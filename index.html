@@ -1,305 +1,223 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CloudFurm</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mini Roblox Studio</title>
 
 <style>
-
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Inter,sans-serif;
-}
-
-html{
-scroll-behavior:smooth;
+font-family:Arial,sans-serif;
 }
 
 body{
-background:#ecebe7;
-color:#111;
+overflow:hidden;
+background:#1e1e1e;
 }
 
-nav{
+#topbar{
 position:fixed;
-top:18px;
-left:50%;
-transform:translateX(-50%);
-width:min(950px,92%);
-height:62px;
+top:0;
+left:0;
+right:0;
+height:60px;
+background:#2b2b2b;
 display:flex;
 align-items:center;
-justify-content:space-between;
-padding:0 18px;
-background:rgba(255,255,255,.82);
-backdrop-filter:blur(18px);
-border:1px solid rgba(0,0,0,.08);
-border-radius:999px;
-box-shadow:0 10px 35px rgba(0,0,0,.08);
-z-index:999;
+padding:10px;
+gap:10px;
+z-index:1000;
 }
 
-.logo{
-display:flex;
-align-items:center;
-gap:12px;
-font-size:20px;
-font-weight:800;
-color:#111;
-}
-
-.logo-circle{
-width:14px;
-height:14px;
-border-radius:50%;
-background:#111;
-}
-
-.links{
-display:flex;
-gap:8px;
-}
-
-.links a{
-text-decoration:none;
-color:#555;
-padding:10px 18px;
-border-radius:999px;
-font-weight:600;
-transition:.25s;
-}
-
-.links a:hover{
-background:white;
-color:#111;
-transform:translateY(-2px);
-box-shadow:0 6px 15px rgba(0,0,0,.08);
-}
-
-.button{
-text-decoration:none;
-background:#181818;
+button{
+background:#0078ff;
 color:white;
-padding:11px 22px;
-border-radius:999px;
-font-weight:700;
-transition:.25s;
+border:none;
+padding:10px 15px;
+border-radius:8px;
+font-weight:bold;
 }
 
-.button:hover{
-transform:translateY(-2px);
-box-shadow:0 10px 22px rgba(0,0,0,.18);
-}
-
-section{
-width:min(1200px,92%);
-margin:auto;
-}
-
-.hero{
-min-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-text-align:center;
-padding-top:120px;
-}
-
-.hero h1{
-font-size:72px;
-line-height:1;
-margin-bottom:20px;
-}
-
-.hero p{
-font-size:20px;
-max-width:650px;
-color:#666;
-}
-
-.hero-btns{
-margin-top:40px;
-display:flex;
-gap:15px;
-flex-wrap:wrap;
-justify-content:center;
-}
-
-.primary,
-.secondary{
-padding:15px 28px;
-border-radius:999px;
-font-weight:700;
-text-decoration:none;
-transition:.3s;
-}
-
-.primary{
-background:#111;
+#info{
 color:white;
+margin-left:auto;
 }
 
-.secondary{
-background:white;
-color:#111;
-border:1px solid rgba(0,0,0,.08);
+#viewport{
+position:fixed;
+top:60px;
+left:0;
+right:0;
+bottom:0;
 }
-
-.primary:hover,
-.secondary:hover{
-transform:translateY(-4px);
-box-shadow:0 10px 25px rgba(0,0,0,.12);
-}
-
-.stats{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:22px;
-margin:90px auto;
-}
-
-.stat{
-background:white;
-padding:35px;
-border-radius:28px;
-box-shadow:0 10px 25px rgba(0,0,0,.06);
-}
-
-.stat h2{
-font-size:42px;
-margin-bottom:8px;
-}
-
-.stat p{
-color:#666;
-}
-
-.features{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:25px;
-margin:120px auto;
-}
-
-.card{
-background:white;
-padding:32px;
-border-radius:28px;
-box-shadow:0 10px 25px rgba(0,0,0,.06);
-transition:.3s;
-}
-
-.card:hover{
-transform:translateY(-8px);
-}
-
-.icon{
-font-size:36px;
-margin-bottom:20px;
-}
-
-.card h3{
-margin-bottom:12px;
-}
-
-.card p{
-color:#666;
-line-height:1.6;
-}
-
-.cta{
-margin:120px auto;
-background:#111;
-color:white;
-padding:80px 40px;
-border-radius:40px;
-text-align:center;
-}
-
-.cta h2{
-font-size:52px;
-margin-bottom:20px;
-}
-
-.cta p{
-max-width:650px;
-margin:auto;
-margin-bottom:35px;
-opacity:.8;
-}
-
-footer{
-text-align:center;
-padding:60px 20px;
-color:#777;
-}
-
-@media(max-width:850px){
-
-.links{
-display:none;
-}
-
-.hero h1{
-font-size:46px;
-}
-
-.hero p{
-font-size:18px;
-}
-
-.stats{
-grid-template-columns:1fr;
-}
-
-.cta h2{
-font-size:36px;
-}
-
-}
-
 </style>
 </head>
-
 <body>
 
-<nav>
-
-<div class="logo">
-<div class="logo-circle"></div>
-CloudFurm
+<div id="topbar">
+<button onclick="addPart()">Add Part</button>
+<button onclick="removePart()">Delete Selected</button>
+<div id="info">Mini Roblox Studio</div>
 </div>
 
-<div class="links">
-<a href="#stats">Stats</a>
-<a href="#features">Features</a>
-</div>
+<div id="viewport"></div>
 
-<a href="#" class="button">CloudFurm V12</a>
+<script type="module">
 
-</nav>
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js';
 
-<section class="hero">
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js';
 
-<h1>Build Faster.<br>Scale Smarter.</h1>
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x202020);
 
-<p>
-CloudFurm is a modern cloud platform that lets developers deploy,
-manage and scale applications with speed, security and reliability.
-</p>
+const camera = new THREE.PerspectiveCamera(
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+);
 
-<div class="hero-btns">
-<a href="get-started.html" class="primary">Get Started</a>
-<a href="documentation.html" class="secondary">Documentation</a>
-</div>
+camera.position.set(10,10,10);
 
-</section>
+const renderer = new THREE.WebGLRenderer({
+antialias:true
+});
 
+renderer.setSize(
+window.innerWidth,
+window.innerHeight
+);
+
+document.getElementById("viewport")
+.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(
+camera,
+renderer.domElement
+);
+
+controls.enableDamping=true;
+
+const grid = new THREE.GridHelper(
+100,
+100
+);
+
+scene.add(grid);
+
+const ambient = new THREE.AmbientLight(
+0xffffff,
+1
+);
+
+scene.add(ambient);
+
+const sun = new THREE.DirectionalLight(
+0xffffff,
+2
+);
+
+sun.position.set(10,20,10);
+
+scene.add(sun);
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+let selected=null;
+const parts=[];
+
+function addPart(){
+
+const geo=new THREE.BoxGeometry(2,2,2);
+
+const mat=new THREE.MeshStandardMaterial({
+color:Math.random()*0xffffff
+});
+
+const cube=new THREE.Mesh(geo,mat);
+
+cube.position.set(
+(Math.random()-0.5)*10,
+1,
+(Math.random()-0.5)*10
+);
+
+scene.add(cube);
+parts.push(cube);
+}
+
+window.addPart=addPart;
+
+window.removePart=()=>{
+if(selected){
+scene.remove(selected);
+selected=null;
+}
+};
+
+for(let i=0;i<3;i++){
+addPart();
+}
+
+window.addEventListener("click",(e)=>{
+
+mouse.x=(e.clientX/window.innerWidth)*2-1;
+mouse.y=-(e.clientY/window.innerHeight)*2+1;
+
+raycaster.setFromCamera(
+mouse,
+camera
+);
+
+const hits=raycaster.intersectObjects(parts);
+
+if(hits.length){
+
+if(selected){
+selected.material.emissive.set(0x000000);
+}
+
+selected=hits[0].object;
+
+selected.material.emissive.set(0x00ff00);
+
+}
+});
+
+window.addEventListener("resize",()=>{
+
+camera.aspect=
+window.innerWidth/window.innerHeight;
+
+camera.updateProjectionMatrix();
+
+renderer.setSize(
+window.innerWidth,
+window.innerHeight
+);
+
+});
+
+function animate(){
+
+requestAnimationFrame(animate);
+
+controls.update();
+
+renderer.render(
+scene,
+camera
+);
+
+}
+
+animate();
+
+</script>
 </body>
 </html>
