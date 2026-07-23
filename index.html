@@ -3,203 +3,1466 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CloudFurm - Developer Auth</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+  <title>Code Editor Workspace with CloudFurm.AI & Plugins</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    :root {
+      --bg-main: #121214;
+      --bg-surface: #1e1e24;
+      --bg-tab-active: #2a2a32;
+      --accent-gold: #ffb703;
+      --accent-play: #4cc9f0;
+      --accent-ai: #a06ee1;
+      --accent-green: #2ec4b6;
+      --accent-orange: #ff7043;
+      --accent-android: #3ddc84;
+      --text-primary: #f8f9fa;
+      --text-secondary: #a0a0ab;
+      --border-color: #2b2b36;
+      --browser-header-bg: #222328;
+    }
+
     * {
       box-sizing: border-box;
-      font-family: 'Roboto', arial, sans-serif;
       margin: 0;
       padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
-      background-color: #f0f4f9;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      height: 100vh;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    .auth-card {
-      background: #ffffff;
-      padding: 28px 24px;
-      border-radius: 20px;
-      width: 100%;
-      max-width: 360px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      text-align: center;
-    }
-
-    .auth-card h1 {
-      font-size: 22px;
-      font-weight: 500;
-      color: #1f1f1f;
-      margin-bottom: 4px;
-    }
-
-    .auth-card p.subtitle {
-      font-size: 14px;
-      color: #444746;
-      margin-bottom: 24px;
-    }
-
-    .input-group {
+      flex-direction: column;
+      overflow: hidden;
       position: relative;
-      margin-bottom: 16px;
-      text-align: left;
     }
 
-    .input-group input {
-      width: 100%;
-      padding: 12px 14px;
-      font-size: 15px;
-      border: 1px solid #747775;
-      border-radius: 4px;
-      outline: none;
-      background: transparent;
-      color: #1f1f1f;
-      transition: border-color 0.2s;
-    }
-
-    .input-group input:focus {
-      border-color: #0b57d0;
-      border-width: 2px;
-      padding: 11px 13px;
-    }
-
-    .button-group {
+    /* Top Navigation Bar */
+    .top-bar {
+      height: 50px;
+      background-color: var(--bg-surface);
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-top: 24px;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border-color);
+      z-index: 10;
     }
 
-    .btn-secondary {
+    .top-bar-left, .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .icon-btn {
       background: none;
       border: none;
-      color: #0b57d0;
-      font-size: 13px;
-      font-weight: 500;
+      color: var(--text-primary);
+      font-size: 18px;
       cursor: pointer;
-      padding: 8px 10px;
-      border-radius: 16px;
-    }
-
-    .btn-secondary:hover {
-      background-color: #f2f6fc;
-    }
-
-    .btn-primary {
-      background-color: #0b57d0;
-      color: #ffffff;
-      border: none;
-      padding: 8px 20px;
-      font-size: 13px;
-      font-weight: 500;
-      border-radius: 16px;
-      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 4px;
       transition: background-color 0.2s;
     }
 
-    .btn-primary:hover {
-      background-color: #0842a0;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    .icon-btn:hover { background-color: var(--border-color); }
+
+    .rename-btn, .play-btn { display: none; }
+    .play-btn { color: var(--accent-play); }
+    .ai-btn { color: var(--accent-ai); }
+
+    /* Project Sidebar Drawer */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
     }
 
-    #status-message {
-      margin-top: 16px;
+    .sidebar-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 280px;
+      height: 100vh;
+      background-color: var(--bg-surface);
+      border-right: 1px solid var(--border-color);
+      z-index: 201;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+    }
+
+    .sidebar.active { transform: translateX(0); }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .project-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .menu-action-btn {
+      width: 100%;
+      padding: 10px 12px;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       font-size: 13px;
-      color: #b3261e;
       text-align: left;
+    }
+
+    .menu-action-btn:hover { background-color: var(--bg-tab-active); }
+
+    .project-list-header {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .project-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .project-item {
+      padding: 10px;
+      border-radius: 6px;
+      background-color: var(--bg-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      border: 1px solid transparent;
+    }
+
+    .project-item.active {
+      border-color: var(--accent-gold);
+      background-color: var(--bg-tab-active);
+    }
+
+    /* AI Helper Panel */
+    .ai-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 320px;
+      max-width: 85vw;
+      height: 100vh;
+      background-color: var(--bg-surface);
+      border-left: 1px solid var(--border-color);
+      z-index: 201;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+    }
+
+    .ai-panel.active { transform: translateX(0); }
+
+    .ai-api-key-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .ai-api-key-box input {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .ai-chat-box {
+      flex: 1;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+
+    .chat-msg {
+      padding: 8px 10px;
+      border-radius: 6px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .chat-msg.user {
+      background: var(--bg-tab-active);
+      align-self: flex-end;
+      color: var(--accent-play);
+    }
+
+    .chat-msg.ai {
+      background: #1a1829;
+      border: 1px solid #33274f;
+      align-self: flex-start;
+      color: var(--text-primary);
+    }
+
+    .ai-input-area {
+      display: flex;
+      gap: 8px;
+    }
+
+    .ai-input-area input {
+      flex: 1;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    /* Options Dropdown */
+    .menu-container { position: relative; }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 8px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      width: 210px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+      display: none;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .dropdown-menu.show { display: flex; }
+
+    .dropdown-item {
+      padding: 10px 14px;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      text-align: left;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dropdown-item:hover { background-color: var(--bg-tab-active); }
+
+    /* Modals Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .app-modal {
+      width: 90%;
+      max-width: 700px;
+      max-height: 85vh;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      height: 48px;
+      background-color: #16161a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 14px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-body {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Plugin Store Cards Grid */
+    .plugin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .plugin-card {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .plugin-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .plugin-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .plugin-title { font-size: 14px; font-weight: 600; }
+    .plugin-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+
+    .plugin-btn {
+      align-self: flex-start;
+      padding: 6px 12px;
+      background-color: var(--bg-tab-active);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .plugin-btn:hover { background-color: var(--border-color); }
+
+    /* Form & Input Fields */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .form-group input, .form-group select {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    /* Build Progress Meter */
+    .build-progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-main);
+      border-radius: 4px;
+      overflow: hidden;
+      display: none;
+    }
+    .build-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-android), var(--accent-green));
+      transition: width 0.3s ease;
+    }
+
+    /* Dynamic File Tabs */
+    .tabs-bar {
+      display: flex;
+      background-color: var(--bg-main);
+      overflow-x: auto;
+      border-bottom: 1px solid var(--border-color);
+      scrollbar-width: none;
+      height: 40px;
+    }
+
+    .tabs-bar::-webkit-scrollbar { display: none; }
+
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      background-color: var(--bg-main);
+      color: var(--text-secondary);
+      font-size: 13px;
+      border-right: 1px solid var(--border-color);
+      white-space: nowrap;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+
+    .tab.active {
+      background-color: var(--bg-tab-active);
+      color: var(--text-primary);
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background-color: var(--accent-gold);
+    }
+
+    .tab-icon { font-size: 12px; }
+    .tab-icon.html { color: #e44d26; }
+    .tab-icon.folder { color: #ffb703; }
+    .tab-icon.file { color: #4cc9f0; }
+
+    .close-tab {
+      font-size: 12px;
+      opacity: 0.6;
+      margin-left: 4px;
+    }
+    .close-tab:hover { opacity: 1; }
+
+    /* Main Editor Workspace */
+    .workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .editor-container {
+      flex: 1;
+      display: flex;
+      background-color: var(--bg-main);
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-y: auto;
+    }
+
+    .line-numbers {
+      width: 44px;
+      padding: 12px 0;
+      text-align: center;
+      color: #4a4a5a;
+      user-select: none;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .code-area {
+      flex: 1;
+      padding: 12px;
+      color: var(--text-primary);
+      outline: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Terminal Output */
+    .terminal-output {
+      height: 220px;
+      background: #0b0b0e;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px;
+      overflow-y: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #39ff14;
+    }
+
+    .terminal-line { margin-bottom: 4px; white-space: pre-wrap; }
+    .terminal-line.error { color: #ff5555; }
+    .terminal-line.info { color: var(--accent-play); }
+    .terminal-line.ai { color: var(--accent-ai); }
+
+    .terminal-input-row {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      background-color: #121216;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+    }
+
+    .terminal-prompt { color: var(--accent-gold); font-size: 12px; margin-right: 8px; }
+
+    .terminal-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+    }
+
+    /* Fullscreen Browser Preview */
+    .preview-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+      transform: translateY(100%);
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+      pointer-events: none;
+    }
+
+    .preview-screen.active {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .browser-bar {
+      height: 56px;
+      background-color: var(--browser-header-bg);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 12px;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .address-bar {
+      flex: 1;
+      background-color: #32333a;
+      border-radius: 20px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      font-size: 13px;
+      color: #e0e0e0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .address-bar i { margin-right: 8px; opacity: 0.7; }
+
+    .preview-body {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background-color: #ffffff;
     }
   </style>
 </head>
 <body>
 
-  <div class="auth-card">
-    <h1>CloudFurm.com</h1>
-    <p class="subtitle">Sign in or create a developer account</p>
+  <input type="file" id="fileInput" style="display: none;" multiple>
 
-    <div class="input-group">
-      <input type="email" id="email" placeholder="Email address" required>
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <button class="icon-btn" id="drawerBtn"><i class="fa-solid fa-bars"></i></button>
     </div>
+    <div class="top-bar-right">
+      <button class="icon-btn ai-btn" id="aiToggleBtn" title="CloudFurm.AI Assistant">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+      </button>
 
-    <div class="input-group">
-      <input type="password" id="password" placeholder="Password" required>
-    </div>
+      <button class="icon-btn rename-btn" id="renameBtn" title="Rename File">
+        <i class="fa-solid fa-pen"></i>
+      </button>
 
-    <p id="status-message"></p>
-
-    <div class="button-group">
-      <button class="btn-secondary" onclick="signUp()">Create account</button>
-      <button class="btn-primary" onclick="signIn()">Next</button>
+      <button class="icon-btn play-btn" id="playBtn" title="Playtest Code">
+        <i class="fa-solid fa-play"></i>
+      </button>
+      
+      <div class="menu-container">
+        <button class="icon-btn" id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <button class="dropdown-item" onclick="createItem('file')">
+            <i class="fa-solid fa-file-circle-plus"></i> New File
+          </button>
+          <button class="dropdown-item" onclick="createItem('folder')">
+            <i class="fa-solid fa-folder-plus"></i> New Folder
+          </button>
+          <button class="dropdown-item" id="importBtn">
+            <i class="fa-solid fa-file-import"></i> Import File
+          </button>
+          <button class="dropdown-item" id="downloadFileBtn">
+            <i class="fa-solid fa-download"></i> Save Current File
+          </button>
+          <button class="dropdown-item" id="pluginStoreBtn">
+            <i class="fa-solid fa-puzzle-piece" style="color: var(--accent-orange);"></i> Plugins & Extensions
+          </button>
+          <button class="dropdown-item" id="commandConsoleBtn">
+            <i class="fa-solid fa-terminal" style="color: var(--accent-green);"></i> Command Console
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Projects</span>
+      <button class="icon-btn" id="closeSidebar"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="project-actions">
+      <button class="menu-action-btn" id="newProjectBtn">
+        <i class="fa-solid fa-plus"></i> New Project
+      </button>
+      <button class="menu-action-btn" id="downloadProjectBtn">
+        <i class="fa-solid fa-file-zipper"></i> Download All Files
+      </button>
+    </div>
+
+    <div class="project-list-header">Your Projects</div>
+    <div class="project-list" id="projectList"></div>
+  </div>
+
+  <div class="ai-panel" id="aiPanel">
+    <div class="sidebar-header">
+      <span class="sidebar-title"><i class="fa-solid fa-robot"></i> CloudFurm.AI</span>
+      <button class="icon-btn" id="closeAiPanel"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="ai-api-key-box">
+      <label style="font-size: 11px; color: var(--text-secondary);">Groq API Key (Pre-Loaded):</label>
+      <input type="password" id="groqApiKey" value="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" placeholder="gsk_..." />
+    </div>
+
+    <button class="menu-action-btn" id="aiFixCodeBtn" style="margin-bottom: 10px;">
+      <i class="fa-solid fa-bolt" style="color: var(--accent-gold);"></i> Fix & Improve Open Code
+    </button>
+
+    <div class="ai-chat-box" id="aiChatBox">
+      <div class="chat-msg ai">Hello! I am CloudFurm.AI. Your API key is loaded and ready. Ask me anything about coding or click "Fix & Improve Open Code"!</div>
+    </div>
+
+    <div class="ai-input-area">
+      <input type="text" id="aiUserPrompt" placeholder="Ask CloudFurm.AI..." />
+      <button class="icon-btn" id="aiSendBtn" style="background: var(--bg-tab-active); padding: 0 12px;">
+        <i class="fa-solid fa-paper-plane" style="color: var(--accent-ai);"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="commandModalOverlay">
+    <div class="app-modal" style="max-width: 600px;">
+      <div class="modal-header">
+        <span><i class="fa-solid fa-terminal" style="color: var(--accent-green);"></i> Command Console</span>
+        <button class="icon-btn" id="closeCommandModal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="terminal-output" id="terminalOutput">
+          <div class="terminal-line info">CloudFurm Command Console v1.0. Type "help" for options.</div>
+        </div>
+        <div class="terminal-input-row">
+          <span class="terminal-prompt">&gt;</span>
+          <input type="text" class="terminal-input" id="terminalInput" placeholder="Type command here..." />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="pluginStoreOverlay">
+    <div class="app-modal">
+      <div class="modal-header">
+        <span><i class="fa-solid fa-puzzle-piece" style="color: var(--accent-orange);"></i> Plugin & Extension Store</span>
+        <button class="icon-btn" id="closePluginStore"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <span style="font-size: 13px; color: var(--text-secondary);">Select a premade plugin to launch and enhance your workspace:</span>
+
+        <div class="plugin-grid" id="pluginGrid">
+          <div class="plugin-card">
+            <div class="plugin-card-header">
+              <div class="plugin-icon" style="background: #2b1f3d; color: var(--accent-ai);">
+                <i class="fa-solid fa-cubes"></i>
+              </div>
+              <div>
+                <div class="plugin-title">Drag & Drop UI Builder</div>
+                <small style="color: var(--accent-gold);">Premade Plugin</small>
+              </div>
+            </div>
+            <div class="plugin-desc">Design HTML pages visually by dragging buttons, text, and inputs onto a canvas without coding.</div>
+            <button class="plugin-btn" id="launchUiBuilderBtn">
+              <i class="fa-solid fa-rocket"></i> Launch Builder
+            </button>
+          </div>
+
+          <div class="plugin-card">
+            <div class="plugin-card-header">
+              <div class="plugin-icon" style="background: #19333d; color: var(--accent-play);">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+              </div>
+              <div>
+                <div class="plugin-title">CSS Keyframe Animator</div>
+                <small style="color: var(--accent-gold);">Premade Plugin</small>
+              </div>
+            </div>
+            <div class="plugin-desc">Visually build smooth CSS animations (bouncing, scaling, pulsing) and insert generated CSS into your file.</div>
+            <button class="plugin-btn" id="launchAnimatorBtn">
+              <i class="fa-solid fa-play"></i> Launch Animator
+            </button>
+          </div>
+
+          <div class="plugin-card">
+            <div class="plugin-card-header">
+              <div class="plugin-icon" style="background: #153321; color: var(--accent-android);">
+                <i class="fa-brands fa-android"></i>
+              </div>
+              <div>
+                <div class="plugin-title">APK & App Bundle Builder</div>
+                <small style="color: var(--accent-gold);">Premade Plugin</small>
+              </div>
+            </div>
+            <div class="plugin-desc">Package your HTML/JS code into an Android Application Package (APK) configuration bundle.</div>
+            <button class="plugin-btn" id="launchApkBuilderBtn">
+              <i class="fa-solid fa-box-archive"></i> Launch Builder
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="apkBuilderOverlay">
+    <div class="app-modal" style="max-width: 550px;">
+      <div class="modal-header">
+        <span><i class="fa-brands fa-android" style="color: var(--accent-android);"></i> APK & App Bundle Builder</span>
+        <button class="icon-btn" id="closeApkBuilder"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Application Name:</label>
+          <input type="text" id="apkAppName" value="My Web App" placeholder="App Name">
+        </div>
+
+        <div class="form-group">
+          <label>Package Identifier:</label>
+          <input type="text" id="apkPackageId" value="com.cloudfurm.myapp" placeholder="com.domain.app">
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <div class="form-group" style="flex: 1;">
+            <label>Version Name:</label>
+            <input type="text" id="apkVersion" value="1.0.0">
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Build Format:</label>
+            <select id="apkFormat">
+              <option value="apk">Android APK (.apk)</option>
+              <option value="aab">Android App Bundle (.aab)</option>
+              <option value="pwa">PWA Package (.zip)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="build-progress-bar" id="buildProgressBar">
+          <div class="build-progress-fill" id="buildProgressFill"></div>
+        </div>
+
+        <div id="buildStatusText" style="font-size: 12px; color: var(--text-secondary); text-align: center; display: none;">
+          Compiling project assets into Android WebView bundle...
+        </div>
+
+        <button class="menu-action-btn" id="startBuildApkBtn" style="background: var(--accent-android); color: #000; font-weight: bold; justify-content: center; margin-top: 6px;">
+          <i class="fa-solid fa-hammer"></i> Build Application Package
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs-bar" id="tabsBar"></div>
+
+  <div class="workspace">
+    <div class="editor-container">
+      <div class="line-numbers" id="lineNumbers">1</div>
+      <div class="code-area" id="codeArea" contenteditable="true" spellcheck="false"></div>
+    </div>
+  </div>
+
+  <div class="preview-screen" id="previewScreen">
+    <div class="browser-bar">
+      <button class="icon-btn" id="backBtn" title="Back to Code">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      <div class="address-bar">
+        <i class="fa-solid fa-lock"></i>
+        <span id="addressUrl">localhost:8158/index.html</span>
+      </div>
+      <button class="icon-btn" id="refreshBtn" title="Refresh">
+        <i class="fa-solid fa-rotate-right"></i>
+      </button>
+      <button class="icon-btn">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </button>
+    </div>
+    <iframe class="preview-body" id="previewFrame"></iframe>
+  </div>
+
   <script>
-    // Live Supabase Configuration
-    const SUPABASE_URL = 'https://pesgoxzabcvxpmhfltbu.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlc2dveHphYmN2eHBtaGZsdGJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3NTQwNzcsImV4cCI6MjEwMDMzMDA3N30.QTizsg1JRTlyN8SDkVxAsfazmKevUsDUCYNX-3cVH6I';
+    // State Store
+    const appState = {
+      projects: [
+        {
+          id: 1,
+          name: 'My Workspace',
+          activeFileId: 101,
+          items: [
+            { id: 101, name: 'index.html', type: 'file', content: '<h1>Hello World</h1>' }
+          ]
+        }
+      ],
+      activeProjectId: 1
+    };
 
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const messageEl = document.getElementById('status-message');
+    // DOM Elements
+    const drawerBtn = document.getElementById('drawerBtn');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const newProjectBtn = document.getElementById('newProjectBtn');
+    const projectList = document.getElementById('projectList');
+    const downloadProjectBtn = document.getElementById('downloadProjectBtn');
 
-    // Auto-redirect if already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        window.location.href = 'dashboard.html';
+    const commandConsoleBtn = document.getElementById('commandConsoleBtn');
+    const commandModalOverlay = document.getElementById('commandModalOverlay');
+    const closeCommandModal = document.getElementById('closeCommandModal');
+    const terminalOutput = document.getElementById('terminalOutput');
+    const terminalInput = document.getElementById('terminalInput');
+
+    const pluginStoreBtn = document.getElementById('pluginStoreBtn');
+    const pluginStoreOverlay = document.getElementById('pluginStoreOverlay');
+    const closePluginStore = document.getElementById('closePluginStore');
+
+    // APK Builder Elements
+    const launchApkBuilderBtn = document.getElementById('launchApkBuilderBtn');
+    const apkBuilderOverlay = document.getElementById('apkBuilderOverlay');
+    const closeApkBuilder = document.getElementById('closeApkBuilder');
+    const startBuildApkBtn = document.getElementById('startBuildApkBtn');
+    const buildProgressBar = document.getElementById('buildProgressBar');
+    const buildProgressFill = document.getElementById('buildProgressFill');
+    const buildStatusText = document.getElementById('buildStatusText');
+    const apkAppName = document.getElementById('apkAppName');
+    const apkPackageId = document.getElementById('apkPackageId');
+    const apkVersion = document.getElementById('apkVersion');
+    const apkFormat = document.getElementById('apkFormat');
+
+    const aiToggleBtn = document.getElementById('aiToggleBtn');
+    const aiPanel = document.getElementById('aiPanel');
+    const closeAiPanel = document.getElementById('closeAiPanel');
+    const groqApiKeyInput = document.getElementById('groqApiKey');
+    const aiChatBox = document.getElementById('aiChatBox');
+    const aiUserPrompt = document.getElementById('aiUserPrompt');
+    const aiSendBtn = document.getElementById('aiSendBtn');
+    const aiFixCodeBtn = document.getElementById('aiFixCodeBtn');
+
+    const menuBtn = document.getElementById('menuBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const playBtn = document.getElementById('playBtn');
+    const renameBtn = document.getElementById('renameBtn');
+    const importBtn = document.getElementById('importBtn');
+    const downloadFileBtn = document.getElementById('downloadFileBtn');
+    const fileInput = document.getElementById('fileInput');
+
+    const tabsBar = document.getElementById('tabsBar');
+    const codeArea = document.getElementById('codeArea');
+    const lineNumbers = document.getElementById('lineNumbers');
+
+    const previewScreen = document.getElementById('previewScreen');
+    const previewFrame = document.getElementById('previewFrame');
+    const backBtn = document.getElementById('backBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const addressUrl = document.getElementById('addressUrl');
+
+    function getActiveProject() {
+      return appState.projects.find(p => p.id === appState.activeProjectId);
+    }
+
+    function getActiveFile() {
+      const proj = getActiveProject();
+      return proj ? proj.items.find(i => i.id === proj.activeFileId) : null;
+    }
+
+    // Modal Operations
+    pluginStoreBtn.addEventListener('click', () => {
+      dropdownMenu.classList.remove('show');
+      pluginStoreOverlay.classList.add('active');
+    });
+    closePluginStore.addEventListener('click', () => pluginStoreOverlay.classList.remove('active'));
+
+    commandConsoleBtn.addEventListener('click', () => {
+      dropdownMenu.classList.remove('show');
+      commandModalOverlay.classList.add('active');
+      terminalInput.focus();
+    });
+    closeCommandModal.addEventListener('click', () => commandModalOverlay.classList.remove('active'));
+
+    // --- Plugin: APK & App Bundle Builder ---
+    launchApkBuilderBtn.addEventListener('click', () => {
+      pluginStoreOverlay.classList.remove('active');
+      apkBuilderOverlay.classList.add('active');
+    });
+    closeApkBuilder.addEventListener('click', () => apkBuilderOverlay.classList.remove('active'));
+
+    startBuildApkBtn.addEventListener('click', () => {
+      const appName = apkAppName.value.trim() || 'My Application';
+      const packageId = apkPackageId.value.trim() || 'com.example.app';
+      const version = apkVersion.value.trim() || '1.0.0';
+      const format = apkFormat.value;
+
+      saveCurrentEditorText();
+      const proj = getActiveProject();
+      if (!proj || !proj.items.length) {
+        return alert('No project files found to build!');
+      }
+
+      startBuildApkBtn.disabled = true;
+      buildProgressBar.style.display = 'block';
+      buildStatusText.style.display = 'block';
+      buildProgressFill.style.width = '0%';
+      buildStatusText.textContent = `Initializing build environment for ${appName}...`;
+
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 20;
+        buildProgressFill.style.width = `${progress}%`;
+
+        if (progress === 40) {
+          buildStatusText.textContent = `Packaging WebView assets for package ${packageId}...`;
+        } else if (progress === 80) {
+          buildStatusText.textContent = `Generating Android Manifest & compiling .${format} bundle...`;
+        } else if (progress >= 100) {
+          clearInterval(interval);
+          buildStatusText.textContent = `Build complete! Downloading ${appName}.${format}...`;
+
+          // Generate Manifest Config File + Asset Manifest Bundle download
+          const manifestContent = JSON.stringify({
+            appName,
+            packageId,
+            version,
+            format,
+            buildDate: new Date().toISOString(),
+            files: proj.items.map(f => ({ name: f.name, type: f.type, content: f.content }))
+          }, null, 2);
+
+          const safeFilename = appName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+          downloadBlob(manifestContent, `${safeFilename}_v${version}.${format}`, 'application/json');
+
+          setTimeout(() => {
+            startBuildApkBtn.disabled = false;
+            buildProgressBar.style.display = 'none';
+            buildStatusText.style.display = 'none';
+            apkBuilderOverlay.classList.remove('active');
+          }, 1500);
+        }
+      }, 600);
+    });
+
+    // Terminal Commands Executor
+    function printTerminal(msg, type = '') {
+      const line = document.createElement('div');
+      line.className = `terminal-line ${type}`;
+      line.textContent = msg;
+      terminalOutput.appendChild(line);
+      terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    }
+
+    terminalInput.addEventListener('keydown', async (e) => {
+      if (e.key === 'Enter') {
+        const cmdText = terminalInput.value.trim();
+        if (!cmdText) return;
+
+        printTerminal(`> ${cmdText}`);
+        terminalInput.value = '';
+
+        const parts = cmdText.split(' ');
+        const mainCmd = parts[0].toLowerCase();
+        const arg = parts.slice(1).join(' ');
+
+        switch (mainCmd) {
+          case 'help':
+            printTerminal('Available Commands:', 'info');
+            printTerminal('  help              - Display this menu');
+            printTerminal('  clear             - Clear output screen');
+            printTerminal('  run               - Launch live project preview');
+            printTerminal('  files             - List all current project files');
+            printTerminal('  new [filename]    - Create a new file');
+            printTerminal('  build             - Launch APK & App Bundle Builder');
+            break;
+
+          case 'clear':
+            terminalOutput.innerHTML = '';
+            break;
+
+          case 'run':
+            commandModalOverlay.classList.remove('active');
+            saveCurrentEditorText();
+            loadPreviewCode();
+            previewScreen.classList.add('active');
+            break;
+
+          case 'files':
+            const proj = getActiveProject();
+            printTerminal(`Files in "${proj.name}":`, 'info');
+            proj.items.forEach(f => printTerminal(`  - ${f.name} (${f.type})`));
+            break;
+
+          case 'build':
+            commandModalOverlay.classList.remove('active');
+            apkBuilderOverlay.classList.add('active');
+            break;
+
+          default:
+            printTerminal(`Command not recognized: "${mainCmd}". Type "help" for options.`, 'error');
+            break;
+        }
       }
     });
 
-    async function signUp() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      if (!email || !password) {
-        messageEl.style.color = '#b3261e';
-        messageEl.textContent = 'Please fill in all fields.';
-        return;
-      }
-
-      const { data, error } = await supabase.auth.signUp({ email, password });
-
-      if (error) {
-        messageEl.style.color = '#b3261e';
-        messageEl.textContent = error.message;
+    // Sidebar & Project Switcher
+    function toggleSidebar(open) {
+      if (open) {
+        renderProjectList();
+        sidebar.classList.add('active');
+        sidebarOverlay.classList.add('active');
+        aiPanel.classList.remove('active');
       } else {
-        messageEl.style.color = '#146c2e';
-        messageEl.textContent = 'Account created! Redirecting to dashboard...';
-        setTimeout(() => {
-          window.location.href = 'dashboard.html';
-        }, 1500);
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
       }
     }
 
-    async function signIn() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+    drawerBtn.addEventListener('click', () => toggleSidebar(true));
+    closeSidebar.addEventListener('click', () => toggleSidebar(false));
 
-      if (!email || !password) {
-        messageEl.style.color = '#b3261e';
-        messageEl.textContent = 'Please fill in all fields.';
-        return;
-      }
-
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-      if (error) {
-        messageEl.style.color = '#b3261e';
-        messageEl.textContent = error.message;
+    // AI Helper Panel Toggle
+    function toggleAiPanel(open) {
+      if (open) {
+        aiPanel.classList.add('active');
+        sidebarOverlay.classList.add('active');
+        sidebar.classList.remove('active');
       } else {
-        messageEl.style.color = '#146c2e';
-        messageEl.textContent = 'Signed in successfully! Redirecting...';
-        window.location.href = 'dashboard.html';
+        aiPanel.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
       }
     }
+
+    aiToggleBtn.addEventListener('click', () => toggleAiPanel(true));
+    closeAiPanel.addEventListener('click', () => toggleAiPanel(false));
+    sidebarOverlay.addEventListener('click', () => {
+      toggleSidebar(false);
+      toggleAiPanel(false);
+    });
+
+    // Groq API Fetch Handler
+    async function askGroqAI(messages) {
+      const apiKey = groqApiKeyInput.value.trim();
+      if (!apiKey) {
+        alert('Please enter your Groq API Key first!');
+        return null;
+      }
+
+      try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: messages,
+            temperature: 0.5
+          })
+        });
+
+        const data = await response.json();
+        if (data.error) {
+          alert('Groq API Error: ' + data.error.message);
+          return null;
+        }
+        return data.choices[0].message.content;
+      } catch (err) {
+        alert('Failed to connect to Groq API. Please check your network or key.');
+        return null;
+      }
+    }
+
+    // AI Chat Messaging
+    function addChatMessage(role, text) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `chat-msg ${role}`;
+      msgDiv.textContent = text;
+      aiChatBox.appendChild(msgDiv);
+      aiChatBox.scrollTop = aiChatBox.scrollHeight;
+    }
+
+    aiSendBtn.addEventListener('click', async () => {
+      const promptText = aiUserPrompt.value.trim();
+      if (!promptText) return;
+
+      addChatMessage('user', promptText);
+      aiUserPrompt.value = '';
+
+      const aiReply = await askGroqAI([
+        { role: 'system', content: 'You are CloudFurm.AI, a helpful coding assistant integrated inside a web code editor.' },
+        { role: 'user', content: promptText }
+      ]);
+
+      if (aiReply) {
+        addChatMessage('ai', aiReply);
+      }
+    });
+
+    // Auto-Fix Code
+    aiFixCodeBtn.addEventListener('click', async () => {
+      const file = getActiveFile();
+      if (!file) return alert('No file is currently open!');
+
+      saveCurrentEditorText();
+      addChatMessage('user', `Fix and optimize my ${file.name} code.`);
+
+      const aiReply = await askGroqAI([
+        { role: 'system', content: 'You are CloudFurm.AI, a professional code cleaner. Return ONLY the improved raw code without any markdown wrappers like ```html.' },
+        { role: 'user', content: `Here is my current code:\n${codeArea.innerText}` }
+      ]);
+
+      if (aiReply) {
+        const cleanCode = aiReply.replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim();
+        codeArea.innerText = cleanCode;
+        saveCurrentEditorText();
+        updateLineNumbers();
+        addChatMessage('ai', 'Updated your code directly in the editor!');
+      }
+    });
+
+    // Projects Manager
+    newProjectBtn.addEventListener('click', () => {
+      const name = prompt('Enter new project name:', 'New Project');
+      if (!name) return;
+
+      const newProj = { id: Date.now(), name: name.trim(), activeFileId: null, items: [] };
+      appState.projects.push(newProj);
+      switchProject(newProj.id);
+      toggleSidebar(false);
+    });
+
+    function switchProject(projId) {
+      saveCurrentEditorText();
+      appState.activeProjectId = projId;
+      const proj = getActiveProject();
+      
+      if (proj.items.length > 0 && !proj.activeFileId) {
+        proj.activeFileId = proj.items[0].id;
+      }
+      
+      const file = getActiveFile();
+      codeArea.innerText = file ? file.content : '';
+      updateUI();
+    }
+
+    function renderProjectList() {
+      projectList.innerHTML = '';
+      appState.projects.forEach(proj => {
+        const item = document.createElement('div');
+        item.className = `project-item ${proj.id === appState.activeProjectId ? 'active' : ''}`;
+        item.innerHTML = `
+          <span><i class="fa-solid fa-folder"></i> ${proj.name}</span>
+          <small style="color:var(--text-secondary)">${proj.items.length} files</small>
+        `;
+        item.addEventListener('click', () => {
+          switchProject(proj.id);
+          toggleSidebar(false);
+        });
+        projectList.appendChild(item);
+      });
+    }
+
+    // Dropdown Menu
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdownMenu.classList.toggle('show');
+    });
+
+    document.addEventListener('click', () => {
+      dropdownMenu.classList.remove('show');
+    });
+
+    function saveCurrentEditorText() {
+      const file = getActiveFile();
+      if (file) {
+        file.content = codeArea.innerText;
+      }
+    }
+
+    function createItem(type) {
+      dropdownMenu.classList.remove('show');
+      const name = prompt(`Enter ${type} name:`, type === 'file' ? 'index.html' : 'New Folder');
+      if (!name) return;
+
+      const proj = getActiveProject();
+      const newItem = {
+        id: Date.now(),
+        name: name.trim(),
+        type: type,
+        content: type === 'file' ? '<h1>New File</h1>' : ''
+      };
+
+      proj.items.push(newItem);
+      if (type === 'file') {
+        setActiveTab(newItem.id);
+      } else {
+        updateUI();
+      }
+    }
+
+    renameBtn.addEventListener('click', () => {
+      const file = getActiveFile();
+      if (!file) return;
+
+      const newName = prompt('Enter new file name:', file.name);
+      if (newName && newName.trim()) {
+        file.name = newName.trim();
+        updateUI();
+      }
+    });
+
+    importBtn.addEventListener('click', () => {
+      dropdownMenu.classList.remove('show');
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const files = e.target.files;
+      if (!files.length) return;
+
+      const proj = getActiveProject();
+      Array.from(files).forEach(f => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const newItem = {
+            id: Date.now() + Math.random(),
+            name: f.name,
+            type: 'file',
+            content: event.target.result
+          };
+          proj.items.push(newItem);
+          setActiveTab(newItem.id);
+        };
+        reader.readAsText(f);
+      });
+      fileInput.value = '';
+    });
+
+    downloadFileBtn.addEventListener('click', () => {
+      dropdownMenu.classList.remove('show');
+      saveCurrentEditorText();
+      const file = getActiveFile();
+      if (!file) return;
+
+      downloadBlob(file.content, file.name, 'text/plain');
+    });
+
+    downloadProjectBtn.addEventListener('click', () => {
+      saveCurrentEditorText();
+      const proj = getActiveProject();
+      if (!proj.items.length) return alert('No files to download.');
+
+      proj.items.forEach(item => {
+        if (item.type === 'file') {
+          downloadBlob(item.content, item.name, 'text/plain');
+        }
+      });
+    });
+
+    function downloadBlob(content, filename, contentType) {
+      const blob = new Blob([content], { type: contentType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Tabs & Workspace
+    function setActiveTab(id) {
+      saveCurrentEditorText();
+      const proj = getActiveProject();
+      const target = proj.items.find(i => i.id === id);
+      if (!target || target.type === 'folder') return;
+
+      proj.activeFileId = id;
+      codeArea.innerText = target.content;
+      updateUI();
+    }
+
+    function closeTab(e, id) {
+      e.stopPropagation();
+      const proj = getActiveProject();
+      proj.items = proj.items.filter(i => i.id !== id);
+
+      if (proj.activeFileId === id) {
+        const remainingFiles = proj.items.filter(i => i.type === 'file');
+        proj.activeFileId = remainingFiles.length ? remainingFiles[remainingFiles.length - 1].id : null;
+        codeArea.innerText = proj.activeFileId ? proj.items.find(i => i.id === proj.activeFileId).content : '';
+      }
+      updateUI();
+    }
+
+    function updateUI() {
+      renderTabs();
+      checkHeaderButtons();
+      updateLineNumbers();
+    }
+
+    function renderTabs() {
+      tabsBar.innerHTML = '';
+      const proj = getActiveProject();
+      if (!proj) return;
+
+      proj.items.forEach(item => {
+        const tab = document.createElement('div');
+        tab.className = `tab ${item.id === proj.activeFileId ? 'active' : ''}`;
+        
+        let iconClass = 'fa-file file';
+        if (item.type === 'folder') iconClass = 'fa-folder folder';
+        else if (item.name.endsWith('.html')) iconClass = 'fa-code html';
+
+        tab.innerHTML = `
+          <i class="fa-solid ${iconClass} tab-icon"></i>
+          <span>${item.name}</span>
+          <i class="fa-solid fa-xmark close-tab" onclick="closeTab(event, ${item.id})"></i>
+        `;
+
+        tab.addEventListener('click', () => setActiveTab(item.id));
+        tabsBar.appendChild(tab);
+      });
+    }
+
+    function checkHeaderButtons() {
+      const file = getActiveFile();
+      if (file) {
+        renameBtn.style.display = 'flex';
+        playBtn.style.display = file.name.toLowerCase().endsWith('.html') ? 'flex' : 'none';
+      } else {
+        renameBtn.style.display = 'none';
+        playBtn.style.display = 'none';
+      }
+    }
+
+    codeArea.addEventListener('input', () => {
+      updateLineNumbers();
+      saveCurrentEditorText();
+    });
+
+    function updateLineNumbers() {
+      const lines = codeArea.innerText.split('\n').length;
+      lineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
+    }
+
+    function loadPreviewCode() {
+      const file = getActiveFile();
+      if (!file) return;
+
+      addressUrl.textContent = `localhost:8158/${file.name}`;
+      previewFrame.srcdoc = codeArea.innerText;
+    }
+
+    playBtn.addEventListener('click', () => {
+      saveCurrentEditorText();
+      loadPreviewCode();
+      previewScreen.classList.add('active');
+    });
+
+    backBtn.addEventListener('click', () => previewScreen.classList.remove('active'));
+    refreshBtn.addEventListener('click', () => loadPreviewCode());
+
+    // Initialize UI
+    switchProject(appState.activeProjectId);
   </script>
-
 </body>
 </html>
