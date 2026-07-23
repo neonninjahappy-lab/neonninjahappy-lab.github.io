@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CloudFurm - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Roboto', arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #f8f9fa;
+      color: #1f1f1f;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 500;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      border: 1px solid #e0e0e0;
+      margin-bottom: 24px;
+    }
+
+    .card h2 {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 14px;
+      border: 1px solid #747775;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: #0b57d0;
+    }
+
+    .btn-primary {
+      background-color: #0b57d0;
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 16px;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      background-color: #0842a0;
+    }
+
+    .btn-danger {
+      background-color: #transparent;
+      color: #b3261e;
+      border: 1px solid #b3261e;
+      padding: 6px 16px;
+      font-size: 13px;
+      border-radius: 16px;
+      cursor: pointer;
+    }
+
+    .btn-danger:hover {
+      background-color: #fce8e6;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 14px;
+    }
+
+    th {
+      color: #444746;
+      font-weight: 500;
+    }
+
+    code {
+      background: #f1f3f4;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #1a73e8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>CloudFurm Dashboard</h1>
+      <button class="btn-danger" onclick="signOut()">Sign Out</button>
+    </header>
+
+    <div class="card">
+      <h2>Create New Project</h2>
+      <input type="text" id="project-name" class="input-field" placeholder="Project / Website Name (e.g., My Portfolio)">
+      <input type="text" id="redirect-url" class="input-field" placeholder="Redirect URL (e.g., https://mywebsite.com/dashboard)">
+      <button class="btn-primary" onclick="createProject()">Generate API Key</button>
+    </div>
+
+    <div class="card">
+      <h2>Your Projects</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Project Name</th>
+            <th>API Key</th>
+            <th>Redirect Domain</th>
+          </tr>
+        </thead>
+        <tbody id="projects-list">
+          <tr><td colspan="3">Loading your projects...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://pesgoxzabcvxpmhfltbu.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlc2dveHphYmN2eHBtaGZsdGJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3NTQwNzcsImV4cCI6MjEwMDMzMDA3N30.QTizsg1JRTlyN8SDkVxAsfazmKevUsDUCYNX-3cVH6I';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentUser = null;
+
+    async function checkAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.href = 'index.html';
+        return;
+      }
+      currentUser = session.user;
+      loadProjects();
+    }
+
+    async function createProject() {
+      const name = document.getElementById('project-name').value;
+      const redirectUrl = document.getElementById('redirect-url').value;
+
+      if (!name || !redirectUrl) {
+        alert('Please provide both a project name and redirect URL.');
+        return;
+      }
+
+      // Generate a unique API Key
+      const apiKey = 'cf_pk_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+      const { error } = await supabase.from('projects').insert({
+        user_id: currentUser.id,
+        name: name,
+        api_key: apiKey,
+        redirect_url: redirectUrl
+      });
+
+      if (error) {
+        alert('Error creating project: ' + error.message);
+      } else {
+        document.getElementById('project-name').value = '';
+        document.getElementById('redirect-url').value = '';
+        loadProjects();
+      }
+    }
+
+    async function loadProjects() {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('user_id', currentUser.id);
+
+      const tbody = document.getElementById('projects-list');
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="3">Error loading projects. Make sure the database table exists.</td></tr>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3">No projects created yet. Create one above!</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.map(p => `
+        <tr>
+          <td><strong>${p.name}</strong></td>
+          <td><code>${p.api_key}</code></td>
+          <td>${p.redirect_url}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function signOut() {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    }
+
+    checkAuth();
+  </script>
+</body>
+</html>
