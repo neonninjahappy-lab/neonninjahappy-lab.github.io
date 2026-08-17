@@ -1,1483 +1,3409 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CloudFurm.dev</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --bg-main: #121214;
-      --bg-surface: #1e1e24;
-      --bg-tab-active: #2a2a32;
-      --accent-gold: #ffb703;
-      --accent-play: #4cc9f0;
-      --accent-ai: #a06ee1;
-      --accent-green: #2ec4b6;
-      --accent-orange: #ff7043;
-      --accent-android: #3ddc84;
-      --text-primary: #f8f9fa;
-      --text-secondary: #a0a0ab;
-      --border-color: #2b2b36;
-      --browser-header-bg: #222328;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    html, body {
-      height: 100%;
-      height: 100dvh;
-      width: 100vw;
-      overflow: hidden;
-      background-color: var(--bg-main);
-      color: var(--text-primary);
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
-    /* Top Navigation Bar */
-    .top-bar {
-      height: 50px;
-      min-height: 50px;
-      max-height: 50px;
-      flex-shrink: 0;
-      background-color: var(--bg-surface);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      border-bottom: 1px solid var(--border-color);
-      z-index: 100;
-    }
-
-    .top-bar-left, .top-bar-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .icon-btn {
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 6px;
-      border-radius: 4px;
-      transition: background-color 0.2s;
-    }
-
-    .icon-btn:hover { background-color: var(--border-color); }
-
-    .rename-btn, .play-btn { display: none; }
-    .play-btn { color: var(--accent-play); }
-    .ai-btn { color: var(--accent-ai); }
-
-    /* Project Sidebar Drawer */
-    .sidebar-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 200;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .sidebar-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 280px;
-      height: 100vh;
-      background-color: var(--bg-surface);
-      border-right: 1px solid var(--border-color);
-      z-index: 201;
-      transform: translateX(-100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-    }
-
-    .sidebar.active { transform: translateX(0); }
-
-    .sidebar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .sidebar-title {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .project-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .menu-action-btn {
-      width: 100%;
-      padding: 10px 12px;
-      background-color: var(--bg-main);
-      border: 1px solid var(--border-color);
-      color: var(--text-primary);
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      text-align: left;
-    }
-
-    .menu-action-btn:hover { background-color: var(--bg-tab-active); }
-
-    .project-list-header {
-      font-size: 12px;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-
-    .project-list {
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .project-item {
-      padding: 10px;
-      border-radius: 6px;
-      background-color: var(--bg-main);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 13px;
-      border: 1px solid transparent;
-    }
-
-    .project-item.active {
-      border-color: var(--accent-gold);
-      background-color: var(--bg-tab-active);
-    }
-
-    /* AI Helper Panel */
-    .ai-panel {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 320px;
-      max-width: 85vw;
-      height: 100vh;
-      background-color: var(--bg-surface);
-      border-left: 1px solid var(--border-color);
-      z-index: 201;
-      transform: translateX(100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-    }
-
-    .ai-panel.active { transform: translateX(0); }
-
-    .ai-api-key-box {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .ai-api-key-box input {
-      background: var(--bg-main);
-      border: 1px solid var(--border-color);
-      color: var(--text-primary);
-      padding: 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      outline: none;
-    }
-
-    .ai-chat-box {
-      flex: 1;
-      background: var(--bg-main);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 12px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 12px;
-      font-size: 13px;
-    }
-
-    .chat-msg {
-      padding: 8px 10px;
-      border-radius: 6px;
-      line-height: 1.4;
-      white-space: pre-wrap;
-    }
-
-    .chat-msg.user {
-      background: var(--bg-tab-active);
-      align-self: flex-end;
-      color: var(--accent-play);
-    }
-
-    .chat-msg.ai {
-      background: #1a1829;
-      border: 1px solid #33274f;
-      align-self: flex-start;
-      color: var(--text-primary);
-    }
-
-    .ai-input-area {
-      display: flex;
-      gap: 8px;
-    }
-
-    .ai-input-area input {
-      flex: 1;
-      background: var(--bg-main);
-      border: 1px solid var(--border-color);
-      color: var(--text-primary);
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 13px;
-      outline: none;
-    }
-
-    /* Options Dropdown */
-    .menu-container { position: relative; }
-
-    .dropdown-menu {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      margin-top: 8px;
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      width: 210px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-      display: none;
-      flex-direction: column;
-      z-index: 100;
-    }
-
-    .dropdown-menu.show { display: flex; }
-
-    .dropdown-item {
-      padding: 10px 14px;
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      text-align: left;
-      font-size: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .dropdown-item:hover { background-color: var(--bg-tab-active); }
-
-    /* Modals Overlay */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.75);
-      z-index: 500;
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-overlay.active { display: flex; }
-
-    .app-modal {
-      width: 90%;
-      max-width: 700px;
-      max-height: 85vh;
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      overflow: hidden;
-    }
-
-    .modal-header {
-      height: 48px;
-      background-color: #16161a;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      font-size: 14px;
-      font-weight: 600;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .modal-body {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* Plugin Store Cards Grid */
-    .plugin-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 14px;
-    }
-
-    .plugin-card {
-      background: var(--bg-main);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .plugin-card-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .plugin-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
-
-    .plugin-title { font-size: 14px; font-weight: 600; }
-    .plugin-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
-
-    .plugin-btn {
-      align-self: flex-start;
-      padding: 6px 12px;
-      background-color: var(--bg-tab-active);
-      border: 1px solid var(--border-color);
-      color: var(--text-primary);
-      border-radius: 4px;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .plugin-btn:hover { background-color: var(--border-color); }
-
-    /* Form & Input Fields */
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .form-group label {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-    .form-group input, .form-group select {
-      background: var(--bg-main);
-      border: 1px solid var(--border-color);
-      color: var(--text-primary);
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 13px;
-      outline: none;
-    }
-
-    /* Build Progress Meter */
-    .build-progress-bar {
-      width: 100%;
-      height: 8px;
-      background: var(--bg-main);
-      border-radius: 4px;
-      overflow: hidden;
-      display: none;
-    }
-    .build-progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent-android), var(--accent-green));
-      transition: width 0.3s ease;
-    }
-
-    /* Dynamic File Tabs */
-    .tabs-bar {
-      display: flex;
-      background-color: var(--bg-main);
-      overflow-x: auto;
-      border-bottom: 1px solid var(--border-color);
-      scrollbar-width: none;
-      height: 40px;
-      min-height: 40px;
-      flex-shrink: 0;
-    }
-
-    .tabs-bar::-webkit-scrollbar { display: none; }
-
-    .tab {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 16px;
-      background-color: var(--bg-main);
-      color: var(--text-secondary);
-      font-size: 13px;
-      border-right: 1px solid var(--border-color);
-      white-space: nowrap;
-      cursor: pointer;
-      position: relative;
-      user-select: none;
-    }
-
-    .tab.active {
-      background-color: var(--bg-tab-active);
-      color: var(--text-primary);
-    }
-
-    .tab.active::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background-color: var(--accent-gold);
-    }
-
-    .tab-icon { font-size: 12px; }
-    .tab-icon.html { color: #e44d26; }
-    .tab-icon.folder { color: #ffb703; }
-    .tab-icon.file { color: #4cc9f0; }
-
-    .close-tab {
-      font-size: 12px;
-      opacity: 0.6;
-      margin-left: 4px;
-    }
-    .close-tab:hover { opacity: 1; }
-
-    /* Main Editor Workspace */
-    .workspace {
-      flex: 1;
-      min-height: 0; /* CRITICAL: Allows flex child to shrink and enable inner scrolling */
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .editor-container {
-      flex: 1;
-      min-height: 0; /* CRITICAL: Enables scrolling inside code container instead of extending body */
-      display: flex;
-      background-color: var(--bg-main);
-      font-family: 'Fira Code', 'Courier New', monospace;
-      font-size: 14px;
-      line-height: 1.5;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-
-    .line-numbers {
-      width: 44px;
-      padding: 12px 0;
-      text-align: center;
-      color: #4a4a5a;
-      user-select: none;
-      border-right: 1px solid rgba(255, 255, 255, 0.05);
-      flex-shrink: 0;
-    }
-
-    .code-area {
-      flex: 1;
-      min-width: 0;
-      padding: 12px;
-      color: var(--text-primary);
-      outline: none;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    /* Terminal Output */
-    .terminal-output {
-      height: 220px;
-      background: #0b0b0e;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 10px;
-      overflow-y: auto;
-      font-family: 'Fira Code', monospace;
-      font-size: 12px;
-      line-height: 1.4;
-      color: #39ff14;
-    }
-
-    .terminal-line { margin-bottom: 4px; white-space: pre-wrap; }
-    .terminal-line.error { color: #ff5555; }
-    .terminal-line.info { color: var(--accent-play); }
-    .terminal-line.ai { color: var(--accent-ai); }
-
-    .terminal-input-row {
-      display: flex;
-      align-items: center;
-      padding: 8px;
-      background-color: #121216;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-    }
-
-    .terminal-prompt { color: var(--accent-gold); font-size: 12px; margin-right: 8px; }
-
-    .terminal-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text-primary);
-      font-family: 'Fira Code', monospace;
-      font-size: 12px;
-    }
-
-    /* Fullscreen Browser Preview */
-    .preview-screen {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background-color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      z-index: 1000;
-      transform: translateY(100%);
-      opacity: 0;
-      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
-      pointer-events: none;
-    }
-
-    .preview-screen.active {
-      transform: translateY(0);
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .browser-bar {
-      height: 56px;
-      background-color: var(--browser-header-bg);
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      gap: 12px;
-      color: #ffffff;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    }
-
-    .address-bar {
-      flex: 1;
-      background-color: #32333a;
-      border-radius: 20px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      padding: 0 14px;
-      font-size: 13px;
-      color: #e0e0e0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .address-bar i { margin-right: 8px; opacity: 0.7; }
-
-    .preview-body {
-      flex: 1;
-      width: 100%;
-      border: none;
-      background-color: #ffffff;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Mobile Profile Editor</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 72px;
+            height: 100%;
+            background-color: #000000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 0;
+            gap: 10px;
+            flex-shrink: 0;
+            overflow-y: auto;
+            scrollbar-width: none;
+            z-index: 2;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .icon-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #2b2d31;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+            overflow: hidden;
+        }
+
+        .icon-btn:hover {
+            border-radius: 16px;
+            background-color: #5865f2;
+        }
+
+        .icon-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .plus-btn:hover {
+            background-color: #23a55a;
+            border-radius: 16px;
+        }
+
+        .plus-btn:hover .plus-icon {
+            stroke: #ffffff;
+        }
+
+        .plus-icon {
+            width: 24px;
+            height: 24px;
+            stroke: #23a55a;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .separator {
+            width: 32px;
+            height: 2px;
+            background-color: #2b2d31;
+            border-radius: 1px;
+            margin: 2px 0;
+            flex-shrink: 0;
+        }
+
+        .custom-icon {
+            width: 24px;
+            height: 24px;
+            fill: #dbdee1;
+        }
+
+        /* Main View Layout */
+        .main-wrapper {
+            flex-grow: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #000000;
+            position: relative;
+        }
+
+        /* Top Bar Layout */
+        .top-bar {
+            padding: 12px 16px 4px 16px;
+            position: relative;
+            z-index: 5;
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-container {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background-color: #1e1f22;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        /* Custom Notification Button */
+        .notif-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background-color: #1e1f22;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background-color 0.2s ease;
+        }
+
+        .notif-btn:hover {
+            background-color: #2b2d31;
+        }
+
+        .notif-icon {
+            width: 20px;
+            height: 20px;
+            fill: #dbdee1;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 46px;
+            left: 0;
+            width: 100%;
+            background-color: #2b2d31;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        .search-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            border-bottom: 1px solid #1e1f22;
+        }
+
+        .search-item:hover {
+            background-color: #35373c;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+            color: #949ba4;
+            overflow-y: auto;
+            background-color: #000000;
+        }
+
+        /* Small White Card */
+        .white-card {
+            width: 100%;
+            max-width: 400px;
+            background-color: #ffffff;
+            color: #000000;
+            border-radius: 12px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            margin-bottom: 16px;
+        }
+
+        .white-card-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #5c5e64;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .friends-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        /* Friends items matching bottom dock styling */
+        .friend-bar {
+            height: 60px;
+            background-color: #111214;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .friend-bar:hover {
+            background-color: #1e1f22;
+        }
+
+        /* Bottom User Dock */
+        .user-bar {
+            height: 60px;
+            background-color: #111214;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            margin: 0 12px 12px 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 12px;
+            transition: background-color 0.2s ease;
+            flex-grow: 1;
+        }
+
+        .user-info:hover {
+            background-color: #2b2d31;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #2b2d31;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .head-icon {
+            width: 22px;
+            height: 22px;
+            fill: #dbdee1;
+        }
+
+        .status-badge {
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 13px;
+            height: 13px;
+            background-color: #23a55a;
+            border: 3px solid #111214;
+            border-radius: 50%;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .username-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .username {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .chevron-icon {
+            width: 14px;
+            height: 14px;
+            fill: #949ba4;
+        }
+
+        .user-status-text {
+            font-size: 12px;
+            color: #949ba4;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background-color: #2b2d31;
+        }
+
+        .bell-icon {
+            width: 20px;
+            height: 20px;
+            fill: #dbdee1;
+        }
+
+        .logout-btn-dock {
+            background: none;
+            border: none;
+            color: #f23f43;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .logout-btn-dock:hover {
+            background-color: #2b2d31;
+        }
+
+        /* Fullscreen Animated Profile View */
+        .profile-page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #111214;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            padding: 16px;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .profile-page.active {
+            transform: translateY(0);
+        }
+
+        .profile-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .close-icon-btn {
+            background: #2b2d31;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+
+        .close-icon-btn:hover {
+            background-color: #35373c;
+        }
+
+        .close-icon-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: #ffffff;
+            stroke-width: 2.5;
+        }
+
+        .profile-header-area {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .large-avatar-container {
+            position: relative;
+            width: 84px;
+            height: 84px;
+            flex-shrink: 0;
+        }
+
+        .large-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #2b2d31;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .large-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .large-head-icon {
+            width: 50px;
+            height: 50px;
+            fill: #dbdee1;
+        }
+
+        .large-status-badge {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 22px;
+            height: 22px;
+            background-color: #23a55a;
+            border: 4px solid #111214;
+            border-radius: 50%;
+        }
+
+        .status-bubble {
+            background-color: #2b2d31;
+            border-radius: 16px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #dbdee1;
+            margin-top: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            flex-grow: 1;
+        }
+
+        .status-bubble-icon {
+            width: 16px;
+            height: 16px;
+            stroke: #b5bac1;
+            stroke-width: 2;
+            flex-shrink: 0;
+        }
+
+        .profile-user-info {
+            margin-bottom: 16px;
+        }
+
+        .display-name-heading {
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .username-subtext {
+            font-size: 14px;
+            color: #949ba4;
+            margin-top: 2px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .edit-profile-btn, .action-action-btn {
+            flex: 1;
+            background-color: #2b2d31;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .edit-profile-btn:hover, .action-action-btn:hover {
+            background-color: #35373c;
+        }
+
+        .edit-profile-btn:active, .action-action-btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: #5865f2;
+        }
+
+        .btn-primary:hover {
+            background-color: #4752c4;
+        }
+
+        .btn-secondary {
+            background-color: #23a55a;
+        }
+
+        .btn-secondary:hover {
+            background-color: #1f9250;
+        }
+
+        .profile-tabs {
+            display: flex;
+            border-bottom: 2px solid #2b2d31;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #949ba4;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tab.active {
+            color: #ffffff;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #5865f2;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #b5bac1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .section-body {
+            font-size: 14px;
+            color: #dbdee1;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            background-color: #1e1f22;
+            padding: 12px 14px;
+            border-radius: 12px;
+        }
+
+        .section-body a {
+            color: #00a8fc;
+            text-decoration: none;
+        }
+
+        .section-body a:hover {
+            text-decoration: underline;
+        }
+
+        .member-since-card {
+            background-color: #1e1f22;
+            padding: 12px 14px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #dbdee1;
+            margin-bottom: 20px;
+        }
+
+        .connection-card {
+            background-color: #1e1f22;
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+        }
+
+        .connection-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .external-icon {
+            width: 16px;
+            height: 16px;
+            stroke: #949ba4;
+            stroke-width: 2;
+        }
+
+        /* Game Activity Card */
+        .game-card {
+            background-color: #1e1f22;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .game-banner {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, #5865f2 0%, #eb459e 100%);
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            padding: 12px;
+        }
+
+        .game-banner img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .game-banner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(30, 31, 34, 0.9), transparent);
+        }
+
+        .game-title-text {
+            position: relative;
+            z-index: 1;
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .game-details {
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .game-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #23a55a;
+            font-weight: 600;
+        }
+
+        .game-status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #23a55a;
+            border-radius: 50%;
+        }
+
+        .game-info-text {
+            font-size: 13px;
+            color: #949ba4;
+        }
+
+        /* Discord Native Mobile Edit Profile Page */
+        .editor-page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #111214;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        .editor-page.active {
+            transform: translateY(0);
+        }
+
+        /* Top Header Navigation */
+        .editor-nav {
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background-color: #111214;
+            flex-shrink: 0;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .close-btn-text {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .save-btn-text {
+            background: none;
+            border: none;
+            color: #5865f2;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Sub Navigation Tabs */
+        .editor-subtabs {
+            display: flex;
+            background-color: #111214;
+            border-bottom: 1px solid #1e1f22;
+            flex-shrink: 0;
+        }
+
+        .subtab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #949ba4;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .subtab.active {
+            color: #ffffff;
+        }
+
+        .subtab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #5865f2;
+        }
+
+        /* Scrollable Content Container */
+        .editor-scroll-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-bottom: 24px;
+        }
+
+        /* Profile Preview Header Box */
+        .preview-header-box {
+            position: relative;
+            background-color: #000000;
+            padding-bottom: 16px;
+        }
+
+        .banner-preview {
+            height: 100px;
+            background-color: #1e1f22;
+            position: relative;
+        }
+
+        .edit-banner-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.6);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .edit-banner-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: #ffffff;
+        }
+
+        .avatar-preview-container {
+            position: relative;
+            margin-top: -40px;
+            margin-left: 16px;
+            width: 80px;
+            height: 80px;
+            display: inline-block;
+        }
+
+        .preview-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #2b2d31;
+            border: 6px solid #111214;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .preview-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .edit-avatar-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: #2b2d31;
+            border: 2px solid #111214;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .edit-avatar-badge svg {
+            width: 13px;
+            height: 13px;
+            fill: #ffffff;
+        }
+
+        .add-status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: #2b2d31;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-left: 12px;
+            vertical-align: top;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        .add-status-chip svg {
+            width: 14px;
+            height: 14px;
+            stroke: #ffffff;
+            stroke-width: 2.5;
+        }
+
+        .preview-identity-info {
+            padding: 12px 16px 0 16px;
+        }
+
+        .preview-display-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .preview-username-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 2px;
+        }
+
+        .preview-username-text {
+            font-size: 13px;
+            color: #949ba4;
+        }
+
+        .badge-icon {
+            width: 16px;
+            height: 16px;
+            fill: #5865f2;
+        }
+
+        /* Form Controls Section */
+        .form-section {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .input-card {
+            background-color: rgb(30,31,34);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-card label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #b5bac1;
+            letter-spacing: 0.5px;
+        }
+
+        .input-field-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .input-field-wrapper input, .input-field-wrapper textarea, .input-field-wrapper select {
+            width: 100%;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .input-field-wrapper textarea {
+            resize: none;
+            height: 48px;
+        }
+
+        .clear-input-btn {
+            background: #2b2d31;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #949ba4;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .hidden-file-input {
+            display: none;
+        }
+
+        /* Authentication Modal */
+        .auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .auth-box {
+            background-color: #2b2d31;
+            padding: 24px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .auth-box h3 {
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .auth-box input {
+            background-color: #1e1f22;
+            border: none;
+            border-radius: 6px;
+            padding: 10px;
+            color: #ffffff;
+            outline: none;
+        }
+
+        .auth-box button {
+            background-color: #5865f2;
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .auth-toggle {
+            color: #00a8fc;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        /* Direct Messages Interface */
+        .dm-page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            display: flex;
+            flex-direction: column;
+            z-index: 15;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .dm-page.active {
+            transform: translateY(0);
+        }
+
+        .dm-header {
+            height: 52px;
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 12px;
+        }
+
+        .dm-messages {
+            flex-grow: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .message-item {
+            background-color: #1e1f22;
+            padding: 8px 12px;
+            border-radius: 8px;
+            max-width: 80%;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message-item.me {
+            align-self: flex-end;
+            background-color: #5865f2;
+        }
+
+        .dm-input-area {
+            padding: 12px;
+            display: flex;
+            gap: 8px;
+            background-color: transparent;
+        }
+
+        .dm-input-area input {
+            flex-grow: 1;
+            background-color: #1e1f22;
+            border: none;
+            border-radius: 16px;
+            padding: 8px 14px;
+            color: #ffffff;
+            outline: none;
+        }
+
+        .dm-input-area button {
+            background-color: #5865f2;
+            border: none;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Requests Section in Main */
+        .pending-box {
+            width: 100%;
+            max-width: 400px;
+            background: #1e1f22;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 16px;
+        }
+
+        .pending-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #2b2d31;
+        }
+
+        .pending-item:last-child {
+            border-bottom: none;
+        }
+
+        .accept-btn {
+            background-color: #23a55a;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Server Action Popup Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal-card {
+            background-color: #2b2d31;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+        }
+
+        .modal-card h3 {
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: #949ba4;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .modal-btn {
+            background-color: #5865f2;
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .modal-btn.secondary {
+            background-color: #23a55a;
+        }
+
+        .modal-btn.danger {
+            background-color: #f23f43;
+        }
+
+        .modal-input {
+            background-color: #1e1f22;
+            border: none;
+            border-radius: 6px;
+            padding: 10px;
+            color: #ffffff;
+            outline: none;
+            width: 100%;
+        }
+
+        .server-upload-preview {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background-color: #1e1f22;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            cursor: pointer;
+            overflow: hidden;
+            border: 2px dashed #949ba4;
+        }
+
+        .server-upload-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Server Chat Card UI */
+        .server-invite-card {
+            background-color: #2b2d31;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 4px;
+            width: 100%;
+        }
+
+        .server-invite-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background-color: #5865f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .server-invite-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .server-invite-details {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .server-invite-name {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 13px;
+        }
+
+        .server-invite-sub {
+            font-size: 11px;
+            color: #949ba4;
+        }
+
+        .server-invite-btn {
+            background-color: #23a55a;
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Server View Layout */
+        .server-layout {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+            background-color: #000000;
+        }
+
+        .server-channels-sidebar {
+            width: 100%;
+            background-color: #000000;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .server-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #111214;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #000000;
+        }
+
+        .server-header h2 {
+            font-size: 16px;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .channels-scroll {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .category-block {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 700;
+            color: #949ba4;
+            text-transform: uppercase;
+            padding: 0 8px;
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 8px;
+            border-radius: 4px;
+            color: #949ba4;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .channel-item:hover, .channel-item.active {
+            background-color: #1e1f22;
+            color: #ffffff;
+        }
+
+        .server-chat-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #000000;
+            z-index: 10;
+        }
+
+        .chat-header {
+            height: 48px;
+            border-bottom: 1px solid #111214;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            background-color: #000000;
+        }
+
+        .close-channel-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .close-channel-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: #ffffff;
+            stroke-width: 2.5;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background-color: #000000;
+        }
+
+        .chat-msg {
+            display: flex;
+            gap: 12px;
+            position: relative;
+        }
+
+        .chat-msg-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #2b2d31;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-msg-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chat-msg-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex-grow: 1;
+        }
+
+        .chat-msg-user-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chat-msg-user {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .chat-msg-text {
+            font-size: 14px;
+            color: #dbdee1;
+            word-break: break-word;
+        }
+
+        .chat-msg-delete {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: none;
+            border: none;
+            color: #f23f43;
+            cursor: pointer;
+            font-size: 14px;
+            display: none;
+        }
+
+        .chat-msg:hover .chat-msg-delete {
+            display: block;
+        }
+
+        .chat-input-area {
+            padding: 0 16px 16px 16px;
+            background-color: #000000;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .typing-indicator {
+            font-size: 12px;
+            color: #949ba4;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .typing-dots {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .typing-dots span {
+            width: 5px;
+            height: 5px;
+            background-color: #949ba4;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+
+        .chat-input-wrapper {
+            background-color: #1e1f22;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+        }
+
+        .chat-input-wrapper input {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 12px 0;
+            color: #ffffff;
+            outline: none;
+            font-size: 14px;
+        }
+
+        /* Custom Logo Member Button */
+        .server-members-logo-btn {
+            background: #1e1f22;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .server-members-logo-btn:hover {
+            background-color: #2b2d31;
+        }
+
+        .server-members-logo-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #5865f2;
+        }
+
+        .owner-crown {
+            display: inline-flex;
+            align-items: center;
+            color: #faa81a;
+            font-size: 12px;
+            margin-left: 2px;
+        }
+
+        .platform-admin-hammer {
+            display: inline-flex;
+            align-items: center;
+            color: #00a8fc;
+            font-size: 12px;
+            margin-left: 2px;
+        }
+
+        @media (max-width: 600px) {
+            .sidebar {
+                width: 56px;
+                padding: 8px 0;
+                gap: 6px;
+            }
+
+            .icon-btn {
+                width: 40px;
+                height: 40px;
+            }
+
+            .plus-icon, .custom-icon {
+                width: 20px;
+                height: 20px;
+            }
+
+            .separator {
+                width: 24px;
+            }
+
+            .user-bar {
+                margin: 0 8px 8px 8px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <input type="file" id="fileInput" style="display: none;" multiple>
-
-  <div class="top-bar">
-    <div class="top-bar-left">
-      <button class="icon-btn" id="drawerBtn"><i class="fa-solid fa-bars"></i></button>
-    </div>
-    <div class="top-bar-right">
-      <button class="icon-btn ai-btn" id="aiToggleBtn" title="CloudFurm.AI Assistant">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-      </button>
-
-      <button class="icon-btn rename-btn" id="renameBtn" title="Rename File">
-        <i class="fa-solid fa-pen"></i>
-      </button>
-
-      <button class="icon-btn play-btn" id="playBtn" title="Playtest Code">
-        <i class="fa-solid fa-play"></i>
-      </button>
-      
-      <div class="menu-container">
-        <button class="icon-btn" id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-        <div class="dropdown-menu" id="dropdownMenu">
-          <button class="dropdown-item" onclick="createItem('file')">
-            <i class="fa-solid fa-file-circle-plus"></i> New File
-          </button>
-          <button class="dropdown-item" onclick="createItem('folder')">
-            <i class="fa-solid fa-folder-plus"></i> New Folder
-          </button>
-          <button class="dropdown-item" id="importBtn">
-            <i class="fa-solid fa-file-import"></i> Import File
-          </button>
-          <button class="dropdown-item" id="downloadFileBtn">
-            <i class="fa-solid fa-download"></i> Save Current File
-          </button>
-          <button class="dropdown-item" id="pluginStoreBtn">
-            <i class="fa-solid fa-puzzle-piece" style="color: var(--accent-orange);"></i> Plugins & Extensions
-          </button>
-          <button class="dropdown-item" id="commandConsoleBtn">
-            <i class="fa-solid fa-terminal" style="color: var(--accent-green);"></i> Command Console
-          </button>
+    <!-- Authentication Overlay Modal -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-box">
+            <h3 id="authTitle">Login</h3>
+            <input type="text" id="authUsername" placeholder="Username">
+            <input type="password" id="authPassword" placeholder="Password">
+            <button id="authSubmitBtn">Login</button>
+            <div class="auth-toggle" id="authToggle">Need an account? Register</div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <span class="sidebar-title">Projects</span>
-      <button class="icon-btn" id="closeSidebar"><i class="fa-solid fa-xmark"></i></button>
     </div>
 
-    <div class="project-actions">
-      <button class="menu-action-btn" id="newProjectBtn">
-        <i class="fa-solid fa-plus"></i> New Project
-      </button>
-      <button class="menu-action-btn" id="downloadProjectBtn">
-        <i class="fa-solid fa-file-zipper"></i> Download All Files
-      </button>
-    </div>
-
-    <div class="project-list-header">Your Projects</div>
-    <div class="project-list" id="projectList"></div>
-  </div>
-
-  <div class="ai-panel" id="aiPanel">
-    <div class="sidebar-header">
-      <span class="sidebar-title"><i class="fa-solid fa-robot"></i> CloudFurm.AI</span>
-      <button class="icon-btn" id="closeAiPanel"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-
-    <div class="ai-api-key-box">
-      <label style="font-size: 11px; color: var(--text-secondary);">Groq API Key (Pre-Loaded):</label>
-      <input type="password" id="groqApiKey" value="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" placeholder="gsk_..." />
-    </div>
-
-    <button class="menu-action-btn" id="aiFixCodeBtn" style="margin-bottom: 10px;">
-      <i class="fa-solid fa-bolt" style="color: var(--accent-gold);"></i> Fix & Improve Open Code
-    </button>
-
-    <div class="ai-chat-box" id="aiChatBox">
-      <div class="chat-msg ai">Hello! I am CloudFurm.AI. Your API key is loaded and ready. Ask me anything about coding or click "Fix & Improve Open Code"!</div>
-    </div>
-
-    <div class="ai-input-area">
-      <input type="text" id="aiUserPrompt" placeholder="Ask CloudFurm.AI..." />
-      <button class="icon-btn" id="aiSendBtn" style="background: var(--bg-tab-active); padding: 0 12px;">
-        <i class="fa-solid fa-paper-plane" style="color: var(--accent-ai);"></i>
-      </button>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="commandModalOverlay">
-    <div class="app-modal" style="max-width: 600px;">
-      <div class="modal-header">
-        <span><i class="fa-solid fa-terminal" style="color: var(--accent-green);"></i> Command Console</span>
-        <button class="icon-btn" id="closeCommandModal"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modal-body">
-        <div class="terminal-output" id="terminalOutput">
-          <div class="terminal-line info">CloudFurm Command Console v1.0. Type "help" for options.</div>
-        </div>
-        <div class="terminal-input-row">
-          <span class="terminal-prompt">&gt;</span>
-          <input type="text" class="terminal-input" id="terminalInput" placeholder="Type command here..." />
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="pluginStoreOverlay">
-    <div class="app-modal">
-      <div class="modal-header">
-        <span><i class="fa-solid fa-puzzle-piece" style="color: var(--accent-orange);"></i> Plugin & Extension Store</span>
-        <button class="icon-btn" id="closePluginStore"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modal-body">
-        <span style="font-size: 13px; color: var(--text-secondary);">Select a premade plugin to launch and enhance your workspace:</span>
-
-        <div class="plugin-grid" id="pluginGrid">
-          <div class="plugin-card">
-            <div class="plugin-card-header">
-              <div class="plugin-icon" style="background: #2b1f3d; color: var(--accent-ai);">
-                <i class="fa-solid fa-cubes"></i>
-              </div>
-              <div>
-                <div class="plugin-title">Drag & Drop UI Builder</div>
-                <small style="color: var(--accent-gold);">Premade Plugin</small>
-              </div>
-            </div>
-            <div class="plugin-desc">Design HTML pages visually by dragging buttons, text, and inputs onto a canvas without coding.</div>
-            <button class="plugin-btn" id="launchUiBuilderBtn">
-              <i class="fa-solid fa-rocket"></i> Launch Builder
-            </button>
-          </div>
-
-          <div class="plugin-card">
-            <div class="plugin-card-header">
-              <div class="plugin-icon" style="background: #19333d; color: var(--accent-play);">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-              </div>
-              <div>
-                <div class="plugin-title">CSS Keyframe Animator</div>
-                <small style="color: var(--accent-gold);">Premade Plugin</small>
-              </div>
-            </div>
-            <div class="plugin-desc">Visually build smooth CSS animations (bouncing, scaling, pulsing) and insert generated CSS into your file.</div>
-            <button class="plugin-btn" id="launchAnimatorBtn">
-              <i class="fa-solid fa-play"></i> Launch Animator
-            </button>
-          </div>
-
-          <div class="plugin-card">
-            <div class="plugin-card-header">
-              <div class="plugin-icon" style="background: #153321; color: var(--accent-android);">
-                <i class="fa-brands fa-android"></i>
-              </div>
-              <div>
-                <div class="plugin-title">APK & App Bundle Builder</div>
-                <small style="color: var(--accent-gold);">Premade Plugin</small>
-              </div>
-            </div>
-            <div class="plugin-desc">Package your HTML/JS code into an Android Application Package (APK) configuration bundle.</div>
-            <button class="plugin-btn" id="launchApkBuilderBtn">
-              <i class="fa-solid fa-box-archive"></i> Launch Builder
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="apkBuilderOverlay">
-    <div class="app-modal" style="max-width: 550px;">
-      <div class="modal-header">
-        <span><i class="fa-brands fa-android" style="color: var(--accent-android);"></i> APK & App Bundle Builder</span>
-        <button class="icon-btn" id="closeApkBuilder"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label>Application Name:</label>
-          <input type="text" id="apkAppName" value="My Web App" placeholder="App Name">
+    <!-- Server Action Popup Modal -->
+    <div class="modal-overlay" id="serverModalOverlay">
+        <div class="modal-card" id="serverModalChoice">
+            <button class="modal-close-btn" id="closeServerModalBtn">✕</button>
+            <h3>Add a Server</h3>
+            <button class="modal-btn" id="choiceCreateBtn">Create My Own</button>
+            <button class="modal-btn secondary" id="choiceJoinBtn">Join a Server</button>
         </div>
 
-        <div class="form-group">
-          <label>Package Identifier:</label>
-          <input type="text" id="apkPackageId" value="com.cloudfurm.myapp" placeholder="com.domain.app">
+        <div class="modal-card" id="serverModalCreate" style="display:none;">
+            <button class="modal-close-btn" onclick="resetServerModal()">✕</button>
+            <h3>Customize Your Server</h3>
+            <label class="server-upload-preview" for="serverIconInput" id="serverIconPreview">
+                <span style="font-size:10px; color:#949ba4; text-align:center;">Upload Icon</span>
+            </label>
+            <input type="file" id="serverIconInput" class="hidden-file-input" accept="image/*">
+            <input type="text" id="serverNameInput" class="modal-input" placeholder="Server Name">
+            <button class="modal-btn" id="submitCreateServerBtn">Create</button>
         </div>
 
-        <div style="display: flex; gap: 10px;">
-          <div class="form-group" style="flex: 1;">
-            <label>Version Name:</label>
-            <input type="text" id="apkVersion" value="1.0.0">
-          </div>
-          <div class="form-group" style="flex: 1;">
-            <label>Build Format:</label>
-            <select id="apkFormat">
-              <option value="apk">Android APK (.apk)</option>
-              <option value="aab">Android App Bundle (.aab)</option>
-              <option value="pwa">PWA Package (.zip)</option>
-            </select>
-          </div>
+        <div class="modal-card" id="serverModalJoin" style="display:none;">
+            <button class="modal-close-btn" onclick="resetServerModal()">✕</button>
+            <h3>Join a Server</h3>
+            <input type="text" id="serverCodeInput" class="modal-input" placeholder="Enter Server ID">
+            <button class="modal-btn secondary" id="submitJoinServerBtn">Join Server</button>
         </div>
 
-        <div class="build-progress-bar" id="buildProgressBar">
-          <div class="build-progress-fill" id="buildProgressFill"></div>
+        <div class="modal-card" id="serverModalInvite" style="display:none;">
+            <button class="modal-close-btn" onclick="resetServerModal()">✕</button>
+            <h3>Invite Friends</h3>
+            <div id="inviteFriendsList" style="display:flex; flex-direction:column; gap:8px; max-height:200px; overflow-y:auto;"></div>
         </div>
 
-        <div id="buildStatusText" style="font-size: 12px; color: var(--text-secondary); text-align: center; display: none;">
-          Compiling project assets into Android WebView bundle...
+        <!-- Add Category Modal -->
+        <div class="modal-card" id="serverModalAddCategory" style="display:none;">
+            <button class="modal-close-btn" onclick="resetServerModal()">✕</button>
+            <h3>Create Category</h3>
+            <input type="text" id="categoryNameInput" class="modal-input" placeholder="Category Name">
+            <button class="modal-btn" id="submitCreateCategoryBtn">Create</button>
         </div>
 
-        <button class="menu-action-btn" id="startBuildApkBtn" style="background: var(--accent-android); color: #000; font-weight: bold; justify-content: center; margin-top: 6px;">
-          <i class="fa-solid fa-hammer"></i> Build Application Package
+        <!-- Add Channel Modal -->
+        <div class="modal-card" id="serverModalAddChannel" style="display:none;">
+            <button class="modal-close-btn" onclick="resetServerModal()">✕</button>
+            <h3>Create Channel</h3>
+            <input type="text" id="channelNameInput" class="modal-input" placeholder="Channel Name">
+            <button class="modal-btn" id="submitCreateChannelBtn">Create</button>
+        </div>
+
+        <!-- Server Members Modal -->
+        <div class="modal-card" id="serverModalMembers" style="display:none;">
+            <button class="modal-close-btn" onclick="resetServerModal()">✕</button>
+            <h3>Server Members</h3>
+            <div id="serverMembersList" style="display:flex; flex-direction:column; gap:8px; max-height:200px; overflow-y:auto;"></div>
+        </div>
+
+        <!-- Control Channel / Server Settings Modal -->
+        <div class="modal-card" id="serverModalControl" style="display:none;">
+            <button class="modal-close-btn" onclick="resetServerModal()">✕</button>
+            <h3>Server Control Panel</h3>
+            <input type="text" id="controlRenameInput" class="modal-input" placeholder="Rename Server">
+            <button class="modal-btn" id="submitControlRenameBtn">Update Name</button>
+            <hr style="border:0; border-top:1px solid #1e1f22; margin:6px 0;">
+            <label style="font-size:12px; color:#949ba4;">Manage Members (Kick / Ban / Mod / Timeout)</label>
+            <div id="controlMembersList" style="display:flex; flex-direction:column; gap:8px; max-height:180px; overflow-y:auto;"></div>
+        </div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <button class="icon-btn" aria-label="Home" id="homeBtn">
+            <svg class="custom-icon" viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
         </button>
-      </div>
+
+        <div class="separator"></div>
+
+        <div id="dynamicServerIcons" style="display:flex; flex-direction:column; gap:10px;"></div>
+
+        <button class="icon-btn plus-btn" id="plusServerBtn" aria-label="Add Server">
+            <svg class="plus-icon" viewBox="0 0 24 24" fill="none">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+        </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+        <!-- Top Search Bar and Notification Button -->
+        <div class="top-bar" id="mainTopBar">
+            <div class="search-container">
+                <input type="text" class="search-input" id="userSearchInput" placeholder="Search usernames...">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+            <button class="notif-btn" aria-label="Notifications">
+                <svg class="notif-icon" viewBox="0 0 24 24">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                </svg>
+            </button>
+        </div>
+
+        <main class="main-content" id="mainHomeContent">
+            <!-- Small White Card containing Friends Dock Items -->
+            <div class="white-card">
+                <div class="white-card-title">Friends</div>
+                <div class="friends-list" id="friendsList"></div>
+            </div>
+            
+            <div class="pending-box" id="pendingBox" style="display:none;">
+                <div class="section-label">Pending Friend Requests</div>
+                <div id="pendingList"></div>
+            </div>
+        </main>
+
+        <main class="main-content" id="mainServerContent" style="display:none; padding:0; height:100%;">
+            <div class="server-layout">
+                <!-- Channels Sidebar -->
+                <div class="server-channels-sidebar">
+                    <div class="server-header">
+                        <h2 id="activeServerTitle">Server</h2>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <button class="action-btn" id="serverControlPanelBtn" style="display:none;" title="Control Channel / Settings">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                </svg>
+                            </button>
+                            <button class="action-btn" id="serverOwnerAddCategoryBtn" style="display:none;" title="Add Category">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="channels-scroll" id="serverChannelsList">
+                        <!-- Dynamic Categories and Channels -->
+                    </div>
+                    <div style="padding: 8px; border-top: 1px solid #1e1f22;">
+                        <button class="modal-btn" id="inviteFriendsServerBtn" style="width: 100%; font-size: 12px; padding: 6px;">Invite Friends</button>
+                    </div>
+                </div>
+
+                <!-- Chat Area Overlay -->
+                <div class="server-chat-area" id="serverChatArea" style="display:none;">
+                    <div class="chat-header">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <button class="server-members-logo-btn" id="serverMembersBtn" title="View Server Members">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                                </svg>
+                            </button>
+                            <span id="activeChannelTitle"># channel</span>
+                        </div>
+                        <button class="close-channel-btn" id="closeChannelBtn" aria-label="Close Channel">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="chat-messages" id="serverChatMessages">
+                        <!-- Chat Messages Render Here -->
+                    </div>
+                    <div class="chat-input-area">
+                        <div class="typing-indicator" id="typingIndicator" style="display:none;">
+                            <span id="typingText">Someone is typing</span>
+                            <div class="typing-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+                        <div class="chat-input-wrapper">
+                            <input type="text" id="serverChatInput" placeholder="Message #channel">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom User Dock -->
+        <div class="user-bar" id="mainUserDock">
+            <div class="user-info" id="userBarTrigger">
+                <div class="avatar-container">
+                    <div class="avatar" id="dockAvatar">
+                        <svg class="head-icon" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <div class="status-badge"></div>
+                </div>
+                <div class="user-details">
+                    <div class="username-row">
+                        <span class="username" id="dockDisplayName">UnknownUser</span>
+                        <svg class="chevron-icon" viewBox="0 0 24 24">
+                            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
+                        </svg>
+                    </div>
+                    <span class="user-status-text">Online</span>
+                </div>
+            </div>
+            <button class="logout-btn-dock" id="dockLogoutBtn" title="Logout">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Fullscreen Profile View -->
+        <div class="profile-page" id="profilePage">
+            <div class="profile-top-bar">
+                <button class="close-icon-btn" id="closeProfileBtn">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="profile-header-area">
+                <div class="large-avatar-container">
+                    <div class="large-avatar" id="profileAvatar">
+                        <svg class="large-head-icon" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <div class="large-status-badge"></div>
+                </div>
+
+                <div class="status-bubble">
+                    <svg class="status-bubble-icon" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 8v8M8 12h8" stroke-linecap="round"/>
+                    </svg>
+                    <span id="profileStatusText">What fictional world would you live in?</span>
+                </div>
+            </div>
+
+            <div class="profile-user-info">
+                <div class="display-name-heading">
+                    <span id="profileDisplayName">Unknown</span>
+                </div>
+                <div class="username-subtext" id="profileUsername">UnknownUser</div>
+            </div>
+
+            <div class="btn-group" id="profileBtnGroup">
+                <button class="edit-profile-btn" id="openEditorBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                    </svg>
+                    Edit Profile
+                </button>
+            </div>
+
+            <div class="profile-tabs">
+                <div class="tab active" data-tab="main">Main</div>
+                <div class="tab" data-tab="games">Games</div>
+            </div>
+
+            <!-- Tab 1: Main -->
+            <div class="tab-content active" id="tabMain">
+                <div class="section-label">Bio</div>
+                <div class="section-body" id="profileBio">
+                    User has a private Description
+                </div>
+
+                <div class="section-label">Member Since</div>
+                <div class="member-since-card">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#dbdee1">
+                        <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.1.1 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.15-.34-.35-.76-.54-1.09c-.01-.02-.04-.03-.07-.03c-1.5.26-2.93.71-4.27 1.33c-.01 0-.02.01-.03.02C2.1 9.3 1.43 13.17 1.8 17a.08.08 0 0 0 .03.06c1.77 1.3 3.48 2.09 5.16 2.61c.03.01.06 0 .07-.02c.4-.55.76-1.13 1.07-1.74c.02-.04 0-.09-.04-.11c-.56-.21-1.09-.47-1.6-.77c-.04-.02-.04-.08 0-.11c.11-.08.22-.17.32-.26c.02-.02.05-.02.07 0c3.4 1.55 7.08 1.55 10.43 0c.02-.02.05-.02.07 0c.1.09.21.18.32.26c.04.03.04.09 0 .11c-.5.3-1.04.56-1.6.77c-.04.02-.05.07-.03.11c.32.61.68 1.19 1.07 1.74c.02.02.05.03.08.02c1.69-.52 3.4-1.31 5.17-2.61c.02-.01.03-.03.03-.06c.45-4.43-.76-8.27-3.25-11.65c0-.01-.02-.02-.03-.02zm-10.4 9.17c-1.01 0-1.84-.93-1.84-2.07c0-1.14.81-2.07 1.84-2.07c1.04 0 1.86.94 1.84 2.07c0 1.14-.81 2.07-1.84 2.07zm6.26 0c-1.01 0-1.84-.93-1.84-2.07c0-1.14.81-2.07 1.84-2.07c1.04 0 1.86.94 1.84 2.07c0 1.14-.82 2.07-1.84 2.07z"/>
+                    </svg>
+                    Jul 29, 2026
+                </div>
+
+                <div class="section-label">Connections</div>
+                <div class="connection-card">
+                    <div class="connection-left">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="2" y1="12" x2="22" y2="12"/>
+                        </svg>
+                        <span>Animator</span>
+                    </div>
+                    <svg class="external-icon" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Tab 2: Games -->
+            <div class="tab-content" id="tabGames">
+                <div class="section-label">Active Recently</div>
+                <div class="game-card">
+                    <div class="game-banner">
+                        <img src="https://picsum.photos/600/200" alt="Untitled Banner">
+                        <div class="game-banner-overlay"></div>
+                        <span class="game-title-text">Untitled</span>
+                    </div>
+                    <div class="game-details">
+                        <div class="game-status">
+                            <div class="game-status-dot"></div>
+                            <span>Building Now</span>
+                        </div>
+                        <div class="game-info-text">Building for 2 hours</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DM Screen -->
+        <div class="dm-page" id="dmPage">
+            <div class="dm-header">
+                <button class="close-btn-text" id="closeDmBtn">✕</button>
+                <span id="dmTargetName" style="font-weight:700;">Direct Message</span>
+            </div>
+            <div class="dm-messages" id="dmMessages"></div>
+            <div class="dm-input-area">
+                <input type="text" id="dmInput" placeholder="Message...">
+                <button id="sendDmBtn">Send</button>
+            </div>
+        </div>
+
+        <!-- Discord Native Mobile Edit Profile Page -->
+        <div class="editor-page" id="editorPage">
+            <div class="editor-nav">
+                <div class="nav-left">
+                    <button class="close-btn-text" id="closeEditorBtn">✕</button>
+                    <span class="nav-title">Profile</span>
+                </div>
+                <button class="save-btn-text" id="saveEditorBtn">Save</button>
+            </div>
+
+            <div class="editor-subtabs">
+                <div class="subtab active">Main Profile</div>
+                <div class="subtab">Profile Shop</div>
+            </div>
+
+            <div class="editor-scroll-area">
+                <div class="preview-header-box">
+                    <div class="banner-preview">
+                        <button class="edit-banner-btn" aria-label="Edit Banner">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="avatar-preview-container">
+                        <div class="preview-avatar" id="editorAvatarPreview">
+                            <svg class="large-head-icon" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        </div>
+                        <label for="editorFileInput" class="edit-avatar-badge">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                            </svg>
+                        </label>
+                        <input type="file" id="editorFileInput" class="hidden-file-input" accept="image/*">
+                    </div>
+
+                    <div class="add-status-chip">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Status
+                    </div>
+
+                    <div class="preview-identity-info">
+                        <div class="preview-display-name" id="previewDisplayName">Unknown</div>
+                        <div class="preview-username-badge">
+                            <span class="preview-username-text" id="previewUsername">UnknownUser</span>
+                            <svg class="badge-icon" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="input-card">
+                        <label for="editDisplayNameInput">Display Name</label>
+                        <div class="input-field-wrapper">
+                            <input type="text" id="editDisplayNameInput" value="Unknown">
+                            <button class="clear-input-btn" id="clearDisplayNameBtn">✕</button>
+                        </div>
+                    </div>
+
+                    <div class="input-card">
+                        <label for="editPronounsInput">Pronouns</label>
+                        <div class="input-field-wrapper">
+                            <input type="text" id="editPronounsInput" placeholder="">
+                        </div>
+                    </div>
+
+                    <div class="input-card">
+                        <label for="editBioInput">Bio</label>
+                        <div class="input-field-wrapper">
+                            <textarea id="editBioInput">Enter Your bio</textarea>
+                        </div>
+                    </div>
+
+                    <div class="input-card" id="platformAdminStylingCard" style="display:none;">
+                        <label>Platform Admin Customization</label>
+                        <div style="display:flex; flex-direction:column; gap:8px; margin-top:6px;">
+                            <label style="font-size:10px; color:#949ba4;">Font Family</label>
+                            <div class="input-field-wrapper">
+                                <select id="adminFontSelect">
+                                    <option value="inherit">Default</option>
+                                    <option value="Courier New, monospace">Courier New</option>
+                                    <option value="Georgia, serif">Georgia</option>
+                                    <option value="Verdana, sans-serif">Verdana</option>
+                                    <option value="Impact, sans-serif">Impact</option>
+                                </select>
+                            </div>
+                            <label style="font-size:10px; color:#949ba4;">Text Color</label>
+                            <div class="input-field-wrapper">
+                                <input type="color" id="adminColorPicker" value="#ffffff" style="height:30px; cursor:pointer;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="tabs-bar" id="tabsBar"></div>
-
-  <div class="workspace">
-    <div class="editor-container">
-      <div class="line-numbers" id="lineNumbers">1</div>
-      <div class="code-area" id="codeArea" contenteditable="true" spellcheck="false"></div>
-    </div>
-  </div>
-
-  <div class="preview-screen" id="previewScreen">
-    <div class="browser-bar">
-      <button class="icon-btn" id="backBtn" title="Back to Code">
-        <i class="fa-solid fa-arrow-left"></i>
-      </button>
-      <div class="address-bar">
-        <i class="fa-solid fa-lock"></i>
-        <span id="addressUrl">localhost:8158/index.html</span>
-      </div>
-      <button class="icon-btn" id="refreshBtn" title="Refresh">
-        <i class="fa-solid fa-rotate-right"></i>
-      </button>
-      <button class="icon-btn">
-        <i class="fa-solid fa-ellipsis-vertical"></i>
-      </button>
-    </div>
-    <iframe class="preview-body" id="previewFrame"></iframe>
-  </div>
-
-  <script>
-    // State Store
-    const appState = {
-      projects: [
-        {
-          id: 1,
-          name: 'My Workspace',
-          activeFileId: 101,
-          items: [
-            { id: 101, name: 'index.html', type: 'file', content: '<h1>Hello World</h1>' }
-          ]
+    <script>
+        /* Storage & Live Dynamic Updates */
+        function getUsers() {
+            return JSON.parse(localStorage.getItem('app_users')) || {};
         }
-      ],
-      activeProjectId: 1
-    };
 
-    // DOM Elements
-    const drawerBtn = document.getElementById('drawerBtn');
-    const closeSidebar = document.getElementById('closeSidebar');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    const newProjectBtn = document.getElementById('newProjectBtn');
-    const projectList = document.getElementById('projectList');
-    const downloadProjectBtn = document.getElementById('downloadProjectBtn');
-
-    const commandConsoleBtn = document.getElementById('commandConsoleBtn');
-    const commandModalOverlay = document.getElementById('commandModalOverlay');
-    const closeCommandModal = document.getElementById('closeCommandModal');
-    const terminalOutput = document.getElementById('terminalOutput');
-    const terminalInput = document.getElementById('terminalInput');
-
-    const pluginStoreBtn = document.getElementById('pluginStoreBtn');
-    const pluginStoreOverlay = document.getElementById('pluginStoreOverlay');
-    const closePluginStore = document.getElementById('closePluginStore');
-
-    // APK Builder Elements
-    const launchApkBuilderBtn = document.getElementById('launchApkBuilderBtn');
-    const apkBuilderOverlay = document.getElementById('apkBuilderOverlay');
-    const closeApkBuilder = document.getElementById('closeApkBuilder');
-    const startBuildApkBtn = document.getElementById('startBuildApkBtn');
-    const buildProgressBar = document.getElementById('buildProgressBar');
-    const buildProgressFill = document.getElementById('buildProgressFill');
-    const buildStatusText = document.getElementById('buildStatusText');
-    const apkAppName = document.getElementById('apkAppName');
-    const apkPackageId = document.getElementById('apkPackageId');
-    const apkVersion = document.getElementById('apkVersion');
-    const apkFormat = document.getElementById('apkFormat');
-
-    const aiToggleBtn = document.getElementById('aiToggleBtn');
-    const aiPanel = document.getElementById('aiPanel');
-    const closeAiPanel = document.getElementById('closeAiPanel');
-    const groqApiKeyInput = document.getElementById('groqApiKey');
-    const aiChatBox = document.getElementById('aiChatBox');
-    const aiUserPrompt = document.getElementById('aiUserPrompt');
-    const aiSendBtn = document.getElementById('aiSendBtn');
-    const aiFixCodeBtn = document.getElementById('aiFixCodeBtn');
-
-    const menuBtn = document.getElementById('menuBtn');
-    const dropdownMenu = document.getElementById('dropdownMenu');
-    const playBtn = document.getElementById('playBtn');
-    const renameBtn = document.getElementById('renameBtn');
-    const importBtn = document.getElementById('importBtn');
-    const downloadFileBtn = document.getElementById('downloadFileBtn');
-    const fileInput = document.getElementById('fileInput');
-
-    const tabsBar = document.getElementById('tabsBar');
-    const codeArea = document.getElementById('codeArea');
-    const lineNumbers = document.getElementById('lineNumbers');
-
-    const previewScreen = document.getElementById('previewScreen');
-    const previewFrame = document.getElementById('previewFrame');
-    const backBtn = document.getElementById('backBtn');
-    const refreshBtn = document.getElementById('refreshBtn');
-    const addressUrl = document.getElementById('addressUrl');
-
-    function getActiveProject() {
-      return appState.projects.find(p => p.id === appState.activeProjectId);
-    }
-
-    function getActiveFile() {
-      const proj = getActiveProject();
-      return proj ? proj.items.find(i => i.id === proj.activeFileId) : null;
-    }
-
-    // Modal Operations
-    pluginStoreBtn.addEventListener('click', () => {
-      dropdownMenu.classList.remove('show');
-      pluginStoreOverlay.classList.add('active');
-    });
-    closePluginStore.addEventListener('click', () => pluginStoreOverlay.classList.remove('active'));
-
-    commandConsoleBtn.addEventListener('click', () => {
-      dropdownMenu.classList.remove('show');
-      commandModalOverlay.classList.add('active');
-      terminalInput.focus();
-    });
-    closeCommandModal.addEventListener('click', () => commandModalOverlay.classList.remove('active'));
-
-    // --- Plugin: APK & App Bundle Builder ---
-    launchApkBuilderBtn.addEventListener('click', () => {
-      pluginStoreOverlay.classList.remove('active');
-      apkBuilderOverlay.classList.add('active');
-    });
-    closeApkBuilder.addEventListener('click', () => apkBuilderOverlay.classList.remove('active'));
-
-    startBuildApkBtn.addEventListener('click', () => {
-      const appName = apkAppName.value.trim() || 'My Application';
-      const packageId = apkPackageId.value.trim() || 'com.example.app';
-      const version = apkVersion.value.trim() || '1.0.0';
-      const format = apkFormat.value;
-
-      saveCurrentEditorText();
-      const proj = getActiveProject();
-      if (!proj || !proj.items.length) {
-        return alert('No project files found to build!');
-      }
-
-      startBuildApkBtn.disabled = true;
-      buildProgressBar.style.display = 'block';
-      buildStatusText.style.display = 'block';
-      buildProgressFill.style.width = '0%';
-      buildStatusText.textContent = `Initializing build environment for ${appName}...`;
-
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 20;
-        buildProgressFill.style.width = `${progress}%`;
-
-        if (progress === 40) {
-          buildStatusText.textContent = `Packaging WebView assets for package ${packageId}...`;
-        } else if (progress === 80) {
-          buildStatusText.textContent = `Generating Android Manifest & compiling .${format} bundle...`;
-        } else if (progress >= 100) {
-          clearInterval(interval);
-          buildStatusText.textContent = `Build complete! Downloading ${appName}.${format}...`;
-
-          // Generate Manifest Config File + Asset Manifest Bundle download
-          const manifestContent = JSON.stringify({
-            appName,
-            packageId,
-            version,
-            format,
-            buildDate: new Date().toISOString(),
-            files: proj.items.map(f => ({ name: f.name, type: f.type, content: f.content }))
-          }, null, 2);
-
-          const safeFilename = appName.toLowerCase().replace(/[^a-z0-9]/g, '_');
-          downloadBlob(manifestContent, `${safeFilename}_v${version}.${format}`, 'application/json');
-
-          setTimeout(() => {
-            startBuildApkBtn.disabled = false;
-            buildProgressBar.style.display = 'none';
-            buildStatusText.style.display = 'none';
-            apkBuilderOverlay.classList.remove('active');
-          }, 1500);
+        function saveUsers(users) {
+            localStorage.setItem('app_users', JSON.stringify(users));
         }
-      }, 600);
-    });
 
-    // Terminal Commands Executor
-    function printTerminal(msg, type = '') {
-      const line = document.createElement('div');
-      line.className = `terminal-line ${type}`;
-      line.textContent = msg;
-      terminalOutput.appendChild(line);
-      terminalOutput.scrollTop = terminalOutput.scrollHeight;
-    }
-
-    terminalInput.addEventListener('keydown', async (e) => {
-      if (e.key === 'Enter') {
-        const cmdText = terminalInput.value.trim();
-        if (!cmdText) return;
-
-        printTerminal(`> ${cmdText}`);
-        terminalInput.value = '';
-
-        const parts = cmdText.split(' ');
-        const mainCmd = parts[0].toLowerCase();
-        const arg = parts.slice(1).join(' ');
-
-        switch (mainCmd) {
-          case 'help':
-            printTerminal('Available Commands:', 'info');
-            printTerminal('  help              - Display this menu');
-            printTerminal('  clear             - Clear output screen');
-            printTerminal('  run               - Launch live project preview');
-            printTerminal('  files             - List all current project files');
-            printTerminal('  new [filename]    - Create a new file');
-            printTerminal('  build             - Launch APK & App Bundle Builder');
-            break;
-
-          case 'clear':
-            terminalOutput.innerHTML = '';
-            break;
-
-          case 'run':
-            commandModalOverlay.classList.remove('active');
-            saveCurrentEditorText();
-            loadPreviewCode();
-            previewScreen.classList.add('active');
-            break;
-
-          case 'files':
-            const proj = getActiveProject();
-            printTerminal(`Files in "${proj.name}":`, 'info');
-            proj.items.forEach(f => printTerminal(`  - ${f.name} (${f.type})`));
-            break;
-
-          case 'build':
-            commandModalOverlay.classList.remove('active');
-            apkBuilderOverlay.classList.add('active');
-            break;
-
-          default:
-            printTerminal(`Command not recognized: "${mainCmd}". Type "help" for options.`, 'error');
-            break;
+        function getDMs() {
+            return JSON.parse(localStorage.getItem('app_dms')) || {};
         }
-      }
-    });
 
-    // Sidebar & Project Switcher
-    function toggleSidebar(open) {
-      if (open) {
-        renderProjectList();
-        sidebar.classList.add('active');
-        sidebarOverlay.classList.add('active');
-        aiPanel.classList.remove('active');
-      } else {
-        sidebar.classList.remove('active');
-        sidebarOverlay.classList.remove('active');
-      }
-    }
+        function saveDMs(dms) {
+            localStorage.setItem('app_dms', JSON.stringify(dms));
+        }
 
-    drawerBtn.addEventListener('click', () => toggleSidebar(true));
-    closeSidebar.addEventListener('click', () => toggleSidebar(false));
+        function getServers() {
+            return JSON.parse(localStorage.getItem('app_servers')) || {};
+        }
 
-    // AI Helper Panel Toggle
-    function toggleAiPanel(open) {
-      if (open) {
-        aiPanel.classList.add('active');
-        sidebarOverlay.classList.add('active');
-        sidebar.classList.remove('active');
-      } else {
-        aiPanel.classList.remove('active');
-        sidebarOverlay.classList.remove('active');
-      }
-    }
+        function saveServers(servers) {
+            localStorage.setItem('app_servers', JSON.stringify(servers));
+        }
 
-    aiToggleBtn.addEventListener('click', () => toggleAiPanel(true));
-    closeAiPanel.addEventListener('click', () => toggleAiPanel(false));
-    sidebarOverlay.addEventListener('click', () => {
-      toggleSidebar(false);
-      toggleAiPanel(false);
-    });
+        function getTypingData() {
+            return JSON.parse(localStorage.getItem('app_typing')) || {};
+        }
 
-    // Groq API Fetch Handler
-    async function askGroqAI(messages) {
-      const apiKey = groqApiKeyInput.value.trim();
-      if (!apiKey) {
-        alert('Please enter your Groq API Key first!');
-        return null;
-      }
+        function saveTypingData(data) {
+            localStorage.setItem('app_typing', JSON.stringify(data));
+        }
 
-      try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-            messages: messages,
-            temperature: 0.5
-          })
+        let currentUser = localStorage.getItem('app_current_user') || null;
+        let viewedUser = null;
+        let activeServerId = null;
+        let activeChannelId = null;
+        let selectedCategoryIdForChannel = null;
+        let isRegistering = false;
+
+        /* Visibility Control Elements */
+        const mainTopBar = document.getElementById('mainTopBar');
+        const mainUserDock = document.getElementById('mainUserDock');
+
+        /* Auth Elements */
+        const authOverlay = document.getElementById('authOverlay');
+        const authTitle = document.getElementById('authTitle');
+        const authUsername = document.getElementById('authUsername');
+        const authPassword = document.getElementById('authPassword');
+        const authSubmitBtn = document.getElementById('authSubmitBtn');
+        const authToggle = document.getElementById('authToggle');
+        const dockLogoutBtn = document.getElementById('dockLogoutBtn');
+
+        authToggle.addEventListener('click', () => {
+            isRegistering = !isRegistering;
+            authTitle.textContent = isRegistering ? 'Register' : 'Login';
+            authSubmitBtn.textContent = isRegistering ? 'Register' : 'Login';
+            authToggle.textContent = isRegistering ? 'Already have an account? Login' : 'Need an account? Register';
         });
 
-        const data = await response.json();
-        if (data.error) {
-          alert('Groq API Error: ' + data.error.message);
-          return null;
-        }
-        return data.choices[0].message.content;
-      } catch (err) {
-        alert('Failed to connect to Groq API. Please check your network or key.');
-        return null;
-      }
-    }
+        authSubmitBtn.addEventListener('click', () => {
+            const username = authUsername.value.trim().toLowerCase();
+            const password = authPassword.value.trim();
+            const users = getUsers();
 
-    // AI Chat Messaging
-    function addChatMessage(role, text) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = `chat-msg ${role}`;
-      msgDiv.textContent = text;
-      aiChatBox.appendChild(msgDiv);
-      aiChatBox.scrollTop = aiChatBox.scrollHeight;
-    }
+            if (!username || !password) {
+                alert('Please fill out all fields');
+                return;
+            }
 
-    aiSendBtn.addEventListener('click', async () => {
-      const promptText = aiUserPrompt.value.trim();
-      if (!promptText) return;
-
-      addChatMessage('user', promptText);
-      aiUserPrompt.value = '';
-
-      const aiReply = await askGroqAI([
-        { role: 'system', content: 'You are CloudFurm.AI, a helpful coding assistant integrated inside a web code editor.' },
-        { role: 'user', content: promptText }
-      ]);
-
-      if (aiReply) {
-        addChatMessage('ai', aiReply);
-      }
-    });
-
-    // Auto-Fix Code
-    aiFixCodeBtn.addEventListener('click', async () => {
-      const file = getActiveFile();
-      if (!file) return alert('No file is currently open!');
-
-      saveCurrentEditorText();
-      addChatMessage('user', `Fix and optimize my ${file.name} code.`);
-
-      const aiReply = await askGroqAI([
-        { role: 'system', content: 'You are CloudFurm.AI, a professional code cleaner. Return ONLY the improved raw code without any markdown wrappers like ```html.' },
-        { role: 'user', content: `Here is my current code:\n${codeArea.innerText}` }
-      ]);
-
-      if (aiReply) {
-        const cleanCode = aiReply.replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim();
-        codeArea.innerText = cleanCode;
-        saveCurrentEditorText();
-        updateLineNumbers();
-        addChatMessage('ai', 'Updated your code directly in the editor!');
-      }
-    });
-
-    // Projects Manager
-    newProjectBtn.addEventListener('click', () => {
-      const name = prompt('Enter new project name:', 'New Project');
-      if (!name) return;
-
-      const newProj = { id: Date.now(), name: name.trim(), activeFileId: null, items: [] };
-      appState.projects.push(newProj);
-      switchProject(newProj.id);
-      toggleSidebar(false);
-    });
-
-    function switchProject(projId) {
-      saveCurrentEditorText();
-      appState.activeProjectId = projId;
-      const proj = getActiveProject();
-      
-      if (proj.items.length > 0 && !proj.activeFileId) {
-        proj.activeFileId = proj.items[0].id;
-      }
-      
-      const file = getActiveFile();
-      codeArea.innerText = file ? file.content : '';
-      updateUI();
-    }
-
-    function renderProjectList() {
-      projectList.innerHTML = '';
-      appState.projects.forEach(proj => {
-        const item = document.createElement('div');
-        item.className = `project-item ${proj.id === appState.activeProjectId ? 'active' : ''}`;
-        item.innerHTML = `
-          <span><i class="fa-solid fa-folder"></i> ${proj.name}</span>
-          <small style="color:var(--text-secondary)">${proj.items.length} files</small>
-        `;
-        item.addEventListener('click', () => {
-          switchProject(proj.id);
-          toggleSidebar(false);
+            if (isRegistering) {
+                if (users[username]) {
+                    alert('Username already exists!');
+                    return;
+                }
+                users[username] = {
+                    username: username,
+                    password: password,
+                    displayName: username,
+                    bio: 'Enter Your bio',
+                    avatar: null,
+                    friends: [],
+                    friendRequests: [],
+                    isPlatformAdmin: username === 'admin' || username === 'owner',
+                    fontFamily: 'inherit',
+                    textColor: '#ffffff'
+                };
+                saveUsers(users);
+                currentUser = username;
+                localStorage.setItem('app_current_user', currentUser);
+                authOverlay.style.display = 'none';
+                initApp();
+            } else {
+                if (!users[username] || users[username].password !== password) {
+                    alert('Invalid credentials!');
+                    return;
+                }
+                currentUser = username;
+                localStorage.setItem('app_current_user', currentUser);
+                authOverlay.style.display = 'none';
+                initApp();
+            }
         });
-        projectList.appendChild(item);
-      });
-    }
 
-    // Dropdown Menu
-    menuBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      dropdownMenu.classList.toggle('show');
-    });
+        dockLogoutBtn.addEventListener('click', () => {
+            currentUser = null;
+            localStorage.removeItem('app_current_user');
+            authOverlay.style.display = 'flex';
+        });
 
-    document.addEventListener('click', () => {
-      dropdownMenu.classList.remove('show');
-    });
+        /* App Elements */
+        const userBarTrigger = document.getElementById('userBarTrigger');
+        const profilePage = document.getElementById('profilePage');
+        const closeProfileBtn = document.getElementById('closeProfileBtn');
 
-    function saveCurrentEditorText() {
-      const file = getActiveFile();
-      if (file) {
-        file.content = codeArea.innerText;
-      }
-    }
+        const openEditorBtn = document.getElementById('openEditorBtn');
+        const editorPage = document.getElementById('editorPage');
+        const closeEditorBtn = document.getElementById('closeEditorBtn');
+        const saveEditorBtn = document.getElementById('saveEditorBtn');
 
-    function createItem(type) {
-      dropdownMenu.classList.remove('show');
-      const name = prompt(`Enter ${type} name:`, type === 'file' ? 'index.html' : 'New Folder');
-      if (!name) return;
+        const dockDisplayName = document.getElementById('dockDisplayName');
+        const profileDisplayName = document.getElementById('profileDisplayName');
+        const previewDisplayName = document.getElementById('previewDisplayName');
+        const editDisplayNameInput = document.getElementById('editDisplayNameInput');
+        const clearDisplayNameBtn = document.getElementById('clearDisplayNameBtn');
 
-      const proj = getActiveProject();
-      const newItem = {
-        id: Date.now(),
-        name: name.trim(),
-        type: type,
-        content: type === 'file' ? '<h1>New File</h1>' : ''
-      };
+        const profileUsername = document.getElementById('profileUsername');
+        const previewUsername = document.getElementById('previewUsername');
 
-      proj.items.push(newItem);
-      if (type === 'file') {
-        setActiveTab(newItem.id);
-      } else {
-        updateUI();
-      }
-    }
+        const profileBio = document.getElementById('profileBio');
+        const editBioInput = document.getElementById('editBioInput');
 
-    renameBtn.addEventListener('click', () => {
-      const file = getActiveFile();
-      if (!file) return;
+        const dockAvatar = document.getElementById('dockAvatar');
+        const profileAvatar = document.getElementById('profileAvatar');
+        const editorAvatarPreview = document.getElementById('editorAvatarPreview');
+        const editorFileInput = document.getElementById('editorFileInput');
 
-      const newName = prompt('Enter new file name:', file.name);
-      if (newName && newName.trim()) {
-        file.name = newName.trim();
-        updateUI();
-      }
-    });
+        const userSearchInput = document.getElementById('userSearchInput');
+        const searchResults = document.getElementById('searchResults');
+        const profileBtnGroup = document.getElementById('profileBtnGroup');
+        const pendingBox = document.getElementById('pendingBox');
+        const pendingList = document.getElementById('pendingList');
+        const friendsList = document.getElementById('friendsList');
 
-    importBtn.addEventListener('click', () => {
-      dropdownMenu.classList.remove('show');
-      fileInput.click();
-    });
+        const platformAdminStylingCard = document.getElementById('platformAdminStylingCard');
+        const adminFontSelect = document.getElementById('adminFontSelect');
+        const adminColorPicker = document.getElementById('adminColorPicker');
 
-    fileInput.addEventListener('change', (e) => {
-      const files = e.target.files;
-      if (!files.length) return;
+        let uploadedAvatarData = null;
 
-      const proj = getActiveProject();
-      Array.from(files).forEach(f => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const newItem = {
-            id: Date.now() + Math.random(),
-            name: f.name,
-            type: 'file',
-            content: event.target.result
-          };
-          proj.items.push(newItem);
-          setActiveTab(newItem.id);
+        function initApp() {
+            const users = getUsers();
+            if (!currentUser || !users[currentUser]) {
+                authOverlay.style.display = 'flex';
+                return;
+            }
+            authOverlay.style.display = 'none';
+            const user = users[currentUser];
+
+            dockDisplayName.textContent = user.displayName;
+            profileDisplayName.textContent = user.displayName;
+            previewDisplayName.textContent = user.displayName;
+            editDisplayNameInput.value = user.displayName;
+
+            profileUsername.textContent = user.username;
+            previewUsername.textContent = user.username;
+
+            profileBio.innerHTML = user.bio ? user.bio.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>') : '';
+            editBioInput.value = user.bio || '';
+
+            if (user.isPlatformAdmin) {
+                platformAdminStylingCard.style.display = 'flex';
+                adminFontSelect.value = user.fontFamily || 'inherit';
+                adminColorPicker.value = user.textColor || '#ffffff';
+            } else {
+                platformAdminStylingCard.style.display = 'none';
+            }
+
+            if (user.avatar) {
+                const imgTag = `<img src="${user.avatar}" alt="Avatar">`;
+                dockAvatar.innerHTML = imgTag;
+                profileAvatar.innerHTML = imgTag;
+                editorAvatarPreview.innerHTML = imgTag;
+            }
+
+            renderFriends();
+            renderPendingRequests();
+            renderServersSidebar();
+        }
+
+        function renderFriends() {
+            const users = getUsers();
+            const me = users[currentUser];
+            friendsList.innerHTML = '';
+
+            if (me && me.friends && me.friends.length > 0) {
+                me.friends.forEach(friendUsername => {
+                    const friend = users[friendUsername];
+                    if (!friend) return;
+
+                    const avatarHtml = friend.avatar 
+                        ? `<img src="${friend.avatar}" alt="Avatar">`
+                        : `<svg class="head-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+
+                    const div = document.createElement('div');
+                    div.className = 'friend-bar';
+                    div.innerHTML = `
+                        <div class="user-info">
+                            <div class="avatar-container">
+                                <div class="avatar">${avatarHtml}</div>
+                                <div class="status-badge"></div>
+                            </div>
+                            <div class="user-details">
+                                <div class="username-row">
+                                    <span class="username">${friend.displayName}</span>
+                                </div>
+                                <span class="user-status-text">Online</span>
+                            </div>
+                        </div>
+                    `;
+                    div.addEventListener('click', () => {
+                        openDM(friendUsername);
+                    });
+                    friendsList.appendChild(div);
+                });
+            } else {
+                friendsList.innerHTML = '<div style="font-size: 13px; color: #949ba4;">No friends added yet.</div>';
+            }
+        }
+
+        function renderPendingRequests() {
+            const users = getUsers();
+            const me = users[currentUser];
+            pendingList.innerHTML = '';
+
+            if (me && me.friendRequests && me.friendRequests.length > 0) {
+                pendingBox.style.display = 'block';
+                me.friendRequests.forEach(reqUsername => {
+                    const div = document.createElement('div');
+                    div.className = 'pending-item';
+                    div.innerHTML = `
+                        <span>${users[reqUsername] ? users[reqUsername].displayName : reqUsername} (@${reqUsername})</span>
+                        <button class="accept-btn" onclick="acceptFriendRequest('${reqUsername}')">Accept</button>
+                    `;
+                    pendingList.appendChild(div);
+                });
+            } else {
+                pendingBox.style.display = 'none';
+            }
+        }
+
+        window.acceptFriendRequest = function(reqUsername) {
+            const users = getUsers();
+            const me = users[currentUser];
+            const sender = users[reqUsername];
+
+            if (!me.friends) me.friends = [];
+            if (!sender.friends) sender.friends = [];
+
+            if (!me.friends.includes(reqUsername)) me.friends.push(reqUsername);
+            if (!sender.friends.includes(currentUser)) sender.friends.push(currentUser);
+
+            me.friendRequests = me.friendRequests.filter(r => r !== reqUsername);
+
+            saveUsers(users);
+            renderFriends();
+            renderPendingRequests();
+            if (viewedUser === reqUsername) {
+                viewUserProfile(reqUsername);
+            }
         };
-        reader.readAsText(f);
-      });
-      fileInput.value = '';
-    });
 
-    downloadFileBtn.addEventListener('click', () => {
-      dropdownMenu.classList.remove('show');
-      saveCurrentEditorText();
-      const file = getActiveFile();
-      if (!file) return;
-
-      downloadBlob(file.content, file.name, 'text/plain');
-    });
-
-    downloadProjectBtn.addEventListener('click', () => {
-      saveCurrentEditorText();
-      const proj = getActiveProject();
-      if (!proj.items.length) return alert('No files to download.');
-
-      proj.items.forEach(item => {
-        if (item.type === 'file') {
-          downloadBlob(item.content, item.name, 'text/plain');
-        }
-      });
-    });
-
-    function downloadBlob(content, filename, contentType) {
-      const blob = new Blob([content], { type: contentType });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    // Tabs & Workspace
-    function setActiveTab(id) {
-      saveCurrentEditorText();
-      const proj = getActiveProject();
-      const target = proj.items.find(i => i.id === id);
-      if (!target || target.type === 'folder') return;
-
-      proj.activeFileId = id;
-      codeArea.innerText = target.content;
-      updateUI();
-    }
-
-    function closeTab(e, id) {
-      e.stopPropagation();
-      const proj = getActiveProject();
-      proj.items = proj.items.filter(i => i.id !== id);
-
-      if (proj.activeFileId === id) {
-        const remainingFiles = proj.items.filter(i => i.type === 'file');
-        proj.activeFileId = remainingFiles.length ? remainingFiles[remainingFiles.length - 1].id : null;
-        codeArea.innerText = proj.activeFileId ? proj.items.find(i => i.id === proj.activeFileId).content : '';
-      }
-      updateUI();
-    }
-
-    function updateUI() {
-      renderTabs();
-      checkHeaderButtons();
-      updateLineNumbers();
-    }
-
-    function renderTabs() {
-      tabsBar.innerHTML = '';
-      const proj = getActiveProject();
-      if (!proj) return;
-
-      proj.items.forEach(item => {
-        const tab = document.createElement('div');
-        tab.className = `tab ${item.id === proj.activeFileId ? 'active' : ''}`;
+        /* Server Logic Functions */
+        const plusServerBtn = document.getElementById('plusServerBtn');
+        const homeBtn = document.getElementById('homeBtn');
+        const serverModalOverlay = document.getElementById('serverModalOverlay');
+        const serverModalChoice = document.getElementById('serverModalChoice');
+        const serverModalCreate = document.getElementById('serverModalCreate');
+        const serverModalJoin = document.getElementById('serverModalJoin');
+        const serverModalInvite = document.getElementById('serverModalInvite');
+        const serverModalAddCategory = document.getElementById('serverModalAddCategory');
+        const serverModalAddChannel = document.getElementById('serverModalAddChannel');
+        const serverModalMembers = document.getElementById('serverModalMembers');
+        const serverModalControl = document.getElementById('serverModalControl');
+        const closeServerModalBtn = document.getElementById('closeServerModalBtn');
         
-        let iconClass = 'fa-file file';
-        if (item.type === 'folder') iconClass = 'fa-folder folder';
-        else if (item.name.endsWith('.html')) iconClass = 'fa-code html';
+        const choiceCreateBtn = document.getElementById('choiceCreateBtn');
+        const choiceJoinBtn = document.getElementById('choiceJoinBtn');
+        const serverIconInput = document.getElementById('serverIconInput');
+        const serverIconPreview = document.getElementById('serverIconPreview');
+        const serverNameInput = document.getElementById('serverNameInput');
+        const submitCreateServerBtn = document.getElementById('submitCreateServerBtn');
+        const serverCodeInput = document.getElementById('serverCodeInput');
+        const submitJoinServerBtn = document.getElementById('submitJoinServerBtn');
+        
+        const dynamicServerIcons = document.getElementById('dynamicServerIcons');
+        const mainHomeContent = document.getElementById('mainHomeContent');
+        const mainServerContent = document.getElementById('mainServerContent');
+        const activeServerTitle = document.getElementById('activeServerTitle');
+        const inviteFriendsServerBtn = document.getElementById('inviteFriendsServerBtn');
+        const inviteFriendsList = document.getElementById('inviteFriendsList');
+        const serverMembersList = document.getElementById('serverMembersList');
+        const serverMembersBtn = document.getElementById('serverMembersBtn');
 
-        tab.innerHTML = `
-          <i class="fa-solid ${iconClass} tab-icon"></i>
-          <span>${item.name}</span>
-          <i class="fa-solid fa-xmark close-tab" onclick="closeTab(event, ${item.id})"></i>
-        `;
+        const serverOwnerAddCategoryBtn = document.getElementById('serverOwnerAddCategoryBtn');
+        const serverControlPanelBtn = document.getElementById('serverControlPanelBtn');
+        const controlRenameInput = document.getElementById('controlRenameInput');
+        const submitControlRenameBtn = document.getElementById('submitControlRenameBtn');
+        const controlMembersList = document.getElementById('controlMembersList');
 
-        tab.addEventListener('click', () => setActiveTab(item.id));
-        tabsBar.appendChild(tab);
-      });
-    }
+        const serverChannelsList = document.getElementById('serverChannelsList');
+        const serverChatArea = document.getElementById('serverChatArea');
+        const activeChannelTitle = document.getElementById('activeChannelTitle');
+        const closeChannelBtn = document.getElementById('closeChannelBtn');
+        const serverChatMessages = document.getElementById('serverChatMessages');
+        const serverChatInput = document.getElementById('serverChatInput');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const typingText = document.getElementById('typingText');
 
-    function checkHeaderButtons() {
-      const file = getActiveFile();
-      if (file) {
-        renameBtn.style.display = 'flex';
-        playBtn.style.display = file.name.toLowerCase().endsWith('.html') ? 'flex' : 'none';
-      } else {
-        renameBtn.style.display = 'none';
-        playBtn.style.display = 'none';
-      }
-    }
+        const categoryNameInput = document.getElementById('categoryNameInput');
+        const submitCreateCategoryBtn = document.getElementById('submitCreateCategoryBtn');
+        const channelNameInput = document.getElementById('channelNameInput');
+        const submitCreateChannelBtn = document.getElementById('submitCreateChannelBtn');
 
-    codeArea.addEventListener('input', () => {
-      updateLineNumbers();
-      saveCurrentEditorText();
-    });
+        let createdServerIconData = null;
 
-    function updateLineNumbers() {
-      const lines = codeArea.innerText.split('\n').length;
-      lineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
-    }
+        plusServerBtn.addEventListener('click', () => {
+            resetServerModal();
+            serverModalOverlay.style.display = 'flex';
+        });
 
-    function loadPreviewCode() {
-      const file = getActiveFile();
-      if (!file) return;
+        closeServerModalBtn.addEventListener('click', () => {
+            serverModalOverlay.style.display = 'none';
+        });
 
-      addressUrl.textContent = `localhost:8158/${file.name}`;
-      previewFrame.srcdoc = codeArea.innerText;
-    }
+        function resetServerModal() {
+            serverModalChoice.style.display = 'flex';
+            serverModalCreate.style.display = 'none';
+            serverModalJoin.style.display = 'none';
+            serverModalInvite.style.display = 'none';
+            serverModalAddCategory.style.display = 'none';
+            serverModalAddChannel.style.display = 'none';
+            serverModalMembers.style.display = 'none';
+            serverModalControl.style.display = 'none';
+            serverNameInput.value = '';
+            serverCodeInput.value = '';
+            categoryNameInput.value = '';
+            channelNameInput.value = '';
+            createdServerIconData = null;
+            serverIconPreview.innerHTML = '<span style="font-size:10px; color:#949ba4; text-align:center;">Upload Icon</span>';
+        }
 
-    playBtn.addEventListener('click', () => {
-      saveCurrentEditorText();
-      loadPreviewCode();
-      previewScreen.classList.add('active');
-    });
+        choiceCreateBtn.addEventListener('click', () => {
+            serverModalChoice.style.display = 'none';
+            serverModalCreate.style.display = 'flex';
+        });
 
-    backBtn.addEventListener('click', () => previewScreen.classList.remove('active'));
-    refreshBtn.addEventListener('click', () => loadPreviewCode());
+        choiceJoinBtn.addEventListener('click', () => {
+            serverModalChoice.style.display = 'none';
+            serverModalJoin.style.display = 'flex';
+        });
 
-    // Initialize UI
-    switchProject(appState.activeProjectId);
-  </script>
+        serverIconInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    createdServerIconData = evt.target.result;
+                    serverIconPreview.innerHTML = `<img src="${createdServerIconData}" alt="Icon">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        submitCreateServerBtn.addEventListener('click', () => {
+            const name = serverNameInput.value.trim();
+            if (!name) {
+                alert('Please enter a server name');
+                return;
+            }
+            const servers = getServers();
+            const id = 'srv_' + Date.now();
+            const defaultCatId = 'cat_' + Date.now();
+            const defaultChanId = 'chan_' + Date.now();
+
+            servers[id] = {
+                id: id,
+                name: name,
+                icon: createdServerIconData,
+                owner: currentUser,
+                members: [currentUser],
+                admins: [],
+                banned: [],
+                timeouts: {},
+                categories: [
+                    {
+                        id: defaultCatId,
+                        name: 'Text Channels',
+                        channels: [
+                            { id: defaultChanId, name: 'general', messages: [] }
+                        ]
+                    }
+                ]
+            };
+            saveServers(servers);
+            serverModalOverlay.style.display = 'none';
+            renderServersSidebar();
+            openServerView(id);
+        });
+
+        submitJoinServerBtn.addEventListener('click', () => {
+            const code = serverCodeInput.value.trim();
+            const servers = getServers();
+            if (!code || !servers[code]) {
+                alert('Invalid Server ID');
+                return;
+            }
+            if (servers[code].banned && servers[code].banned.includes(currentUser)) {
+                alert('You are banned from this server.');
+                return;
+            }
+            if (!servers[code].members.includes(currentUser)) {
+                servers[code].members.push(currentUser);
+                saveServers(servers);
+            }
+            serverModalOverlay.style.display = 'none';
+            renderServersSidebar();
+            openServerView(code);
+        });
+
+        function renderServersSidebar() {
+            const servers = getServers();
+            dynamicServerIcons.innerHTML = '';
+            Object.values(servers).forEach(srv => {
+                if (srv.members && srv.members.includes(currentUser)) {
+                    const btn = document.createElement('button');
+                    btn.className = 'icon-btn';
+                    btn.title = srv.name;
+                    if (srv.icon) {
+                        btn.innerHTML = `<img src="${srv.icon}" alt="${srv.name}">`;
+                    } else {
+                        btn.textContent = srv.name.charAt(0).toUpperCase();
+                        btn.style.fontWeight = 'bold';
+                        btn.style.color = '#ffffff';
+                    }
+                    btn.addEventListener('click', () => {
+                        openServerView(srv.id);
+                    });
+                    dynamicServerIcons.appendChild(btn);
+                }
+            });
+        }
+
+        function openServerView(serverId) {
+            activeServerId = serverId;
+            activeChannelId = null;
+            const servers = getServers();
+            const srv = servers[serverId];
+            if (!srv) return;
+
+            if (srv.banned && srv.banned.includes(currentUser)) {
+                alert('You are banned from this server.');
+                homeBtn.click();
+                return;
+            }
+
+            mainHomeContent.style.display = 'none';
+            mainServerContent.style.display = 'flex';
+            activeServerTitle.textContent = srv.name;
+
+            const isOwner = srv.owner === currentUser;
+            const isAdmin = srv.admins && srv.admins.includes(currentUser);
+
+            if (isOwner || isAdmin) {
+                serverOwnerAddCategoryBtn.style.display = 'flex';
+                serverControlPanelBtn.style.display = 'flex';
+            } else {
+                serverOwnerAddCategoryBtn.style.display = 'none';
+                serverControlPanelBtn.style.display = 'none';
+            }
+
+            if (!srv.categories) srv.categories = [];
+
+            serverChatArea.style.display = 'none';
+            mainTopBar.style.display = 'flex';
+            mainUserDock.style.display = 'flex';
+            renderServerChannels();
+        }
+
+        serverControlPanelBtn.addEventListener('click', () => {
+            if (!activeServerId) return;
+            const servers = getServers();
+            const users = getUsers();
+            const srv = servers[activeServerId];
+            if (!srv) return;
+
+            const isOwner = srv.owner === currentUser;
+            const isAdmin = srv.admins && srv.admins.includes(currentUser);
+            if (!isOwner && !isAdmin) return;
+
+            controlRenameInput.value = srv.name;
+            controlMembersList.innerHTML = '';
+
+            (srv.members || []).forEach(memberUsername => {
+                if (memberUsername === srv.owner) return;
+                const member = users[memberUsername] || { displayName: memberUsername };
+                const isServerAdmin = srv.admins && srv.admins.includes(memberUsername);
+
+                const div = document.createElement('div');
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.justifyContent = 'space-between';
+                div.style.padding = '6px';
+                div.style.borderRadius = '6px';
+                div.style.backgroundColor = '#1e1f22';
+
+                div.innerHTML = `
+                    <span style="font-size:13px; color:#ffffff;">${member.displayName}</span>
+                    <div style="display:flex; gap:4px;">
+                        ${isOwner ? `<button class="modal-btn" style="padding:2px 6px; font-size:11px;" onclick="toggleServerAdmin('${memberUsername}')">${isServerAdmin ? 'Demote Mod' : 'Make Mod'}</button>` : ''}
+                        <button class="modal-btn" style="padding:2px 6px; font-size:11px; background-color:#faa81a;" onclick="timeoutServerMember('${memberUsername}')">Timeout</button>
+                        <button class="modal-btn" style="padding:2px 6px; font-size:11px; background-color:#f23f43;" onclick="kickServerMember('${memberUsername}')">Kick</button>
+                        <button class="modal-btn danger" style="padding:2px 6px; font-size:11px;" onclick="banServerMember('${memberUsername}')">Ban</button>
+                    </div>
+                `;
+                controlMembersList.appendChild(div);
+            });
+
+            resetServerModal();
+            serverModalChoice.style.display = 'none';
+            serverModalControl.style.display = 'flex';
+            serverModalOverlay.style.display = 'flex';
+        });
+
+        submitControlRenameBtn.addEventListener('click', () => {
+            const newName = controlRenameInput.value.trim();
+            if (!newName || !activeServerId) return;
+            const servers = getServers();
+            const srv = servers[activeServerId];
+            if (!srv) return;
+
+            srv.name = newName;
+            saveServers(servers);
+            activeServerTitle.textContent = newName;
+            serverModalOverlay.style.display = 'none';
+            renderServersSidebar();
+        });
+
+        window.toggleServerAdmin = function(username) {
+            const servers = getServers();
+            const srv = servers[activeServerId];
+            if (!srv || srv.owner !== currentUser) return;
+            if (!srv.admins) srv.admins = [];
+
+            if (srv.admins.includes(username)) {
+                srv.admins = srv.admins.filter(u => u !== username);
+            } else {
+                srv.admins.push(username);
+            }
+            saveServers(servers);
+            serverControlPanelBtn.click();
+        };
+
+        window.timeoutServerMember = function(username) {
+            const servers = getServers();
+            const srv = servers[activeServerId];
+            if (!srv) return;
+            if (!srv.timeouts) srv.timeouts = {};
+            srv.timeouts[username] = Date.now() + 60000; // 1 min timeout
+            saveServers(servers);
+            alert(`${username} has been timed out for 1 minute.`);
+            serverModalOverlay.style.display = 'none';
+        };
+
+        window.kickServerMember = function(username) {
+            const servers = getServers();
+            const srv = servers[activeServerId];
+            if (!srv) return;
+            srv.members = srv.members.filter(u => u !== username);
+            saveServers(servers);
+            serverControlPanelBtn.click();
+        };
+
+        window.banServerMember = function(username) {
+            const servers = getServers();
+            const srv = servers[activeServerId];
+            if (!srv) return;
+            srv.members = srv.members.filter(u => u !== username);
+            if (!srv.banned) srv.banned = [];
+            srv.banned.push(username);
+            saveServers(servers);
+            serverControlPanelBtn.click();
+        };
+
+        function renderServerChannels() {
+            if (!activeServerId) return;
+            const servers = getServers();
+            const srv = servers[activeServerId];
+            if (!srv) return;
+
+            serverChannelsList.innerHTML = '';
+
+            const isOwner = srv.owner === currentUser;
+            const isAdmin = srv.admins && srv.admins.includes(currentUser);
+
+            (srv.categories || []).forEach(cat => {
+                const catDiv = document.createElement('div');
+                catDiv.className = 'category-block';
+
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'category-header';
+                headerDiv.innerHTML = `<span>${cat.name}</span>`;
+
+                if (isOwner || isAdmin) {
+                    const addChanBtn = document.createElement('span');
+                    addChanBtn.style.cursor = 'pointer';
+                    addChanBtn.style.fontSize = '14px';
+                    addChanBtn.textContent = '+';
+                    addChanBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        selectedCategoryIdForChannel = cat.id;
+                        resetServerModal();
+                        serverModalChoice.style.display = 'none';
+                        serverModalAddChannel.style.display = 'flex';
+                        serverModalOverlay.style.display = 'flex';
+                    });
+                    headerDiv.appendChild(addChanBtn);
+                }
+
+                catDiv.appendChild(headerDiv);
+
+                (cat.channels || []).forEach(chan => {
+                    const chanDiv = document.createElement('div');
+                    chanDiv.className = `channel-item ${chan.id === activeChannelId ? 'active' : ''}`;
+                    chanDiv.innerHTML = `<span>#</span> <span>${chan.name}</span>`;
+                    chanDiv.addEventListener('click', () => {
+                        activeChannelId = chan.id;
+                        renderServerChannels();
+                        renderServerChat();
+                        serverChatArea.style.display = 'flex';
+                        mainTopBar.style.display = 'none';
+                        mainUserDock.style.display = 'none';
+                    });
+                    catDiv.appendChild(chanDiv);
+                });
+
+                serverChannelsList.appendChild(catDiv);
+            });
+        }
+
+        closeChannelBtn.addEventListener('click', () => {
+            activeChannelId = null;
+            serverChatArea.style.display = 'none';
+            mainTopBar.style.display = 'flex';
+            mainUserDock.style.display = 'flex';
+            renderServerChannels();
+        });
+
+        serverMembersBtn.addEventListener('click', () => {
+            if (!activeServerId) return;
+            const servers = getServers();
+            const users = getUsers();
+            const srv = servers[activeServerId];
+            if (!srv) return;
+
+            serverMembersList.innerHTML = '';
+            (srv.members || []).forEach(memberUsername => {
+                const member = users[memberUsername] || { displayName: memberUsername };
+                const div = document.createElement('div');
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.gap = '8px';
+                div.style.padding = '6px';
+                div.style.borderRadius = '6px';
+                div.style.backgroundColor = '#1e1f22';
+
+                const avatarHtml = member.avatar
+                    ? `<img src="${member.avatar}" style="width:24px; height:24px; border-radius:50%; object-fit:cover;">`
+                    : `<div style="width:24px; height:24px; border-radius:50%; background-color:#2b2d31;"></div>`;
+
+                let iconsHtml = '';
+                if (memberUsername === srv.owner) {
+                    iconsHtml += `<span class="owner-crown" title="Server Owner">👑</span>`;
+                }
+                if (member.isPlatformAdmin) {
+                    iconsHtml += `<span class="platform-admin-hammer" title="Platform Admin">🔨</span>`;
+                }
+
+                div.innerHTML = `
+                    ${avatarHtml}
+                    <span style="font-size:14px; font-weight:600; color:#ffffff;">${member.displayName}</span>
+                    ${iconsHtml}
+                `;
+                serverMembersList.appendChild(div);
+            });
+
+            resetServerModal();
+            serverModalChoice.style.display = 'none';
+            serverModalMembers.style.display = 'flex';
+            serverModalOverlay.style.display = 'flex';
+        });
+
+        function renderServerChat() {
+            if (!activeServerId || !activeChannelId) {
+                serverChatMessages.innerHTML = '';
+                activeChannelTitle.textContent = '# select-channel';
+                return;
+            }
+
+            const servers = getServers();
+            const srv = servers[activeServerId];
+            if (!srv) return;
+
+            const users = getUsers();
+            const isOwner = srv.owner === currentUser;
+            const isAdmin = srv.admins && srv.admins.includes(currentUser);
+
+            let activeChan = null;
+            (srv.categories || []).forEach(cat => {
+                (cat.channels || []).forEach(chan => {
+                    if (chan.id === activeChannelId) activeChan = chan;
+                });
+            });
+
+            if (!activeChan) return;
+
+            activeChannelTitle.textContent = `# ${activeChan.name}`;
+            serverChatInput.placeholder = `Message #${activeChan.name}`;
+            serverChatMessages.innerHTML = '';
+
+            (activeChan.messages || []).forEach(msg => {
+                const msgUser = users[msg.sender] || { displayName: msg.sender, avatar: null, fontFamily: 'inherit', textColor: '#ffffff' };
+                const avatarHtml = msgUser.avatar 
+                    ? `<img src="${msgUser.avatar}" alt="Avatar">`
+                    : `<svg class="head-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+
+                let badgesHtml = '';
+                if (msg.sender === srv.owner) {
+                    badgesHtml += `<span class="owner-crown" title="Server Owner">👑</span>`;
+                }
+                if (msgUser.isPlatformAdmin) {
+                    badgesHtml += `<span class="platform-admin-hammer" title="Platform Admin">🔨</span>`;
+                }
+
+                const fontStyle = msgUser.fontFamily && msgUser.fontFamily !== 'inherit' ? `font-family: ${msgUser.fontFamily};` : '';
+                const colorStyle = msgUser.textColor ? `color: ${msgUser.textColor};` : '';
+
+                const div = document.createElement('div');
+                div.className = 'chat-msg';
+                div.innerHTML = `
+                    <div class="chat-msg-avatar">${avatarHtml}</div>
+                    <div class="chat-msg-content">
+                        <div class="chat-msg-user-row">
+                            <span class="chat-msg-user" style="${fontStyle}">${msgUser.displayName}</span>
+                            ${badgesHtml}
+                        </div>
+                        <span class="chat-msg-text" style="${fontStyle} ${colorStyle}">${msg.text}</span>
+                    </div>
+                `;
+
+                if (isOwner || isAdmin || msg.sender === currentUser) {
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'chat-msg-delete';
+                    deleteBtn.textContent = '✕';
+                    deleteBtn.addEventListener('click', () => {
+                        deleteServerMessage(msg.id);
+                    });
+                    div.appendChild(deleteBtn);
+                }
+
+                serverChatMessages.appendChild(div);
+            });
+
+            serverChatMessages.scrollTop = serverChatMessages.scrollHeight;
+
+            // Render Typing Indicator
+            const typingData = getTypingData();
+            const channelTyping = typingData[activeChannelId] || {};
+            const activeTypers = Object.keys(channelTyping).filter(u => u !== currentUser && (Date.now() - channelTyping[u] < 3000));
+            
+            if (activeTypers.length > 0) {
+                typingIndicator.style.display = 'flex';
+                const typerNames = activeTypers.map(u => users[u] ? users[u].displayName : u).join(', ');
+                typingText.textContent = `${typerNames} ${activeTypers.length === 1 ? 'is' : 'are'} typing`;
+            } else {
+                typingIndicator.style.display = 'none';
+            }
+        }
+
+        serverOwnerAddCategoryBtn.addEventListener('click', () => {
+            resetServerModal();
+            serverModalChoice.style.display = 'none';
+            serverModalAddCategory.style.display = 'flex';
+            serverModalOverlay.style.display = 'flex';
+        });
+
+        submitCreateCategoryBtn.addEventListener('click', () => {
+            const name = categoryNameInput.value.trim();
+            if (!name || !activeServerId) return;
+
+            const servers = getServers();
+            const srv = servers[activeServerId];
+            if (!srv) return;
+
+            if (!srv.categories) srv.categories = [];
+            srv.categories.push({
+                id: 'cat_' + Date.now(),
+                name: name,
+                channels: []
+            });
+
+            saveServers(servers);
+            serverModalOverlay.style.display = 'none';
+            renderServerChannels();
+        });
+
+        submitCreateChannelBtn.addEventListener('click', () => {
+            const name = channelNameInput.value.trim();
+            if (!name || !activeServerId || !selectedCategoryIdForChannel) return;
+
+            const servers = getServers();
+            const srv = servers[activeServerId];
+            if (!srv) return;
+
+            const cat = (srv.categories || []).find(c => c.id === selectedCategoryIdForChannel);
+            if (cat) {
+                const chanId = 'chan_' + Date.now();
+                if (!cat.channels) cat.channels = [];
+                cat.channels.push({
+                    id: chanId,
+                    name: name,
+                    messages: []
+                });
+            }
+
+            saveServers(servers);
+            serverModalOverlay.style.display = 'none';
+            renderServerChannels();
+        });
+
+        serverChatInput.addEventListener('input', () => {
+            if (!activeChannelId || !currentUser) return;
+            const typingData = getTypingData();
+            if (!typingData[activeChannelId]) typingData[activeChannelId] = {};
+            typingData[activeChannelId][currentUser] = Date.now();
+            saveTypingData(typingData);
+        });
+
+        serverChatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const text = serverChatInput.value.trim();
+                if (!text || !activeServerId || !activeChannelId) return;
+
+                const servers = getServers();
+                const srv = servers[activeServerId];
+                if (!srv) return;
+
+                if (srv.timeouts && srv.timeouts[currentUser] && srv.timeouts[currentUser] > Date.now()) {
+                    alert('You are timed out in this server.');
+                    return;
+                }
+
+                let activeChan = null;
+                (srv.categories || []).forEach(cat => {
+                    (cat.channels || []).forEach(chan => {
+                        if (chan.id === activeChannelId) activeChan = chan;
+                    });
+                });
+
+                if (activeChan) {
+                    if (!activeChan.messages) activeChan.messages = [];
+                    activeChan.messages.push({
+                        id: 'msg_' + Date.now(),
+                        sender: currentUser,
+                        text: text
+                    });
+                    saveServers(servers);
+                    serverChatInput.value = '';
+                    renderServerChat();
+                }
+            }
+        });
+
+        function deleteServerMessage(msgId) {
+            if (!activeServerId || !activeChannelId) return;
+            const servers = getServers();
+            const srv = servers[activeServerId];
+            if (!srv) return;
+
+            const isOwner = srv.owner === currentUser;
+            const isAdmin = srv.admins && srv.admins.includes(currentUser);
+
+            (srv.categories || []).forEach(cat => {
+                (cat.channels || []).forEach(chan => {
+                    if (chan.id === activeChannelId && chan.messages) {
+                        chan.messages = chan.messages.filter(m => {
+                            if (m.id === msgId) {
+                                return isOwner || isAdmin || m.sender === currentUser;
+                            }
+                            return true;
+                        });
+                    }
+                });
+            });
+
+            saveServers(servers);
+            renderServerChat();
+        }
+
+        inviteFriendsServerBtn.addEventListener('click', () => {
+            openInviteModal();
+        });
+
+        homeBtn.addEventListener('click', () => {
+            activeServerId = null;
+            activeChannelId = null;
+            serverChatArea.style.display = 'none';
+            mainServerContent.style.display = 'none';
+            mainHomeContent.style.display = 'flex';
+            mainTopBar.style.display = 'flex';
+            mainUserDock.style.display = 'flex';
+        });
+
+        function openInviteModal() {
+            const users = getUsers();
+            const me = users[currentUser];
+            inviteFriendsList.innerHTML = '';
+
+            if (me && me.friends && me.friends.length > 0) {
+                me.friends.forEach(friendUsername => {
+                    const friend = users[friendUsername];
+                    if (!friend) return;
+                    const div = document.createElement('div');
+                    div.style.display = 'flex';
+                    div.style.alignItems = 'center';
+                    div.style.justifyContent = 'space-between';
+                    div.innerHTML = `
+                        <span style="font-size:14px;">${friend.displayName}</span>
+                        <button class="modal-btn" style="padding:4px 8px; font-size:12px;">Send Invite</button>
+                    `;
+                    div.querySelector('button').addEventListener('click', () => {
+                        sendServerInvite(friendUsername, activeServerId);
+                        alert('Invite sent!');
+                    });
+                    inviteFriendsList.appendChild(div);
+                });
+            } else {
+                inviteFriendsList.innerHTML = '<div style="font-size: 13px; color: #949ba4;">No friends to invite.</div>';
+            }
+
+            resetServerModal();
+            serverModalChoice.style.display = 'none';
+            serverModalInvite.style.display = 'flex';
+            serverModalOverlay.style.display = 'flex';
+        }
+
+        function sendServerInvite(targetUsername, serverId) {
+            const dms = getDMs();
+            const key = getDmKey(currentUser, targetUsername);
+            if (!dms[key]) dms[key] = [];
+            
+            dms[key].push({
+                sender: currentUser,
+                text: '',
+                isInvite: true,
+                serverId: serverId
+            });
+            saveDMs(dms);
+        }
+
+        window.joinServerFromInvite = function(serverId) {
+            const servers = getServers();
+            if (servers[serverId]) {
+                if (servers[serverId].banned && servers[serverId].banned.includes(currentUser)) {
+                    alert('You are banned from this server.');
+                    return;
+                }
+                if (!servers[serverId].members.includes(currentUser)) {
+                    servers[serverId].members.push(currentUser);
+                    saveServers(servers);
+                }
+                renderServersSidebar();
+                dmPage.classList.remove('active');
+                openServerView(serverId);
+            } else {
+                alert('Server no longer exists');
+            }
+        };
+
+        /* Search Functionality */
+        userSearchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim().toLowerCase();
+            const users = getUsers();
+            searchResults.innerHTML = '';
+            if (!query) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const matches = Object.keys(users).filter(u => u.includes(query) && u !== currentUser);
+            if (matches.length > 0) {
+                searchResults.style.display = 'flex';
+                matches.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'search-item';
+                    div.innerHTML = `<span>${users[m].displayName} (@${m})</span>`;
+                    div.addEventListener('click', () => {
+                        viewUserProfile(m);
+                        searchResults.style.display = 'none';
+                        userSearchInput.value = '';
+                    });
+                    searchResults.appendChild(div);
+                });
+            } else {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        function viewUserProfile(username) {
+            viewedUser = username;
+            const users = getUsers();
+            const target = users[username];
+            const me = users[currentUser];
+
+            profileDisplayName.textContent = target.displayName;
+            profileUsername.textContent = target.username;
+            profileBio.innerHTML = target.bio ? target.bio.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>') : '';
+
+            if (target.avatar) {
+                profileAvatar.innerHTML = `<img src="${target.avatar}" alt="Avatar">`;
+            } else {
+                profileAvatar.innerHTML = `<svg class="large-head-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+            }
+
+            const isFriend = me.friends && me.friends.includes(username);
+            const hasRequested = target.friendRequests && target.friendRequests.includes(currentUser);
+            const hasIncoming = me.friendRequests && me.friendRequests.includes(username);
+
+            let btnText = 'Add Friend';
+            let btnClass = 'btn-primary';
+
+            if (isFriend) {
+                btnText = 'Friends';
+                btnClass = '';
+            } else if (hasRequested) {
+                btnText = 'Request Sent';
+                btnClass = '';
+            } else if (hasIncoming) {
+                btnText = 'Accept Request';
+                btnClass = 'btn-secondary';
+            }
+
+            profileBtnGroup.innerHTML = `
+                <button class="action-action-btn ${btnClass}" id="addFriendBtn">${btnText}</button>
+                <button class="action-action-btn" id="dmUserBtn">Message</button>
+            `;
+
+            document.getElementById('addFriendBtn').addEventListener('click', () => {
+                const latestUsers = getUsers();
+                const latestTarget = latestUsers[username];
+                const latestMe = latestUsers[currentUser];
+
+                if (isFriend) return;
+
+                if (hasIncoming) {
+                    acceptFriendRequest(username);
+                    return;
+                }
+
+                if (!latestTarget.friendRequests) latestTarget.friendRequests = [];
+                if (!latestTarget.friendRequests.includes(currentUser)) {
+                    latestTarget.friendRequests.push(currentUser);
+                    saveUsers(latestUsers);
+                    viewUserProfile(username);
+                }
+            });
+
+            document.getElementById('dmUserBtn').addEventListener('click', () => {
+                profilePage.classList.remove('active');
+                openDM(username);
+            });
+
+            profilePage.classList.add('active');
+        }
+
+        /* Navigations */
+        userBarTrigger.addEventListener('click', () => {
+            viewedUser = currentUser;
+            initApp();
+            profileBtnGroup.innerHTML = `
+                <button class="edit-profile-btn" id="openEditorBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                    </svg>
+                    Edit Profile
+                </button>
+            `;
+            document.getElementById('openEditorBtn').addEventListener('click', () => {
+                editorPage.classList.add('active');
+            });
+            profilePage.classList.add('active');
+        });
+
+        closeProfileBtn.addEventListener('click', () => {
+            profilePage.classList.remove('active');
+        });
+
+        openEditorBtn.addEventListener('click', () => {
+            editorPage.classList.add('active');
+        });
+
+        closeEditorBtn.addEventListener('click', () => {
+            editorPage.classList.remove('active');
+        });
+
+        /* Tab Switching */
+        const tabs = document.querySelectorAll('.profile-tabs .tab');
+        const tabMain = document.getElementById('tabMain');
+        const tabGames = document.getElementById('tabGames');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const selectedTab = tab.getAttribute('data-tab');
+                if (selectedTab === 'main') {
+                    tabMain.classList.add('active');
+                    tabGames.classList.remove('active');
+                } else if (selectedTab === 'games') {
+                    tabGames.classList.add('active');
+                    tabMain.classList.remove('active');
+                }
+            });
+        });
+
+        /* Direct Messaging Logic */
+        const dmPage = document.getElementById('dmPage');
+        const closeDmBtn = document.getElementById('closeDmBtn');
+        const dmTargetName = document.getElementById('dmTargetName');
+        const dmMessages = document.getElementById('dmMessages');
+        const dmInput = document.getElementById('dmInput');
+        const sendDmBtn = document.getElementById('sendDmBtn');
+        let currentDmTarget = null;
+
+        function getDmKey(user1, user2) {
+            return [user1, user2].sort().join('_');
+        }
+
+        function openDM(username) {
+            currentDmTarget = username;
+            const users = getUsers();
+            dmTargetName.textContent = users[username].displayName;
+            renderMessages();
+            dmPage.classList.add('active');
+        }
+
+        function renderMessages() {
+            if (!currentDmTarget) return;
+            const dms = getDMs();
+            const servers = getServers();
+            const key = getDmKey(currentUser, currentDmTarget);
+            const history = dms[key] || [];
+            dmMessages.innerHTML = '';
+            history.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = `message-item ${msg.sender === currentUser ? 'me' : ''}`;
+                
+                if (msg.isInvite) {
+                    const srv = servers[msg.serverId];
+                    const srvName = srv ? srv.name : 'Unknown Server';
+                    const iconHtml = (srv && srv.icon) ? `<img src="${srv.icon}">` : srvName.charAt(0).toUpperCase();
+                    div.innerHTML = `
+                        <div>You've been invited to join a server!</div>
+                        <div class="server-invite-card">
+                            <div class="server-invite-icon">${iconHtml}</div>
+                            <div class="server-invite-details">
+                                <span class="server-invite-name">${srvName}</span>
+                                <span class="server-invite-sub">Server Invite</span>
+                            </div>
+                            <button class="server-invite-btn" onclick="joinServerFromInvite('${msg.serverId}')">Join</button>
+                        </div>
+                    `;
+                } else {
+                    div.textContent = msg.text;
+                }
+                dmMessages.appendChild(div);
+            });
+            dmMessages.scrollTop = dmMessages.scrollHeight;
+        }
+
+        sendDmBtn.addEventListener('click', () => {
+            const text = dmInput.value.trim();
+            if (!text || !currentDmTarget) return;
+            const dms = getDMs();
+            const key = getDmKey(currentUser, currentDmTarget);
+            if (!dms[key]) dms[key] = [];
+            dms[key].push({ sender: currentUser, text: text });
+            saveDMs(dms);
+            dmInput.value = '';
+            renderMessages();
+        });
+
+        closeDmBtn.addEventListener('click', () => {
+            dmPage.classList.remove('active');
+        });
+
+        /* Real-time Display Name Mirroring */
+        editDisplayNameInput.addEventListener('input', (e) => {
+            previewDisplayName.textContent = e.target.value || 'Revenant';
+        });
+
+        clearDisplayNameBtn.addEventListener('click', () => {
+            editDisplayNameInput.value = '';
+            previewDisplayName.textContent = '';
+        });
+
+        /* Handle File Upload */
+        editorFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    uploadedAvatarData = evt.target.result;
+                    editorAvatarPreview.innerHTML = `<img src="${uploadedAvatarData}" alt="Avatar">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        /* Save Functionality */
+        saveEditorBtn.addEventListener('click', () => {
+            const users = getUsers();
+            const newName = editDisplayNameInput.value.trim() || currentUser;
+            const newBio = editBioInput.value.trim();
+
+            users[currentUser].displayName = newName;
+            users[currentUser].bio = newBio;
+
+            if (users[currentUser].isPlatformAdmin) {
+                users[currentUser].fontFamily = adminFontSelect.value;
+                users[currentUser].textColor = adminColorPicker.value;
+            }
+
+            if (uploadedAvatarData) {
+                users[currentUser].avatar = uploadedAvatarData;
+            }
+
+            saveUsers(users);
+            initApp();
+            editorPage.classList.remove('active');
+        });
+
+        /* Auto-Sync via polling so updates happen real-time across UI without refreshing */
+        setInterval(() => {
+            if (currentUser) {
+                renderFriends();
+                renderPendingRequests();
+                renderServersSidebar();
+                if (dmPage.classList.contains('active')) {
+                    renderMessages();
+                }
+                if (mainServerContent.style.display !== 'none') {
+                    renderServerChannels();
+                    if (activeChannelId) {
+                        renderServerChat();
+                    }
+                }
+            }
+        }, 1000);
+
+        // Initialize on load
+        initApp();
+    </script>
 </body>
 </html>
