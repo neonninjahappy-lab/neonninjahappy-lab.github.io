@@ -1,132 +1,2266 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudFurm</title>
-    <link rel="icon" type="image/webp" href="https://i.postimg.cc/zXPXv7tM/Boy-Cloudfurm.webp">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#121214">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>CloudFurm Mobile Studio</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    :root {
+      --bg-main: #121214;
+      --bg-surface: #1e1e24;
+      --bg-tab-active: #2a2a32;
+      --accent-gold: #ffb703;
+      --accent-play: #4cc9f0;
+      --accent-ai: #a06ee1;
+      --accent-collab: #ff477e;
+      --accent-green: #2ec4b6;
+      --accent-orange: #ff7043;
+      --accent-android: #3ddc84;
+      --accent-red: #e63946;
+      --text-primary: #f8f9fa;
+      --text-secondary: #a0a0ab;
+      --border-color: #2b2b36;
+      --browser-header-bg: #222328;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
 
-        body {
-            background: #110000;
-            color: #ffffff;
-            font-family: 'Poppins', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Noto Sans, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
 
-        .grid-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(rgba(255, 0, 0, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
-            z-index: 1;
-            pointer-events: none;
-        }
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      user-select: none;
+      -webkit-user-select: none;
+    }
 
-        .container {
-            text-align: center;
-            background: #1a0000;
-            padding: 40px 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-            max-width: 400px;
-            width: 100%;
-            border: 1px solid #330000;
-            position: relative;
-            z-index: 10;
-            box-sizing: border-box;
-        }
+    body {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+    }
 
-        h1 {
-            margin-top: 0;
-            font-size: 32px;
-            font-weight: 800;
-            color: #ff4d4d;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
+    /* Top Navigation Bar */
+    .top-bar {
+      height: calc(50px + var(--safe-top));
+      min-height: 50px;
+      flex-shrink: 0;
+      background-color: var(--bg-surface);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--safe-top) 12px 0 12px;
+      border-bottom: 1px solid var(--border-color);
+      z-index: 100;
+    }
 
-        p {
-            font-size: 15px;
-            margin-bottom: 30px;
-            color: #cccccc;
-            line-height: 1.5;
-            font-weight: 400;
-        }
+    .top-bar-left, .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-        .download-btn {
-            background: #cc0000;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            width: 100%;
-            box-sizing: border-box;
-        }
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 38px;
+      min-height: 38px;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+      position: relative;
+    }
 
-        .download-btn:hover {
-            background: #ff1a1a;
-        }
+    .icon-btn:active { background-color: var(--border-color); }
 
-        .download-btn:active {
-            background: #990000;
-        }
+    .home-nav-btn { color: var(--accent-gold); }
+    .save-btn { color: var(--accent-green); }
+    .collab-btn { color: var(--accent-collab); }
+    .play-btn { color: var(--accent-play); display: none; }
+    .ai-btn { color: var(--accent-ai); }
 
-        .icon {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            margin-bottom: 20px;
-        }
+    /* Toast Notification */
+    .save-toast {
+      position: fixed;
+      top: calc(58px + var(--safe-top));
+      right: 16px;
+      background-color: var(--accent-green);
+      color: #000;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 6px 14px;
+      border-radius: 20px;
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .save-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 480px) {
-            .container {
-                padding: 30px 20px;
-            }
-            h1 {
-                font-size: 28px;
-            }
-            .download-btn {
-                padding: 15px 20px;
-                font-size: 15px;
-            }
-        }
-    </style>
+    /* Shared Collab Sync Bar Indicator */
+    .collab-sync-indicator {
+      background: rgba(255, 71, 126, 0.15);
+      border-bottom: 2px solid var(--accent-collab);
+      color: var(--accent-collab);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 95;
+    }
+
+    .room-code-badge {
+      background-color: var(--accent-collab);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+      letter-spacing: 1px;
+      margin-left: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* Home Screen View */
+    .home-screen {
+      position: absolute;
+      top: calc(50px + var(--safe-top));
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--bg-main);
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .home-screen.hidden {
+      display: none;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .home-hero {
+      background: linear-gradient(135deg, #1e1e24 0%, #2a2a35 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .home-hero-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .home-hero-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .stat-card {
+      flex: 1;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--accent-gold);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .quick-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .quick-action-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .quick-action-card:active { background: var(--bg-tab-active); }
+
+    .quick-action-icon {
+      font-size: 22px;
+    }
+
+    .quick-action-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .recent-projects-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 80px;
+    }
+
+    .recent-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .recent-card:active { background: var(--bg-tab-active); }
+
+    .recent-card-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .recent-card-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .recent-card-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* Floating Action Button (FAB) */
+    .fab-btn {
+      position: fixed;
+      bottom: calc(24px + var(--safe-bottom));
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-orange));
+      color: #000;
+      border: none;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(255, 183, 3, 0.4);
+      z-index: 150;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .fab-btn:active { transform: scale(0.92); }
+
+    /* Floating Quick Create Sheet */
+    .quick-create-sheet {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--bg-surface);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      border-top: 1px solid var(--border-color);
+      padding: 20px 20px calc(20px + var(--safe-bottom)) 20px;
+      z-index: 300;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
+    }
+
+    .quick-create-sheet.active { transform: translateY(0); }
+
+    .sheet-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Sidebars & Panels Overlay */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 290px;
+      height: 100vh;
+      background-color: var(--bg-surface);
+      border-right: 1px solid var(--border-color);
+      z-index: 201;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      padding: calc(16px + var(--safe-top)) 16px 16px 16px;
+    }
+
+    .sidebar.active { transform: translateX(0); }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .project-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .menu-action-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .menu-action-btn:active { background-color: var(--bg-tab-active); }
+
+    .project-list-header {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .project-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .project-item {
+      padding: 12px;
+      border-radius: 8px;
+      background-color: var(--bg-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      border: 1px solid transparent;
+    }
+
+    .project-item.active {
+      border-color: var(--accent-gold);
+      background-color: var(--bg-tab-active);
+    }
+
+    /* Right Side Panels (AI & Collab) */
+    .side-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 320px;
+      max-width: 88vw;
+      height: 100vh;
+      background-color: var(--bg-surface);
+      border-left: 1px solid var(--border-color);
+      z-index: 201;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      padding: calc(16px + var(--safe-top)) 16px 16px 16px;
+      overflow-y: auto;
+    }
+
+    .side-panel.active { transform: translateX(0); }
+
+    .coming-soon-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 16px;
+      padding: 20px;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+    }
+
+    .coming-soon-icon {
+      font-size: 48px;
+    }
+
+    .coming-soon-badge {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .collab-card {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .room-code-box {
+      background: var(--bg-surface);
+      border: 1px dashed var(--accent-collab);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      font-family: monospace;
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--accent-collab);
+      letter-spacing: 2px;
+    }
+
+    .collab-input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text-primary);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .collab-input:focus {
+      border-color: var(--accent-collab);
+    }
+
+    .kick-btn {
+      background: rgba(230, 57, 70, 0.15);
+      border: 1px solid var(--accent-red);
+      color: var(--accent-red);
+      font-size: 11px;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .kick-btn:active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+
+    /* Options Dropdown */
+    .menu-container { position: relative; }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 8px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      width: 230px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      display: none;
+      flex-direction: column;
+      z-index: 100;
+      overflow: hidden;
+    }
+
+    .dropdown-menu.show { display: flex; }
+
+    .dropdown-item {
+      padding: 12px 16px;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      text-align: left;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dropdown-item:active { background-color: var(--bg-tab-active); }
+
+    /* App Mode Simulator Screen */
+    .app-mode-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: rgba(10, 10, 12, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transform: translateY(100%);
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+      pointer-events: none;
+    }
+
+    .app-mode-screen.active {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .app-mode-header {
+      position: absolute;
+      top: calc(12px + var(--safe-top));
+      right: 20px;
+      display: flex;
+      gap: 12px;
+      z-index: 1010;
+    }
+
+    .phone-wrapper {
+      width: 375px;
+      height: 720px;
+      max-width: 92vw;
+      max-height: 82vh;
+      background: #000;
+      border: 8px solid #2b2b36;
+      border-radius: 36px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    }
+
+    .phone-notch {
+      width: 130px;
+      height: 18px;
+      background-color: #2b2b36;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      z-index: 10;
+    }
+
+    .app-mode-frame {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background-color: #ffffff;
+    }
+
+    /* Dynamic File Tabs */
+    .tabs-bar {
+      display: flex;
+      background-color: var(--bg-main);
+      overflow-x: auto;
+      border-bottom: 1px solid var(--border-color);
+      scrollbar-width: none;
+      height: 42px;
+      min-height: 42px;
+      flex-shrink: 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tabs-bar::-webkit-scrollbar { display: none; }
+
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      background-color: var(--bg-main);
+      color: var(--text-secondary);
+      font-size: 13px;
+      border-right: 1px solid var(--border-color);
+      white-space: nowrap;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+
+    .tab.active {
+      background-color: var(--bg-tab-active);
+      color: var(--text-primary);
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background-color: var(--accent-gold);
+    }
+
+    .tab-icon { font-size: 12px; }
+    .tab-icon.html { color: #e44d26; }
+    .tab-icon.folder { color: #ffb703; }
+    .tab-icon.file { color: #4cc9f0; }
+
+    .close-tab {
+      font-size: 12px;
+      opacity: 0.6;
+      margin-left: 6px;
+      padding: 4px;
+    }
+    .close-tab:active { opacity: 1; }
+
+    /* Main Editor Workspace */
+    .workspace {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .editor-container {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      background-color: var(--bg-main);
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+    }
+
+    .line-numbers {
+      width: 44px;
+      padding: 12px 0;
+      text-align: center;
+      color: #4a4a5a;
+      user-select: none;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      flex-shrink: 0;
+    }
+
+    .code-area {
+      flex: 1;
+      min-width: 0;
+      padding: 12px;
+      color: var(--text-primary);
+      outline: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    /* Fullscreen Browser Preview */
+    .preview-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+      transform: translateY(100%);
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+      pointer-events: none;
+    }
+
+    .preview-screen.active {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .browser-bar {
+      height: calc(56px + var(--safe-top));
+      padding-top: var(--safe-top);
+      background-color: var(--browser-header-bg);
+      display: flex;
+      align-items: center;
+      padding-left: 12px;
+      padding-right: 12px;
+      gap: 12px;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .address-bar {
+      flex: 1;
+      background-color: #32333a;
+      border-radius: 20px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      font-size: 13px;
+      color: #e0e0e0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .address-bar i { margin-right: 8px; opacity: 0.7; }
+
+    .preview-body {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background-color: #ffffff;
+    }
+
+    /* Collab Cursor Elements */
+    .cursor-layer {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 10;
+      overflow: hidden;
+    }
+    .remote-cursor {
+      position: absolute;
+      width: 2px;
+      height: 1.2em;
+      background-color: var(--accent-collab);
+      z-index: 50;
+      transition: top 0.1s, left 0.1s;
+      pointer-events: none;
+    }
+    .remote-cursor-label {
+      position: absolute;
+      top: -16px;
+      left: 0;
+      background-color: var(--accent-collab);
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border-bottom-left-radius: 0;
+      white-space: nowrap;
+      font-weight: bold;
+      pointer-events: none;
+      opacity: 0.8;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+  </style>
 </head>
 <body>
 
-    <div class="grid-bg"></div>
+  <input type="file" id="fileInput" style="display: none;" multiple="">
 
-    <div class="container">
-        <img src="https://i.postimg.cc/zXPXv7tM/Boy-Cloudfurm.webp" alt="CloudFurm Logo" class="icon">
-        <h1>CloudFurm</h1>
-        <p>Get the latest Android APK for CloudFurm. Click the button below to start your download.</p>
-        
-        <button class="download-btn" id="downloadBtn">Download for Android</button>
+  <!-- Save Toast Notification -->
+  <div class="save-toast" id="saveToast"><i class="fa-solid fa-check"></i> Saved!</div>
+
+  <!-- Top Bar Nav -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <button class="icon-btn" id="drawerBtn" title="Projects Drawer"><i class="fa-solid fa-bars"></i></button>
+      <button class="icon-btn home-nav-btn" id="homeViewBtn" title="Home Dashboard"><i class="fa-solid fa-house"></i></button>
+    </div>
+    <div class="top-bar-right">
+      <button class="icon-btn save-btn" id="manualSaveBtn" title="Manual Save">
+        <i class="fa-solid fa-floppy-disk"></i>
+      </button>
+
+      <button class="icon-btn collab-btn" id="collabToggleBtn" title="Live Collaboration">
+        <i class="fa-solid fa-users"></i>
+      </button>
+
+      <button class="icon-btn ai-btn" id="aiToggleBtn" title="AI Assistant (Coming Soon)">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+      </button>
+
+      <button class="icon-btn play-btn" id="playBtn" title="Playtest Code">
+        <i class="fa-solid fa-play"></i>
+      </button>
+      
+      <div class="menu-container">
+        <button class="icon-btn" id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <button class="dropdown-item" onclick="createItem('file')">
+            <i class="fa-solid fa-file-circle-plus"></i> New File
+          </button>
+          <button class="dropdown-item" onclick="createItem('folder')">
+            <i class="fa-solid fa-folder-plus"></i> New Folder
+          </button>
+          <button class="dropdown-item" id="importBtn">
+            <i class="fa-solid fa-file-import"></i> Open Code From Device
+          </button>
+          <button class="dropdown-item" id="downloadFileBtn">
+            <i class="fa-solid fa-download"></i> Save Current File
+          </button>
+          <button class="dropdown-item" id="appModeBtn">
+            <i class="fa-solid fa-mobile-screen-button" style="color: var(--accent-play);"></i> View as App
+          </button>
+          <button class="dropdown-item" id="apkBuilderBtn">
+            <i class="fa-brands fa-android" style="color: var(--accent-android);"></i> Convert to APK (Coming Soon)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Shared Collab Workspace Banner -->
+  <div class="collab-sync-indicator" id="collabSyncIndicator">
+    <span>
+      <i class="fa-solid fa-users" style="margin-right: 4px;"></i> Room:
+      <strong id="syncRoomCodeText" class="room-code-badge">CF-XXXX</strong>
+    </span>
+    <span id="collabConnState"><i class="fa-solid fa-sync fa-spin"></i> Syncing</span>
+  </div>
+
+  <!-- Mobile Home Dashboard View -->
+  <div class="home-screen" id="homeScreen">
+    <div class="home-hero">
+      <div class="home-hero-title">
+        <i class="fa-brands fa-android" style="color: var(--accent-android);"></i> CloudFurm Studio
+      </div>
+      <div class="home-hero-sub">
+        Mobile Code Editor &amp; Real-time Project Studio. All changes are automatically saved to your device and synced with your team.
+      </div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-number" id="statProjects">1</div>
+          <div class="stat-label">Projects</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statFiles">1</div>
+          <div class="stat-label">Saved Files</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" style="color: var(--accent-green);"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="stat-label">Auto-Save On</div>
+        </div>
+      </div>
     </div>
 
-    <script>
-        document.getElementById('downloadBtn').addEventListener('click', function() {
-            window.open("https://archive.org/download/cloud-furm-beta-v-2/CloudFurm%20Beta%20V2.apk", "_blank");
-        });
-    </script>
+    <div class="section-title">Quick Actions</div>
+    <div class="quick-actions-grid">
+      <div class="quick-action-card" id="quickNewFile">
+        <i class="fa-solid fa-file-circle-plus quick-action-icon" style="color: var(--accent-gold);"></i>
+        <div class="quick-action-title">New File</div>
+      </div>
+      <div class="quick-action-card" id="quickNewProject">
+        <i class="fa-solid fa-folder-plus quick-action-icon" style="color: var(--accent-play);"></i>
+        <div class="quick-action-title">New Project</div>
+      </div>
+      <div class="quick-action-card" id="quickOpenCollab">
+        <i class="fa-solid fa-users quick-action-icon" style="color: var(--accent-collab);"></i>
+        <div class="quick-action-title">Live Collab</div>
+      </div>
+      <div class="quick-action-card" id="quickOpenApk">
+        <i class="fa-brands fa-android quick-action-icon" style="color: var(--accent-android);"></i>
+        <div class="quick-action-title">APK Builder (Soon)</div>
+      </div>
+    </div>
 
-</body>
-</html>
+    <div class="section-title">Your Saved Projects</div>
+    <div class="recent-projects-list" id="homeRecentProjectsList"></div>
+  </div>
+
+  <!-- Floating Action Button (FAB) -->
+  <button class="fab-btn" id="fabBtn" title="Quick Actions">
+    <i class="fa-solid fa-plus"></i>
+  </button>
+
+  <!-- Floating Quick Create Sheet -->
+  <div class="quick-create-sheet" id="quickCreateSheet">
+    <div class="sheet-title">
+      <span>Quick Actions</span>
+      <button class="icon-btn" id="closeSheetBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <button class="menu-action-btn" onclick="createItem('file'); closeQuickSheet();">
+      <i class="fa-solid fa-file-circle-plus" style="color: var(--accent-gold);"></i> Create New Code File
+    </button>
+    <button class="menu-action-btn" onclick="createItem('folder'); closeQuickSheet();">
+      <i class="fa-solid fa-folder-plus" style="color: var(--accent-play);"></i> Create New Folder
+    </button>
+    <button class="menu-action-btn" onclick="triggerDeviceImport(); closeQuickSheet();">
+      <i class="fa-solid fa-file-import" style="color: var(--accent-green);"></i> Import File From Device
+    </button>
+    <button class="menu-action-btn" onclick="promptNewProject(); closeQuickSheet();">
+      <i class="fa-solid fa-diagram-project" style="color: var(--accent-ai);"></i> Create New Project Workspace
+    </button>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar Drawer -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Projects</span>
+      <button class="icon-btn" id="closeSidebar"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="project-actions">
+      <button class="menu-action-btn" id="newProjectBtn">
+        <i class="fa-solid fa-plus"></i> New Project
+      </button>
+      <button class="menu-action-btn" id="downloadProjectBtn">
+        <i class="fa-solid fa-file-zipper"></i> Download All Files
+      </button>
+    </div>
+
+    <div class="project-list-header">Your Projects</div>
+    <div class="project-list" id="projectList"></div>
+  </div>
+
+  <!-- AI Helper Panel (Coming Soon) -->
+  <div class="side-panel" id="aiPanel">
+    <div class="sidebar-header">
+      <span class="sidebar-title"><i class="fa-solid fa-robot" style="color: var(--accent-ai);"></i> CloudFurm.AI</span>
+      <button class="icon-btn" id="closeAiPanel"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="coming-soon-card">
+      <i class="fa-solid fa-wand-magic-sparkles coming-soon-icon" style="color: var(--accent-ai);"></i>
+      <span class="coming-soon-badge" style="background: rgba(160, 110, 225, 0.2); color: var(--accent-ai); border: 1px solid var(--accent-ai);">Coming Soon</span>
+      <h3 style="font-size: 16px; font-weight: bold;">AI Code Assistant</h3>
+      <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+        AI code auto-fixing, prompt generation, and real-time debugging features are currently under development!
+      </p>
+    </div>
+  </div>
+
+  <!-- APK Builder Panel (Coming Soon) -->
+  <div class="side-panel" id="apkPanel">
+    <div class="sidebar-header">
+      <span class="sidebar-title"><i class="fa-brands fa-android" style="color: var(--accent-android);"></i> APK Converter</span>
+      <button class="icon-btn" id="closeApkPanel"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="coming-soon-card">
+      <i class="fa-solid fa-box-open coming-soon-icon" style="color: var(--accent-android);"></i>
+      <span class="coming-soon-badge" style="background: rgba(61, 220, 132, 0.2); color: var(--accent-android); border: 1px solid var(--accent-android);">Coming Soon</span>
+      <h3 style="font-size: 16px; font-weight: bold;">In-App Native APK Compiler</h3>
+      <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+        Direct client-side APK compilation is under development! Future updates will allow 1-click native Android package builds straight from your mobile browser.
+      </p>
+    </div>
+  </div>
+
+  <!-- Collaboration System Panel -->
+  <div class="side-panel" id="collabPanel">
+    <div class="sidebar-header">
+      <span class="sidebar-title"><i class="fa-solid fa-users" style="color: var(--accent-collab);"></i> Live Collab</span>
+      <button class="icon-btn" id="closeCollabPanel"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Active Session / Disconnect Banner -->
+    <div class="collab-card" id="collabStatusCard" style="display: none; border-color: var(--accent-green);">
+      <div style="font-size: 14px; font-weight: bold; color: var(--accent-green);">
+        <i class="fa-solid fa-signal"></i> Shared Workspace Active
+      </div>
+      <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.4;" id="collabStatusText">
+        Connected to Room: <span id="activeRoomCodeLabel" style="color: var(--text-primary); font-weight: bold;">--</span>
+      </p>
+      <p style="font-size: 11px; color: var(--accent-gold); line-height: 1.3;">
+        ⚡ Creating projects, adding files/folders, and editing code sync live across all connected devices in this room!
+      </p>
+      <button class="menu-action-btn" id="leaveRoomBtn" style="justify-content: center; background: rgba(230, 57, 70, 0.15); color: var(--accent-red); border-color: var(--accent-red);">
+        <i class="fa-solid fa-right-from-bracket"></i> Leave Collaboration Room
+      </button>
+    </div>
+
+    <div class="collab-card">
+      <div style="font-size: 14px; font-weight: bold; color: var(--text-primary);">
+        <i class="fa-solid fa-tower-broadcast" style="color: var(--accent-collab);"></i> Host Room Code
+      </div>
+      <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.4;">
+        Share this code to start hosting projects together live.
+      </p>
+
+      <div class="room-code-box" id="roomCodeDisplay">CF-XXXX</div>
+      
+      <div style="font-size: 13px; font-weight: bold; color: var(--text-primary); margin-top: 10px;">Project to Share</div>
+      <select id="hostProjectSelect" class="collab-input" style="margin-top: 6px; margin-bottom: 12px;">
+      </select>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="menu-action-btn" id="copyRoomBtn" style="flex: 1; justify-content: center; background: var(--bg-surface); color: var(--accent-collab); border-color: var(--accent-collab);">
+          <i class="fa-solid fa-copy"></i> Copy Code
+        </button>
+        <button class="menu-action-btn" id="refreshRoomBtn" style="justify-content: center; background: var(--bg-surface); color: var(--accent-gold); border-color: var(--accent-gold); min-width: 44px;" title="Generate New Room Code">
+          <i class="fa-solid fa-arrows-rotate"></i>
+        </button>
+      </div>
+
+      <button class="menu-action-btn" id="startHostingBtn" style="justify-content: center; background: var(--bg-surface); color: var(--accent-collab); border-color: var(--accent-collab); margin-top: 8px;">
+        <i class="fa-solid fa-satellite-dish"></i> Host Shared Session
+      </button>
+    </div>
+
+    <div class="collab-card">
+      <div style="font-size: 14px; font-weight: bold; color: var(--text-primary);">
+        <i class="fa-solid fa-right-to-bracket" style="color: var(--accent-play);"></i> Join Existing Room
+      </div>
+      <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.4;">
+        Enter a host's room code to join their live coding & project workspace.
+      </p>
+
+      <input type="text" id="joinRoomInput" class="collab-input" placeholder="Type Room Code (e.g., CF-4829)">
+      
+      <button class="menu-action-btn" id="joinRoomBtn" style="justify-content: center; background: var(--bg-surface); color: var(--accent-play); border-color: var(--accent-play);">
+        <i class="fa-solid fa-plug"></i> Join Shared Project Room
+      </button>
+    </div>
+
+    <div class="collab-card">
+      <div style="font-size: 13px; font-weight: bold; color: var(--text-primary);">Active Collaborators</div>
+      <div id="collaboratorsList" style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-surface); padding: 8px 12px; border-radius: 8px; font-size: 13px;">
+          <span><i class="fa-solid fa-circle" style="color: var(--accent-green); font-size: 8px; margin-right: 6px;"></i> You (Offline)</span>
+          <span style="font-size: 10px; opacity: 0.7;">Solo Mode</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Bar -->
+  <div class="tabs-bar" id="tabsBar"></div>
+
+  <!-- Workspace -->
+  <div class="workspace">
+    <div class="editor-container">
+      <div class="line-numbers" id="lineNumbers">1</div>
+      <div class="code-area" id="codeArea" contenteditable="true" spellcheck="false"></div>
+      <div class="cursor-layer" id="cursorLayer"></div>
+    </div>
+  </div>
+
+  <!-- Preview Screen -->
+  <div class="preview-screen" id="previewScreen">
+    <div class="browser-bar">
+      <button class="icon-btn" id="backBtn" title="Back to Code">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      <div class="address-bar">
+        <i class="fa-solid fa-lock"></i>
+        <span id="addressUrl">localhost:8158/index.html</span>
+      </div>
+      <button class="icon-btn" id="refreshBtn" title="Refresh">
+        <i class="fa-solid fa-rotate-right"></i>
+      </button>
+      <button class="icon-btn">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </button>
+    </div>
+    <iframe class="preview-body" id="previewFrame" srcdoc=""></iframe>
+  </div>
+
+  <!-- Phone App Mode Screen -->
+  <div class="app-mode-screen" id="appModeScreen">
+    <div class="app-mode-header">
+      <button class="icon-btn" id="closeAppModeBtn" title="Exit App Mode">
+        <i class="fa-solid fa-xmark" style="font-size: 22px;"></i>
+      </button>
+    </div>
+    <div class="phone-wrapper">
+      <div class="phone-notch"></div>
+      <iframe class="app-mode-frame" id="appModeFrame" srcdoc=""></iframe>
+    </div>
+  </div>
+
+  <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
+  <script>
+    // Storage Initialization
+    const STORAGE_KEY = 'cloudfurm_studio_app_data_v2';
+    let isEditorLoaded = false;
+
+    let appState = {
+      projects: [
+        {
+          id: 1,
+          name: 'My Workspace',
+          activeFileId: 101,
+          items: [
+            { id: 101, name: 'index.html', type: 'file', content: '<h1>Hello World</h1>\n<p>Welcome to CloudFurm Mobile Studio!</p>' }
+          ]
+        }
+      ],
+      activeProjectId: 1
+    };
+
+    function loadStateFromDevice() {
+      try {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (savedData) {
+          const parsed = JSON.parse(savedData);
+          if (parsed && parsed.projects && parsed.projects.length) {
+            appState = parsed;
+          }
+        }
+      } catch (err) {
+        console.warn('Unable to read device storage:', err);
+      }
+    }
+
+    function saveStateToDevice() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (err) {
+        console.warn('Unable to write to device storage:', err);
+      }
+    }
+
+    loadStateFromDevice();
+
+    // Dynamic Room Code & Real-Time Channel Manager
+    //
+    // Uses Ably (ably.com) as a hosted realtime relay - no server to run
+    // or deploy yourself. Get a free API key at https://ably.com/sign-up,
+    // then paste it below. Free tier: 6M messages/month, 200 concurrent
+    // connections, plenty for personal/small-team use.
+    const ABLY_API_KEY = 'i-KP3A.BljS8g:4dMXVbJgjqE-Q1z72EMbvb1naxk3AnrF80-gpG62lAc';
+
+    function generateRandomRoomCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 4; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return 'CF-' + code;
+    }
+
+    let activeHostRoomCode = generateRandomRoomCode();
+    let currentConnectedRoom = null;
+    let ablyClient = null;
+    let collabChannel = null; // Ably realtime channel for the current room
+    let userRole = 'Solo';
+    let myPeerId = null;
+    let remoteCursors = {}; // Stores connected peers cursor info
+
+    const collabSyncIndicator = document.getElementById('collabSyncIndicator');
+    const syncRoomCodeText = document.getElementById('syncRoomCodeText');
+    const startHostingBtn = document.getElementById('startHostingBtn');
+    const cursorLayer = document.getElementById('cursorLayer');
+
+    // Reflects the real Ably connection state instead of a hardcoded "Syncing" label.
+    function setCollabConnectionState(state) {
+      const el = document.getElementById('collabConnState');
+      if (!el) return;
+      if (state === 'connected') {
+        el.innerHTML = '<i class="fa-solid fa-circle-check"></i> Live';
+        el.style.color = 'var(--accent-green)';
+      } else if (state === 'disconnected') {
+        el.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Disconnected';
+        el.style.color = 'var(--accent-red)';
+      } else if (state === 'error') {
+        el.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Connection failed';
+        el.style.color = 'var(--accent-red)';
+      } else {
+        el.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Syncing';
+        el.style.color = '';
+      }
+    }
+
+    // Sync Broadcast Functionality with Error Handling
+    function broadcastProjectSync() {
+      if (collabChannel && currentConnectedRoom) {
+        try {
+          collabChannel.publish('msg', {
+            type: 'PROJECT_SYNC_UPDATE',
+            room: currentConnectedRoom,
+            projectData: getActiveProject(),
+            senderRole: userRole
+          });
+        } catch (err) {
+          console.error("Failed to broadcast project sync:", err);
+        }
+      }
+    }
+
+    // Cursor position extraction and broadcasting
+    function sendCursorPosition() {
+      if (!collabChannel || !currentConnectedRoom) return;
+      if (document.activeElement !== codeArea) return;
+
+      let charCount = 0;
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const preCaretRange = range.cloneRange();
+        preCaretRange.selectNodeContents(codeArea);
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+        charCount = preCaretRange.toString().length;
+      }
+
+      try {
+        collabChannel.publish('msg', {
+          type: 'CURSOR_UPDATE',
+          room: currentConnectedRoom,
+          role: userRole,
+          position: charCount
+        });
+      } catch (err) {
+        console.error("Failed to send cursor position:", err);
+      }
+    }
+
+    function updateRemoteCursor(peerId, role, charPos) {
+      remoteCursors[peerId] = { pos: charPos, role: role };
+      renderCursors();
+    }
+
+    function renderCursors() {
+      if (!cursorLayer) return;
+      cursorLayer.innerHTML = '';
+      Object.keys(remoteCursors).forEach(peerId => {
+        const cursorData = remoteCursors[peerId];
+        
+        const range = document.createRange();
+        let charCount = 0, nodeStack = [codeArea], node, foundStart = false;
+        range.setStart(codeArea, 0);
+        range.collapse(true);
+
+        while (nodeStack.length > 0) {
+          node = nodeStack.pop();
+          if (node.nodeType === 3) {
+            const nextCharCount = charCount + node.length;
+            if (!foundStart && cursorData.pos >= charCount && cursorData.pos <= nextCharCount) {
+              range.setStart(node, cursorData.pos - charCount);
+              range.collapse(true);
+              foundStart = true;
+              break;
+            }
+            charCount = nextCharCount;
+          } else {
+            let i = node.childNodes.length;
+            while (i--) nodeStack.push(node.childNodes[i]);
+          }
+        }
+        
+        if (foundStart) {
+          const rect = range.getBoundingClientRect();
+          const editorContainer = document.querySelector('.editor-container');
+          const containerRect = editorContainer.getBoundingClientRect();
+          
+          const top = rect.top - containerRect.top + editorContainer.scrollTop;
+          const left = rect.left - containerRect.left + editorContainer.scrollLeft;
+          
+          const cursorEl = document.createElement('div');
+          cursorEl.className = 'remote-cursor';
+          cursorEl.style.top = top + 'px';
+          cursorEl.style.left = left + 'px';
+          
+          const color = cursorData.role === 'Hosting' ? 'var(--accent-gold)' : 'var(--accent-play)';
+          cursorEl.style.backgroundColor = color;
+          
+          const labelEl = document.createElement('div');
+          labelEl.className = 'remote-cursor-label';
+          labelEl.textContent = cursorData.role === 'Hosting' ? 'Host' : 'Peer';
+          labelEl.style.backgroundColor = color;
+          
+          cursorEl.appendChild(labelEl);
+          cursorLayer.appendChild(cursorEl);
+        }
+      });
+    }
+
+    function connectToCollabRoom(roomCode, role) {
+      if (ablyClient) {
+        try { ablyClient.close(); } catch (e) {}
+        ablyClient = null;
+        collabChannel = null;
+      }
+
+      currentConnectedRoom = roomCode;
+      userRole = role;
+      myPeerId = (role === 'Guest' ? 'peer-' : 'host-') + Date.now();
+      setCollabConnectionState('connecting');
+
+      try {
+        if (ABLY_API_KEY === 'YOUR-ABLY-API-KEY-HERE') {
+          alert('Live Collab needs an Ably API key first. Get a free one at ably.com/sign-up and paste it into the ABLY_API_KEY constant near the top of the script.');
+          setCollabConnectionState('error');
+          return;
+        }
+
+        ablyClient = new Ably.Realtime({ key: ABLY_API_KEY, clientId: myPeerId });
+
+        ablyClient.connection.on('connected', () => {
+          setCollabConnectionState('connected');
+          if (userRole === 'Guest') {
+            collabChannel.publish('msg', { type: 'REQUEST_PROJECT_STATE', room: roomCode });
+          }
+        });
+
+        ablyClient.connection.on('failed', (err) => {
+          console.error('Ably connection failed:', err);
+          setCollabConnectionState('error');
+        });
+
+        ablyClient.connection.on('suspended', () => setCollabConnectionState('disconnected'));
+
+        ablyClient.connection.on('disconnected', () => {
+          if (currentConnectedRoom) setCollabConnectionState('disconnected');
+        });
+
+        // One channel per room code - everyone using the same room code
+        // lands on the same channel and sees each other's messages.
+        collabChannel = ablyClient.channels.get('cloudfurm-collab-' + roomCode);
+
+        collabChannel.subscribe('msg', (message) => {
+          if (message.clientId === myPeerId) return; // ignore our own echoes
+          const data = message.data;
+          if (!data || !data.type) return;
+
+          if (data.type === 'REQUEST_PROJECT_STATE' && userRole === 'Hosting') {
+            collabChannel.publish('msg', {
+              type: 'FULL_PROJECT_STATE',
+              room: currentConnectedRoom,
+              projectData: getActiveProject()
+            });
+          } else if (data.type === 'FULL_PROJECT_STATE' || data.type === 'PROJECT_SYNC_UPDATE') {
+            if (data.projectData) {
+              let existingProjIndex = appState.projects.findIndex(p => p.id === data.projectData.id);
+              if (existingProjIndex >= 0) {
+                appState.projects[existingProjIndex] = data.projectData;
+              } else {
+                appState.projects.push(data.projectData);
+              }
+
+              if (appState.activeProjectId !== data.projectData.id) {
+                switchProject(data.projectData.id);
+              } else {
+                saveStateToDevice();
+                updateUI();
+                renderHomeDashboard();
+                renderProjectList();
+
+                const activeFile = getActiveFile();
+                if (activeFile) {
+                  let savedCaretPosition = 0;
+                  const selection = window.getSelection();
+                  const isFocused = document.activeElement === codeArea;
+
+                  if (isFocused && selection.rangeCount > 0) {
+                      const range = selection.getRangeAt(0);
+                      const preCaretRange = range.cloneRange();
+                      preCaretRange.selectNodeContents(codeArea);
+                      preCaretRange.setEnd(range.endContainer, range.endOffset);
+                      savedCaretPosition = preCaretRange.toString().length;
+                  }
+
+                  codeArea.innerText = activeFile.content;
+                  updateLineNumbers();
+                  liveUpdatePreviews();
+
+                  if (isFocused) {
+                      const range = document.createRange();
+                      let charCount = 0, nodeStack = [codeArea], node, foundStart = false;
+                      range.setStart(codeArea, 0);
+                      range.collapse(true);
+                      while (nodeStack.length > 0) {
+                          node = nodeStack.pop();
+                          if (node.nodeType === 3) {
+                              const nextCharCount = charCount + node.length;
+                              if (!foundStart && savedCaretPosition >= charCount && savedCaretPosition <= nextCharCount) {
+                                  range.setStart(node, savedCaretPosition - charCount);
+                                  range.collapse(true);
+                                  foundStart = true;
+                                  break;
+                              }
+                              charCount = nextCharCount;
+                          } else {
+                              let i = node.childNodes.length;
+                              while (i--) nodeStack.push(node.childNodes[i]);
+                          }
+                      }
+                      selection.removeAllRanges();
+                      selection.addRange(range);
+                  }
+                }
+              }
+            }
+          } else if (data.type === 'CURSOR_UPDATE') {
+            updateRemoteCursor(message.clientId, data.role, data.position);
+          } else if (data.type === 'KICKED' && data.targetPeerId === myPeerId) {
+            alert('The host asked you to leave this collaboration room.');
+            leaveCollaborationRoom();
+          }
+        });
+
+        // Presence handles join/leave detection for us, including the case
+        // where someone's tab closes or their connection drops - Ably
+        // notices and fires 'leave' automatically.
+        collabChannel.presence.subscribe('enter', (member) => {
+          if (member.clientId === myPeerId) return;
+          addCollaboratorToList(member.data && member.data.role, member.clientId);
+        });
+        collabChannel.presence.subscribe('leave', (member) => {
+          removeCollaboratorFromList(member.clientId);
+          delete remoteCursors[member.clientId];
+          renderCursors();
+        });
+
+        collabChannel.presence.enter({ role: userRole }).catch(err => {
+          console.error('Failed to enter presence set:', err);
+        });
+
+        // Populate the list with anyone already in the room.
+        collabChannel.presence.get().then(members => {
+          members.forEach(m => {
+            if (m.clientId !== myPeerId) addCollaboratorToList(m.data && m.data.role, m.clientId);
+          });
+        }).catch(err => console.error('Failed to fetch presence set:', err));
+
+      } catch (err) {
+        console.warn('Ably connection failed:', err);
+        setCollabConnectionState('error');
+      }
+
+      collabSyncIndicator.style.display = 'flex';
+      syncRoomCodeText.textContent = roomCode;
+      updateCollabSessionUI(roomCode, role);
+      
+      closeAllSidePanels();
+      hideHomeScreen();
+      quickCreateSheet.classList.remove('active');
+    }
+
+    // DOM Elements
+    const homeScreen = document.getElementById('homeScreen');
+    const homeViewBtn = document.getElementById('homeViewBtn');
+    const fabBtn = document.getElementById('fabBtn');
+    const quickCreateSheet = document.getElementById('quickCreateSheet');
+    const closeSheetBtn = document.getElementById('closeSheetBtn');
+    const saveToast = document.getElementById('saveToast');
+    const manualSaveBtn = document.getElementById('manualSaveBtn');
+
+    const drawerBtn = document.getElementById('drawerBtn');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const newProjectBtn = document.getElementById('newProjectBtn');
+    const projectList = document.getElementById('projectList');
+    const downloadProjectBtn = document.getElementById('downloadProjectBtn');
+
+    const appModeBtn = document.getElementById('appModeBtn');
+    const appModeScreen = document.getElementById('appModeScreen');
+    const appModeFrame = document.getElementById('appModeFrame');
+    const closeAppModeBtn = document.getElementById('closeAppModeBtn');
+
+    const apkBuilderBtn = document.getElementById('apkBuilderBtn');
+    const apkPanel = document.getElementById('apkPanel');
+    const closeApkPanel = document.getElementById('closeApkPanel');
+
+    const aiToggleBtn = document.getElementById('aiToggleBtn');
+    const aiPanel = document.getElementById('aiPanel');
+    const closeAiPanel = document.getElementById('closeAiPanel');
+
+    const collabToggleBtn = document.getElementById('collabToggleBtn');
+    const collabPanel = document.getElementById('collabPanel');
+    const closeCollabPanel = document.getElementById('closeCollabPanel');
+    const copyRoomBtn = document.getElementById('copyRoomBtn');
+    const refreshRoomBtn = document.getElementById('refreshRoomBtn');
+    const roomCodeDisplay = document.getElementById('roomCodeDisplay');
+    const joinRoomInput = document.getElementById('joinRoomInput');
+    const joinRoomBtn = document.getElementById('joinRoomBtn');
+    const collabStatusCard = document.getElementById('collabStatusCard');
+    const activeRoomCodeLabel = document.getElementById('activeRoomCodeLabel');
+    const leaveRoomBtn = document.getElementById('leaveRoomBtn');
+    const collaboratorsList = document.getElementById('collaboratorsList');
+
+    const menuBtn = document.getElementById('menuBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const playBtn = document.getElementById('playBtn');
+    const importBtn = document.getElementById('importBtn');
+    const downloadFileBtn = document.getElementById('downloadFileBtn');
+    const fileInput = document.getElementById('fileInput');
+
+    const tabsBar = document.getElementById('tabsBar');
+    const codeArea = document.getElementById('codeArea');
+    const lineNumbers = document.getElementById('lineNumbers');
+
+    const previewScreen = document.getElementById('previewScreen');
+    const previewFrame = document.getElementById('previewFrame');
+    const backBtn = document.getElementById('backBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const addressUrl = document.getElementById('addressUrl');
+
+    roomCodeDisplay.textContent = activeHostRoomCode;
+
+    function getActiveProject() {
+      return appState.projects.find(p => p.id === appState.activeProjectId) || appState.projects[0];
+    }
+
+    function getActiveFile() {
+      const proj = getActiveProject();
+      return proj ? proj.items.find(i => i.id === proj.activeFileId) : null;
+    }
+
+    // Save System Logic
+    function triggerSaveToast() {
+      saveToast.classList.add('show');
+      setTimeout(() => {
+        saveToast.classList.remove('show');
+      }, 1400);
+    }
+
+    function liveUpdatePreviews() {
+      const file = getActiveFile();
+      if (file && file.name.toLowerCase().endsWith('.html')) {
+        if (previewScreen.classList.contains('active')) {
+          previewFrame.srcdoc = file.content;
+        }
+        if (appModeScreen.classList.contains('active')) {
+          appModeFrame.srcdoc = file.content;
+        }
+      }
+    }
+
+    function syncCurrentTextToState() {
+      if (!isEditorLoaded) return;
+      const file = getActiveFile();
+      if (file) {
+        file.content = codeArea.innerText;
+        saveStateToDevice();
+        broadcastProjectSync();
+        liveUpdatePreviews();
+      }
+    }
+
+    function saveCurrentEditorText(showFeedback = false) {
+      if (!isEditorLoaded) return;
+      syncCurrentTextToState();
+      if (showFeedback) triggerSaveToast();
+    }
+
+    manualSaveBtn.addEventListener('click', () => {
+      saveCurrentEditorText(true);
+    });
+
+    codeArea.addEventListener('input', () => {
+      updateLineNumbers();
+      syncCurrentTextToState();
+      sendCursorPosition();
+    });
+
+    codeArea.addEventListener('keyup', () => {
+      syncCurrentTextToState();
+      sendCursorPosition();
+    });
+
+    codeArea.addEventListener('click', sendCursorPosition);
+
+    codeArea.addEventListener('blur', () => {
+      saveCurrentEditorText(false);
+    });
+
+    codeArea.addEventListener('paste', () => {
+      setTimeout(() => {
+        updateLineNumbers();
+        syncCurrentTextToState();
+        sendCursorPosition();
+      }, 50);
+    });
+
+    // Home Dashboard Navigation
+    function showHomeScreen() {
+      saveCurrentEditorText();
+      renderHomeDashboard();
+      homeScreen.classList.remove('hidden');
+    }
+
+    function hideHomeScreen() {
+      homeScreen.classList.add('hidden');
+    }
+
+    homeViewBtn.addEventListener('click', () => {
+      if (homeScreen.classList.contains('hidden')) {
+        showHomeScreen();
+      } else {
+        hideHomeScreen();
+      }
+    });
+
+    function renderHomeDashboard() {
+      let totalFiles = 0;
+      appState.projects.forEach(p => {
+        totalFiles += p.items.filter(i => i.type === 'file').length;
+      });
+
+      document.getElementById('statProjects').textContent = appState.projects.length;
+      document.getElementById('statFiles').textContent = totalFiles;
+
+      const recentListContainer = document.getElementById('homeRecentProjectsList');
+      recentListContainer.innerHTML = '';
+
+      appState.projects.forEach(proj => {
+        const card = document.createElement('div');
+        card.className = 'recent-card';
+        card.innerHTML = `
+          <div class="recent-card-info">
+            <i class="fa-solid fa-folder" style="color: var(--accent-gold); font-size: 18px;"></i>
+            <div>
+              <div class="recent-card-title">${proj.name}</div>
+              <div class="recent-card-sub">${proj.items.length} items</div>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color: var(--text-secondary); font-size: 12px;"></i>
+        `;
+        card.addEventListener('click', () => {
+          switchProject(proj.id);
+          hideHomeScreen();
+        });
+        recentListContainer.appendChild(card);
+      });
+    }
+
+    document.getElementById('quickNewFile').addEventListener('click', () => {
+      hideHomeScreen();
+      createItem('file');
+    });
+
+    document.getElementById('quickNewProject').addEventListener('click', () => {
+      promptNewProject();
+    });
+
+    document.getElementById('quickOpenCollab').addEventListener('click', () => {
+      hideHomeScreen();
+      updateHostProjectSelect();
+      togglePanel('collab', true);
+    });
+
+    document.getElementById('quickOpenApk').addEventListener('click', () => {
+      hideHomeScreen();
+      togglePanel('apk', true);
+    });
+
+    fabBtn.addEventListener('click', () => {
+      quickCreateSheet.classList.add('active');
+    });
+
+    closeSheetBtn.addEventListener('click', closeQuickSheet);
+
+    function closeQuickSheet() {
+      quickCreateSheet.classList.remove('active');
+    }
+
+    function triggerDeviceImport() {
+      dropdownMenu.classList.remove('show');
+      fileInput.click();
+    }
+
+    function promptNewProject() {
+      const name = prompt('Enter new project name:', 'Shared Project Workspace');
+      if (!name) return;
+
+      const newProj = { id: Date.now(), name: name.trim(), activeFileId: null, items: [] };
+      appState.projects.push(newProj);
+      saveStateToDevice();
+      switchProject(newProj.id);
+      broadcastProjectSync();
+      toggleSidebar(false);
+      hideHomeScreen();
+    }
+
+    function closeAllSidePanels() {
+      aiPanel.classList.remove('active');
+      collabPanel.classList.remove('active');
+      apkPanel.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+    }
+
+    function togglePanel(type, open) {
+      closeAllSidePanels();
+      if (open) {
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.add('active');
+        if (type === 'ai') aiPanel.classList.add('active');
+        if (type === 'collab') collabPanel.classList.add('active');
+        if (type === 'apk') apkPanel.classList.add('active');
+      }
+    }
+
+    aiToggleBtn.addEventListener('click', () => togglePanel('ai', true));
+    closeAiPanel.addEventListener('click', closeAllSidePanels);
+
+    collabToggleBtn.addEventListener('click', () => {
+      updateHostProjectSelect();
+      togglePanel('collab', true);
+    });
+    closeCollabPanel.addEventListener('click', closeAllSidePanels);
+
+    apkBuilderBtn.addEventListener('click', () => {
+      dropdownMenu.classList.remove('show');
+      togglePanel('apk', true);
+    });
+    closeApkPanel.addEventListener('click', closeAllSidePanels);
+
+    function updateHostProjectSelect() {
+      const select = document.getElementById('hostProjectSelect');
+      if (!select) return;
+      select.innerHTML = '';
+      appState.projects.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = p.name;
+        if(p.id === appState.activeProjectId) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    copyRoomBtn.addEventListener('click', () => {
+      const code = roomCodeDisplay.textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        copyRoomBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+        setTimeout(() => {
+          copyRoomBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Code';
+        }, 1500);
+      }).catch(() => {
+        alert('Room Code: ' + code);
+      });
+    });
+
+    refreshRoomBtn.addEventListener('click', () => {
+      activeHostRoomCode = generateRandomRoomCode();
+      roomCodeDisplay.textContent = activeHostRoomCode;
+      
+      refreshRoomBtn.style.transform = 'rotate(360deg)';
+      refreshRoomBtn.style.transition = 'transform 0.4s ease';
+      setTimeout(() => {
+        refreshRoomBtn.style.transform = 'none';
+        refreshRoomBtn.style.transition = 'none';
+      }, 400);
+
+      if (currentConnectedRoom) {
+        connectToCollabRoom(activeHostRoomCode, 'Hosting');
+      }
+    });
+
+    startHostingBtn.addEventListener('click', () => {
+      const select = document.getElementById('hostProjectSelect');
+      if (select && select.value) {
+        switchProject(parseInt(select.value));
+      }
+      connectToCollabRoom(activeHostRoomCode, 'Hosting');
+    });
+
+    joinRoomBtn.addEventListener('click', () => {
+      const code = joinRoomInput.value.trim().toUpperCase();
+      if (!code) {
+        alert('Please enter a valid room code!');
+        return;
+      }
+
+      connectToCollabRoom(code, 'Guest');
+      joinRoomInput.value = '';
+      // Actual success/failure is reflected by the Live / Disconnected /
+      // Connection failed indicator in the sync banner - it's driven by the
+      // real Ably connection state now, not a fake timeout.
+    });
+
+    leaveRoomBtn.addEventListener('click', () => {
+      leaveCollaborationRoom();
+    });
+
+    function updateCollabSessionUI(roomCode, role) {
+      activeRoomCodeLabel.textContent = roomCode;
+      collabStatusCard.style.display = 'flex';
+
+      collaboratorsList.innerHTML = '';
+      
+      const userRow = document.createElement('div');
+      userRow.style.cssText = 'display: flex; align-items: center; justify-content: space-between; background: var(--bg-surface); padding: 8px 12px; border-radius: 8px; font-size: 13px;';
+      userRow.innerHTML = `
+        <span><i class="fa-solid fa-circle" style="color: var(--accent-green); font-size: 8px; margin-right: 6px;"></i> You (${role})</span>
+        <span style="font-size: 10px; opacity: 0.7;">${role === 'Hosting' ? 'Host' : 'Member'}</span>
+      `;
+      collaboratorsList.appendChild(userRow);
+
+      if (role === 'Hosting') {
+        // Real collaborators are added automatically via Ably presence as
+        // the relay server - no more faking a guest that isn't there.
+      } else {
+        const hostRow = document.createElement('div');
+        hostRow.style.cssText = 'display: flex; align-items: center; justify-content: space-between; background: var(--bg-surface); padding: 8px 12px; border-radius: 8px; font-size: 13px;';
+        hostRow.innerHTML = `
+          <span><i class="fa-solid fa-circle" style="color: var(--accent-gold); font-size: 8px; margin-right: 6px;"></i> Room Host (${roomCode})</span>
+          <span style="font-size: 10px; opacity: 0.7;">Owner</span>
+        `;
+        collaboratorsList.appendChild(hostRow);
+      }
+    }
+
+    function addCollaboratorToList(role, peerId) {
+      if (document.getElementById(peerId)) return;
+      const peerRow = document.createElement('div');
+      peerRow.id = peerId;
+      peerRow.style.cssText = 'display: flex; align-items: center; justify-content: space-between; background: var(--bg-surface); padding: 8px 12px; border-radius: 8px; font-size: 13px;';
+      
+      if (userRole === 'Hosting') {
+        peerRow.innerHTML = `
+          <span><i class="fa-solid fa-circle" style="color: var(--accent-play); font-size: 8px; margin-right: 6px;"></i> Peer Member</span>
+          <button class="kick-btn" onclick="kickCollaborator('${peerId}')">
+            <i class="fa-solid fa-user-xmark"></i> Kick
+          </button>
+        `;
+      } else {
+        peerRow.innerHTML = `
+          <span><i class="fa-solid fa-circle" style="color: var(--accent-play); font-size: 8px; margin-right: 6px;"></i> Peer Member</span>
+          <span style="font-size: 10px; opacity: 0.7;">Online</span>
+        `;
+      }
+      collaboratorsList.appendChild(peerRow);
+    }
+
+    function removeCollaboratorFromList(peerId) {
+      const el = document.getElementById(peerId);
+      if (el) el.remove();
+    }
+
+    function leaveCollaborationRoom() {
+      if (currentConnectedRoom) {
+        if (collabChannel) {
+          try { collabChannel.presence.leave(); } catch (e) {}
+        }
+        if (ablyClient) {
+          try { ablyClient.close(); } catch (e) {}
+        }
+        collabChannel = null;
+        ablyClient = null;
+        alert(`You left room: ${currentConnectedRoom}`);
+      }
+      currentConnectedRoom = null;
+      userRole = 'Solo';
+      remoteCursors = {};
+      renderCursors();
+      collabSyncIndicator.style.display = 'none';
+      collabStatusCard.style.display = 'none';
+      
+      collaboratorsList.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-surface); padding: 8px 12px; border-radius: 8px; font-size: 13px;">
+          <span><i class="fa-solid fa-circle" style="color: var(--accent-green); font-size: 8px; margin-right: 6px;"></i> You (Offline)</span>
+          <span style="font-size: 10px; opacity: 0.7;">Solo</span>
+        </div>
+      `;
+    }
+
+    function kickCollaborator(peerId) {
+      // NOTE: with a client-only realtime service like Ably, there's no
+      // safe way for the browser to force another browser to disconnect -
+      // that requires a secret admin key that can't live in client code.
+      // This sends a request that well-behaved clients honor automatically
+      // (see the KICKED handler above), which covers normal use, but a
+      // deliberately modified client could ignore it. If you need a true
+      // forced disconnect, that's what the self-hosted collab-server
+      // option is for.
+      if (!confirm('Ask this collaborator to leave the session?')) return;
+      if (collabChannel && currentConnectedRoom) {
+        try {
+          collabChannel.publish('msg', { type: 'KICKED', room: currentConnectedRoom, targetPeerId: peerId });
+        } catch (err) {
+          console.error('Failed to send kick request:', err);
+        }
+      }
+      removeCollaboratorFromList(peerId);
+      delete remoteCursors[peerId];
+      renderCursors();
+    }
+
+    function loadAppModeCode() {
+      saveCurrentEditorText();
+      const file = getActiveFile();
+      if (!file) return;
+
+      appModeFrame.srcdoc = codeArea.innerText;
+    }
+
+    appModeBtn.addEventListener('click', () => {
+      dropdownMenu.classList.remove('show');
+      loadAppModeCode();
+      appModeScreen.classList.add('active');
+    });
+
+    closeAppModeBtn.addEventListener('click', () => {
+      appModeScreen.classList.remove('active');
+    });
+
+    function toggleSidebar(open) {
+      if (open) {
+        renderProjectList();
+        closeAllSidePanels();
+        sidebar.classList.add('active');
+        sidebarOverlay.classList.add('active');
+      } else {
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+      }
+    }
+
+    drawerBtn.addEventListener('click', () => toggleSidebar(true));
+    closeSidebar.addEventListener('click', () => toggleSidebar(false));
+
+    sidebarOverlay.addEventListener('click', () => {
+      toggleSidebar(false);
+      closeAllSidePanels();
+    });
+
+    newProjectBtn.addEventListener('click', promptNewProject);
+
+    function switchProject(projId) {
+      if (isEditorLoaded) {
+        saveCurrentEditorText();
+      }
+      appState.activeProjectId = projId;
+      const proj = getActiveProject();
+      
+      if (proj.items.length > 0 && !proj.activeFileId) {
+        proj.activeFileId = proj.items[0].id;
+      }
+      
+      const file = getActiveFile();
+      codeArea.innerText = file ? file.content : '';
+      isEditorLoaded = true;
+      saveStateToDevice();
+      broadcastProjectSync();
+      updateUI();
+    }
+
+    function renderProjectList() {
+      projectList.innerHTML = '';
+      appState.projects.forEach(proj => {
+        const item = document.createElement('div');
+        item.className = `project-item ${proj.id === appState.activeProjectId ? 'active' : ''}`;
+        item.innerHTML = `
+          <span><i class="fa-solid fa-folder"></i> ${proj.name}</span>
+          <small style="color:var(--text-secondary)">${proj.items.length} files</small>
+        `;
+        item.addEventListener('click', () => {
+          switchProject(proj.id);
+          toggleSidebar(false);
+          hideHomeScreen();
+        });
+        projectList.appendChild(item);
+      });
+    }
+
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdownMenu.classList.toggle('show');
+    });
+
+    document.addEventListener('click', () => {
+      dropdownMenu.classList.remove('show');
+    });
+
+    function createItem(type) {
+      dropdownMenu.classList.remove('show');
+      const name = prompt(`Enter ${type} name:`, type === 'file' ? 'index.html' : 'New Folder');
+      if (!name) return;
+
+      const proj = getActiveProject();
+      const newItem = {
+        id: Date.now(),
+        name: name.trim(),
+        type: type,
+        content: type === 'file' ? '<h1>New Shared File</h1>' : ''
+      };
+
+      proj.items.push(newItem);
+      saveStateToDevice();
+      broadcastProjectSync();
+      
+      if (type === 'file') {
+        setActiveTab(newItem.id);
+      } else {
+        updateUI();
+      }
+    }
+
+    importBtn.addEventListener('click', triggerDeviceImport);
+
+    fileInput.addEventListener('change', (e) => {
+      const files = e.target.files;
+      if (!files.length) return;
+
+      const proj = getActiveProject();
+      Array.from(files).forEach(f => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const newItem = {
+            id: Date.now() + Math.random(),
+            name: f.name,
+            type: 'file',
+            content: event.target.result
+          };
+          proj.items.push(newItem);
+          saveStateToDevice();
+          broadcastProjectSync();
+          setActiveTab(newItem.id);
+          hideHomeScreen();
+        };
+        reader.onerror = (err) => {
+          console.error("FileReader error:", err);
+        };
+        reader.readAsText(f);
+      });
+      fileInput.value = '';
+    });
+
+    downloadFileBtn.addEventListener('click', () => {
+      dropdownMenu.classList.remove('show');
+      saveCurrentEditorText();
+      const file = getActiveFile();
+      if (!file) return;
+
+      downloadBlob(file.content, file.name, 'text/plain');
+    });
+
+    downloadProjectBtn.addEventListener('click', () => {
+      saveCurrentEditorText();
+      const proj = getActiveProject();
+      if (!proj.items.length) return alert('No files to download.');
+
+      const zip = new JSZip();
+      proj.items.forEach(item => {
+        if (item.type === 'file') {
+          zip.file(item.name, item.content);
+        } else if (item.type === 'folder') {
+          zip.folder(item.name);
+        }
+      });
+
+      zip.generateAsync({ type: 'blob' }).then(function(content) {
+        downloadBlob(content, proj.name.replace(/\s+/g, '_') + '.zip', 'application/zip');
+      }).catch(err => {
+        console.error("Error generating zip file:", err);
+      });
+    });
+
+    function downloadBlob(content, filename, contentType) {
+      const blob = (content instanceof Blob) ? content : new Blob([content], { type: contentType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function setActiveTab(id) {
+      if (isEditorLoaded) {
+        saveCurrentEditorText();
+      }
+      const proj = getActiveProject();
+      const target = proj.items.find(i => i.id === id);
+      if (!target || target.type === 'folder') return;
+
+      proj.activeFileId = id;
+      codeArea.innerText = target.content;
+      isEditorLoaded = true;
+      saveStateToDevice();
+      broadcastProjectSync();
+      updateUI();
+    }
+
+    function closeTab(e, id) {
+      e.stopPropagation();
+      const proj = getActiveProject();
+      proj.items = proj.items.filter(i => i.id !== id);
+
+      if (proj.activeFileId === id) {
+        const remainingFiles = proj.items.filter(i => i.type === 'file');
+        proj.activeFileId = remainingFiles.length ? remainingFiles[remainingFiles.length - 1].id : null;
+        codeArea.innerText = proj.activeFileId ? proj.items.find(i => i.id === proj.activeFileId).content : '';
+      }
+      saveStateToDevice();
+      broadcastProjectSync();
+      updateUI();
+    }
+
+    function updateUI() {
+      renderTabs();
+      checkHeaderButtons();
+      updateLineNumbers();
+    }
+
+    function renderTabs() {
+      tabsBar.innerHTML = '';
+      const proj = getActiveProject();
+      if (!proj) return;
+
+      proj.items.forEach(item => {
+        const tab = document.createElement('div');
+        tab.className = `tab ${item.id === proj.activeFileId ? 'active' : ''}`;
+        
+        let iconClass = 'fa-file file';
+        if (item.type === 'folder') iconClass = 'fa-folder folder';
+        else if (item.name.endsWith('.html')) iconClass = 'fa-code html';
+
+        tab.innerHTML = `
+          <i class="fa-solid ${iconClass} tab-icon"></i>
+          <span>${item.name}</span>
+          <i class="fa-solid fa-xmark close-tab" onclick="closeTab(event, ${item.id})"></i>
+        `;
+
+        tab.addEventListener('click', () => setActiveTab(item.id));
+        tabsBar.appendChild(tab);
+      });
+    }
+
+    function checkHeaderButtons() {
+      const file = getActiveFile();
+      if (file) {
+        playBtn.style.display = file.name.toLowerCase().endsWith('.html') ? 'flex' : 'none';
+      } else {
+        playBtn.style.display = 'none';
+      }
+    }
+
+    function updateLineNumbers() {
+      const lines = codeArea.innerText.split('\n').length;
+      lineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
+    }
+
+    function loadPreviewCode() {
+      const file = getActiveFile();
+      if (!file) return;
+
+      addressUrl.textContent = `localhost:8158/${file.name}`;
+      previewFrame.srcdoc = codeArea.innerText;
+    }
+
+    playBtn.addEventListener('click', () => {
+      saveCurrentEditorText();
+      loadPreviewCode();
+      previewScreen.classList.add('active');
+    });
+
+    backBtn.addEventListener('click', () => previewScreen.classList.remove('active'));
+    refreshBtn.addEventListener('click', () => loadPreviewCode());
+
+    switchProject(appState.activeProjectId);
+    renderHomeDashboard();
+  </script>
+</body></html>
