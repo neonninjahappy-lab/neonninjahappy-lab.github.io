@@ -58,26 +58,36 @@
 
         p {
             font-size: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             color: #cccccc;
             line-height: 1.5;
             font-weight: 400;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .download-btn {
             background: #cc0000;
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 16px;
+            padding: 15px 20px;
+            font-size: 15px;
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s ease;
+            transition: background 0.2s ease, transform 0.1s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
             width: 100%;
             box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
         }
 
         .download-btn:hover {
@@ -86,6 +96,18 @@
 
         .download-btn:active {
             background: #990000;
+            transform: scale(0.98);
+        }
+
+        .download-btn.ios {
+            background: #1e1e1e;
+            border: 1px solid #ff4d4d;
+            color: #ff4d4d;
+        }
+
+        .download-btn.ios:hover {
+            background: #330000;
+            color: #ffffff;
         }
 
         .icon {
@@ -95,7 +117,28 @@
             margin-bottom: 20px;
         }
 
-        /* Mobile Responsiveness */
+        .instructions {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #330000;
+            text-align: left;
+            font-size: 14px;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .instructions b {
+            color: #ff4d4d;
+        }
+
+        .guide-img {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #330000;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 30px 20px;
@@ -104,8 +147,11 @@
                 font-size: 28px;
             }
             .download-btn {
-                padding: 15px 20px;
-                font-size: 15px;
+                padding: 15px 15px;
+                font-size: 14px;
+            }
+            .instructions {
+                font-size: 13px;
             }
         }
     </style>
@@ -117,14 +163,29 @@
     <div class="container">
         <img src="https://i.postimg.cc/zXPXv7tM/Boy-Cloudfurm.webp" alt="CloudFurm Logo" class="icon">
         <h1>CloudFurm</h1>
-        <p>Get the latest Android APK for CloudFurm. Click the button below to start your download.</p>
+        <p>Select your platform below to download or direct install CloudFurm on your device.</p>
         
-        <button class="download-btn" id="downloadBtn">Download for Android</button>
+        <div class="button-group">
+            <button class="download-btn" id="androidBtn">Download for Android</button>
+            <button class="download-btn ios" id="iosBtn">Direct Install (iOS)</button>
+        </div>
+
+        <div class="instructions">
+            <b>iOS Installation Steps:</b><br><br>
+            <b>1. Click Direct Install, then open Settings > General > VPN & Device Management and trust the profile.</b><br><br>
+            <b>2. After tapping Trust, a popup will ask to Allow and Restart. Tap "Allow and restart" to finish enabling the profile.</b>
+            
+            <img src="https://i.redd.it/yp0b3bh2gdfd1.jpeg" alt="Allow and Restart Prompt" class="guide-img">
+        </div>
     </div>
 
     <script>
-        document.getElementById('downloadBtn').addEventListener('click', function() {
+        document.getElementById('androidBtn').addEventListener('click', function() {
             window.open("https://github.com/fazekreek-dev/CloudFurm/releases/download/2.0/CloudFurm.V4.apk", "_blank");
+        });
+
+        document.getElementById('iosBtn').addEventListener('click', function() {
+            window.location.href = "itms-services://?action=download-manifest&url=https://github.com/fazekreek-dev/CloudF/releases/download/ios/manifest.plist";
         });
     </script>
 
