@@ -167,7 +167,7 @@
         
         <div class="button-group">
             <button class="download-btn" id="androidBtn">Download for Android</button>
-            <button class="download-btn ios" id="iosBtn">Direct Install (iOS)</button>
+            <a href="itms-services://?action=download-manifest&url=https://github.com/fazekreek-dev/CloudF/releases/download/ios/manifest.plist" class="download-btn ios" id="iosBtn">Direct Install (iOS)</a>
         </div>
 
         <div class="instructions">
@@ -182,10 +182,6 @@
     <script>
         document.getElementById('androidBtn').addEventListener('click', function() {
             window.open("https://github.com/fazekreek-dev/CloudFurm/releases/download/2.0/CloudFurm.V4.apk", "_blank");
-        });
-
-        document.getElementById('iosBtn').addEventListener('click', function() {
-            window.location.href = "itms-services://?action=download-manifest&url=https://github.com/fazekreek-dev/CloudF/releases/download/ios/manifest.plist";
         });
     </script>
 
