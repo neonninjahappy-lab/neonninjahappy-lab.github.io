@@ -3,76 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudFurm — Download</title>
+    <title>CloudFurm</title>
 
-    <!-- SEO / share preview -->
     <meta name="description" content="Download CloudFurm, the mobile code editor and live-collaboration studio. Get it for Android (V6) or iOS (v3.2).">
     <meta property="og:title" content="CloudFurm">
     <meta property="og:description" content="Mobile code editor with live collaboration, voice chat, and instant preview. Android V6 · iOS v3.2.">
-    <meta property="og:image" content="https://i.postimg.cc/zXPXv7tM/Boy-Cloudfurm.webp">
     <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="CloudFurm">
-    <meta name="twitter:description" content="Mobile code editor with live collaboration, voice chat, and instant preview.">
 
-    <link rel="icon" type="image/webp" href="https://i.postimg.cc/zXPXv7tM/Boy-Cloudfurm.webp">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka for headings/UI and Quicksand for the clean, slim logo text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@300;400&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+        :root {
+            --bg-main: #121214;
+            --bg-surface: #1e1e24;
+            --bg-tab-active: #2a2a32;
+            --accent-gold: #ffb703;
+            --accent-play: #4cc9f0;
+            --accent-ai: #a06ee1;
+            --accent-green: #2ec4b6;
+            --accent-orange: #ff7043;
+            --accent-android: #3ddc84;
+            --accent-ios: #ff4d4d;
+            --text-primary: #f8f9fa;
+            --text-secondary: #a0a0ab;
+            --border-color: #2b2b36;
+            --font-cartoon: 'Fredoka', 'Comfortaa', cursive, sans-serif;
+            --font-logo: 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
 
         body {
-            background: #110000;
-            color: #ffffff;
-            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 76px 20px 40px 20px;
+            position: relative;
         }
 
-        .grid-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(rgba(255, 0, 0, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
-            z-index: 1;
+        /* Cartoony Typography Application */
+        .cartoon-text, h1, .brand-text, .drawer-title, .stat-num {
+            font-family: var(--font-cartoon);
+        }
+
+        /* Pure CSS Logo accurately styled with thinner, rounded text geometry */
+        .app-logo {
+            background-color: #161616;
+            border-radius: 26%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-family: var(--font-logo);
+            font-weight: 300; /* Thinner weight for rounded, slim look */
+            letter-spacing: -2px;
+            user-select: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .app-logo:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+
+        .app-logo.small {
+            width: 34px;
+            height: 34px;
+            font-size: 17px;
+            letter-spacing: -1.5px;
+            border-radius: 10px;
+        }
+
+        .app-logo.large {
+            width: 104px;
+            height: 104px;
+            font-size: 50px;
+            margin-bottom: 18px;
+        }
+
+        /* Top Bar Header */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: rgba(30, 30, 36, 0.92);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .menu-toggle:hover {
+            background: var(--bg-tab-active);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            color: var(--text-primary);
+        }
+
+        /* Navigation Drawer */
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(6px);
+            z-index: 200;
+            opacity: 0;
             pointer-events: none;
+            transition: opacity 0.3s ease;
         }
 
+        .nav-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .nav-drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            max-width: 80vw;
+            height: 100vh;
+            background-color: var(--bg-surface);
+            border-right: 1px solid var(--border-color);
+            z-index: 201;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 20px;
+        }
+
+        .nav-drawer.active {
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .drawer-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .close-drawer {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--bg-tab-active);
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            color: var(--accent-gold);
+        }
+
+        /* Responsive Fluid Layout & Card Container */
         .container {
             text-align: center;
-            background: #1a0000;
-            padding: 40px 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-            max-width: 400px;
+            background: var(--bg-surface);
+            padding: 40px 28px;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
             width: 100%;
-            border: 1px solid #330000;
+            max-width: 720px;
+            margin: 0 auto;
+            border: 1px solid var(--border-color);
             position: relative;
             z-index: 10;
-            box-sizing: border-box;
+            transition: max-width 0.3s ease, padding 0.3s ease;
+        }
+
+        /* View Panels */
+        .page-panel {
+            display: none;
+        }
+
+        .page-panel.active {
+            display: block;
         }
 
         h1 {
-            margin-top: 0;
-            font-size: 32px;
-            font-weight: 800;
-            color: #ff4d4d;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
         }
 
-        p {
+        p.subtitle {
             font-size: 15px;
-            margin-bottom: 25px;
-            color: #cccccc;
+            margin-bottom: 24px;
+            color: var(--text-secondary);
             line-height: 1.5;
-            font-weight: 400;
         }
 
         /* Platform detection banner */
@@ -81,29 +279,29 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            background: rgba(255, 77, 77, 0.1);
-            border: 1px solid #4d1414;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 12px;
-            color: #ff9999;
-            margin-bottom: 18px;
-            font-weight: 600;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: var(--accent-play);
+            margin-bottom: 24px;
+            font-weight: 500;
         }
 
         .detected-banner.show { display: flex; }
 
-        /* Feature highlights */
+        /* Feature highlights grid */
         .feature-list {
             text-align: left;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 25px;
-            background: #150000;
-            border: 1px solid #2a0000;
-            border-radius: 10px;
-            padding: 14px 16px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
         }
 
         .feature-item {
@@ -111,67 +309,69 @@
             align-items: center;
             gap: 10px;
             font-size: 13px;
-            color: #d9d9d9;
+            color: var(--text-primary);
         }
 
-        .feature-item .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #ff4d4d;
-            flex-shrink: 0;
+        .feature-item i {
+            font-size: 15px;
+            width: 20px;
+            text-align: center;
         }
 
         .button-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
         }
 
         .download-btn {
-            background: #cc0000;
-            color: white;
-            border: none;
-            padding: 15px 20px;
+            background: var(--bg-tab-active);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 16px 20px;
             font-size: 15px;
             font-weight: 600;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background 0.2s ease, transform 0.1s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            transition: all 0.2s ease;
             width: 100%;
-            box-sizing: border-box;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             text-decoration: none;
             position: relative;
         }
 
         .download-btn:hover {
-            background: #ff1a1a;
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
+            background: var(--border-color);
         }
 
-        .download-btn:active {
-            background: #990000;
-            transform: scale(0.98);
+        .download-btn.android-btn {
+            background: rgba(61, 220, 132, 0.1);
+            border-color: var(--accent-android);
+            color: var(--accent-android);
         }
 
-        .download-btn.ios {
-            background: #1e1e1e;
-            border: 1px solid #ff4d4d;
-            color: #ff4d4d;
+        .download-btn.android-btn:hover {
+            background: rgba(61, 220, 132, 0.2);
         }
 
-        .download-btn.ios:hover {
-            background: #330000;
-            color: #ffffff;
+        .download-btn.ios-btn {
+            background: rgba(255, 77, 77, 0.1);
+            border-color: var(--accent-ios);
+            color: var(--accent-ios);
+        }
+
+        .download-btn.ios-btn:hover {
+            background: rgba(255, 77, 77, 0.2);
         }
 
         .download-btn.recommended {
-            box-shadow: 0 0 0 2px #ff4d4d, 0 6px 16px rgba(255, 77, 77, 0.35);
+            box-shadow: 0 0 16px rgba(255, 183, 3, 0.25);
+            border-width: 2px;
         }
 
         .download-btn:disabled {
@@ -180,12 +380,12 @@
         }
 
         .btn-version {
-            font-size: 10px;
-            font-weight: 400;
-            text-transform: none;
-            letter-spacing: 0;
-            opacity: 0.7;
-            margin-left: 2px;
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0.8;
+            background: rgba(0,0,0,0.25);
+            padding: 3px 8px;
+            border-radius: 6px;
         }
 
         .spinner {
@@ -202,55 +402,47 @@
 
         .status-msg {
             font-size: 12px;
-            margin-top: 8px;
+            margin-top: 6px;
             min-height: 16px;
-            font-weight: 600;
+            font-weight: 500;
         }
 
-        .status-msg.error { color: #ff6b6b; }
-        .status-msg.success { color: #6bff9c; }
-
-        .icon {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            margin-bottom: 20px;
-        }
+        .status-msg.error { color: #ff5555; }
+        .status-msg.success { color: var(--accent-android); }
 
         .instructions {
-            margin-top: 30px;
-            padding-top: 25px;
-            border-top: 1px solid #330000;
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
             text-align: left;
-            font-size: 14px;
-            color: #ffffff;
+            font-size: 13px;
+            color: var(--text-secondary);
             line-height: 1.6;
         }
 
         .instructions b {
-            color: #ff4d4d;
+            color: var(--text-primary);
         }
 
         .guide-img {
             width: 100%;
-            border-radius: 8px;
-            margin-top: 15px;
-            border: 1px solid #330000;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            margin-top: 14px;
+            border: 1px solid var(--border-color);
         }
 
-        /* "Why trust a profile" expandable */
+        /* Collapsible Trust Details */
         .why-trust {
-            margin-top: 18px;
-            border-top: 1px solid #2a0000;
-            padding-top: 14px;
+            margin-top: 14px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
         }
 
         .why-trust summary {
             cursor: pointer;
             font-size: 13px;
-            color: #ff9999;
-            font-weight: 600;
+            color: var(--accent-play);
+            font-weight: 500;
             list-style: none;
             display: flex;
             align-items: center;
@@ -271,52 +463,46 @@
 
         .why-trust p {
             font-size: 12px;
-            color: #a8a8a8;
-            margin: 10px 0 0 0;
-            line-height: 1.6;
+            color: var(--text-secondary);
+            margin: 8px 0 0 0;
+            line-height: 1.5;
         }
 
-        .footer-note {
-            margin-top: 20px;
-            font-size: 11px;
-            color: #666;
-        }
-
-        /* Stats row */
+        /* Stats Grid */
         .stats-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 22px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
         }
 
         .stat-box {
-            flex: 1;
-            background: #150000;
-            border: 1px solid #2a0000;
-            border-radius: 10px;
-            padding: 10px 6px;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 10px;
             text-align: center;
         }
 
         .stat-num {
-            font-size: 17px;
-            font-weight: 800;
-            color: #ff4d4d;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-gold);
         }
 
         .stat-label {
-            font-size: 10px;
-            color: #999;
+            font-size: 11px;
+            color: var(--text-secondary);
             margin-top: 2px;
         }
 
-        /* Section headers used throughout the lower content */
+        /* Section Headers */
         .section-heading {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.6px;
-            color: #ff8080;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
             margin: 28px 0 12px 0;
             text-align: left;
             display: flex;
@@ -328,51 +514,44 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: #2a0000;
+            background: var(--border-color);
         }
 
-        /* System requirements */
+        /* System Requirements Table */
         .req-table {
             text-align: left;
-            font-size: 12.5px;
-            color: #ccc;
-            background: #150000;
-            border: 1px solid #2a0000;
-            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
             padding: 12px 16px;
         }
 
         .req-row {
             display: flex;
             justify-content: space-between;
-            padding: 7px 0;
-            border-bottom: 1px solid #221010;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .req-row:last-child { border-bottom: none; }
 
-        .req-row span:first-child {
-            color: #999;
-        }
+        .req-row span:first-child { color: var(--text-secondary); }
+        .req-row span:last-child { color: var(--text-primary); font-weight: 500; }
 
-        .req-row span:last-child {
-            color: #eee;
-            font-weight: 600;
-            text-align: right;
-        }
-
-        /* Changelog */
+        /* Changelog Card */
         .changelog {
             text-align: left;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
 
         .changelog-entry {
-            background: #150000;
-            border: 1px solid #2a0000;
-            border-left: 3px solid #661515;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-gold);
             border-radius: 8px;
             padding: 12px 14px;
         }
@@ -385,30 +564,30 @@
         }
 
         .changelog-entry .cl-version {
-            font-size: 13px;
-            font-weight: 700;
-            color: #ff9999;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
         .changelog-entry .cl-date {
             font-size: 11px;
-            color: #777;
+            color: var(--text-secondary);
         }
 
         .changelog-entry ul {
             margin: 0;
-            padding-left: 16px;
-            font-size: 12px;
-            color: #bbb;
-            line-height: 1.7;
+            padding-left: 18px;
+            font-size: 12.5px;
+            color: var(--text-secondary);
+            line-height: 1.6;
         }
 
-        /* FAQ / accordion */
+        /* FAQ Accordion */
         .faq-item {
-            border: 1px solid #2a0000;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             margin-bottom: 8px;
-            background: #150000;
+            background: var(--bg-main);
             overflow: hidden;
         }
 
@@ -416,36 +595,34 @@
             cursor: pointer;
             list-style: none;
             padding: 12px 14px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #eee;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--text-primary);
             text-align: left;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .faq-item summary::-webkit-details-marker { display: none; }
 
         .faq-item summary::before {
             content: '+';
-            color: #ff4d4d;
-            font-weight: 800;
-            font-size: 15px;
-            width: 14px;
+            color: var(--accent-gold);
+            font-weight: 700;
+            font-size: 16px;
+            width: 12px;
             flex-shrink: 0;
         }
 
-        .faq-item[open] summary::before {
-            content: '−';
-        }
+        .faq-item[open] summary::before { content: '−'; }
 
         .faq-item p {
             margin: 0;
             padding: 0 14px 14px 36px;
             font-size: 12.5px;
-            color: #a8a8a8;
-            line-height: 1.6;
+            color: var(--text-secondary);
+            line-height: 1.5;
             text-align: left;
         }
 
@@ -461,197 +638,362 @@
             display: flex;
             gap: 10px;
             font-size: 12.5px;
-            color: #bbb;
-            background: #150000;
-            border: 1px solid #2a0000;
+            color: var(--text-secondary);
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 10px 12px;
+            padding: 10px 14px;
         }
 
         .perm-item .perm-name {
-            color: #eee;
-            font-weight: 700;
-            min-width: 84px;
+            color: var(--text-primary);
+            font-weight: 600;
+            min-width: 85px;
             flex-shrink: 0;
         }
 
-        /* Support / contact */
+        /* Support Links */
         .support-row {
-            display: flex;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
         }
 
         .support-btn {
-            flex: 1;
-            background: #150000;
-            border: 1px solid #2a0000;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #ddd;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            color: var(--text-primary);
             text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
+            transition: all 0.2s ease;
         }
 
-        .support-btn span.small {
-            font-size: 10px;
-            color: #888;
+        .support-btn:hover {
+            border-color: var(--accent-gold);
+            background: var(--bg-tab-active);
+            transform: translateY(-2px);
+        }
+
+        .support-btn .small {
+            font-size: 11px;
+            color: var(--text-secondary);
             font-weight: 400;
         }
 
-        @media (max-width: 480px) {
+        /* Announcements Panel */
+        .announcement-card {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .announcement-card .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .badge.new {
+            background: rgba(255, 183, 3, 0.15);
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+        }
+
+        .badge.update {
+            background: rgba(76, 201, 240, 0.15);
+            color: var(--accent-play);
+            border: 1px solid var(--accent-play);
+        }
+
+        .announcement-card h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        .announcement-card .date {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .announcement-card p {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .footer-note {
+            margin-top: 24px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Tablet Optimization (min-width: 600px) */
+        @media (min-width: 600px) {
+            .button-group {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Desktop Optimization (min-width: 900px) */
+        @media (min-width: 900px) {
+            body {
+                padding-top: 90px;
+            }
+
             .container {
-                padding: 30px 20px;
+                max-width: 860px;
+                padding: 52px 48px;
             }
+
             h1 {
-                font-size: 28px;
+                font-size: 42px;
             }
-            .download-btn {
-                padding: 15px 15px;
-                font-size: 14px;
+
+            p.subtitle {
+                font-size: 17px;
             }
+
+            .feature-list {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+                padding: 24px;
+            }
+
+            .feature-item {
+                font-size: 14.5px;
+            }
+
             .instructions {
-                font-size: 13px;
+                font-size: 14.5px;
+            }
+        }
+
+        /* Ultra Wide Desktop Optimization */
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 960px;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="grid-bg"></div>
+    <!-- Top Navigation Bar -->
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <button class="menu-toggle" id="menuToggle" title="Open Navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="brand">
+                <div class="app-logo small">&lt;/&gt;</div>
+                <span class="brand-text">CloudFurm</span>
+            </div>
+        </div>
+        <div>
+            <a href="https://github.com/fazekreek-dev/CloudFurm" target="_blank" class="menu-toggle" title="View GitHub Repository">
+                <i class="fa-brands fa-github"></i>
+            </a>
+        </div>
+    </div>
 
+    <!-- Slide-Out Navigation Drawer -->
+    <div class="nav-overlay" id="navOverlay"></div>
+    <div class="nav-drawer" id="navDrawer">
+        <div class="drawer-header">
+            <span class="drawer-title">Navigation</span>
+            <button class="close-drawer" id="closeDrawer"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-link active" id="navDownloads">
+                <i class="fa-solid fa-download"></i> Downloads
+            </div>
+            <div class="nav-link" id="navAnnouncements">
+                <i class="fa-solid fa-bullhorn"></i> Announcements
+            </div>
+            <a href="https://github.com/fazekreek-dev/CloudFurm" target="_blank" class="nav-link">
+                <i class="fa-brands fa-github"></i> GitHub Repository <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 11px; margin-left: auto;"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Container Panel -->
     <div class="container">
-        <img src="https://i.postimg.cc/zXPXv7tM/Boy-Cloudfurm.webp" alt="CloudFurm Logo" class="icon">
-        <h1>CloudFurm</h1>
-        <p>Code from your phone. Build, preview, and collaborate live — no desktop required.</p>
-
-        <div class="detected-banner" id="detectedBanner"></div>
-
-        <div class="feature-list">
-            <div class="feature-item"><span class="dot"></span> Live multi-device collaboration with voice chat</div>
-            <div class="feature-item"><span class="dot"></span> Built-in autocomplete for HTML, CSS & JS</div>
-            <div class="feature-item"><span class="dot"></span> Instant in-app preview, no server needed</div>
-            <div class="feature-item"><span class="dot"></span> Export your project as a .zip anytime</div>
-        </div>
-
-        <div class="stats-row">
-            <div class="stat-box">
-                <div class="stat-num">V6</div>
-                <div class="stat-label">Android</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-num">v3.2</div>
-                <div class="stat-label">iOS</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-num">~100MB</div>
-                <div class="stat-label">Install size</div>
-            </div>
-        </div>
         
-        <div class="button-group">
-            <button class="download-btn" id="androidBtn">
-                <i class="btn-icon"></i>
-                <span>Download for Android</span>
-                <span class="btn-version">V6</span>
-                <span class="spinner" id="androidSpinner"></span>
-            </button>
-            <div class="status-msg" id="androidStatus"></div>
+        <!-- DOWNLOADS PAGE PANEL -->
+        <div class="page-panel active" id="downloadsPanel">
+            <div class="app-logo large">&lt;/&gt;</div>
+            <h1>CloudFurm</h1>
+            <p class="subtitle">Code from your phone. Build, preview, and collaborate live — no desktop required.</p>
 
-            <button class="download-btn ios" id="iosBtn">
-                <span>Direct Install (iOS)</span>
-                <span class="btn-version">v3.2</span>
-                <span class="spinner" id="iosSpinner"></span>
-            </button>
-            <div class="status-msg" id="iosStatus"></div>
-        </div>
+            <div class="detected-banner" id="detectedBanner"></div>
 
-        <div class="instructions">
-            <b>iOS Installation Steps:</b><br><br>
-            <b>1. Click Direct Install, then open Settings > General > VPN & Device Management and trust the profile.</b><br><br>
-            <b>2. After tapping Trust, a popup will ask to Allow and Restart. Tap "Allow and restart" to finish enabling the profile.</b>
+            <div class="feature-list">
+                <div class="feature-item"><i class="fa-solid fa-users" style="color: var(--accent-play);"></i> Live multi-device collaboration</div>
+                <div class="feature-item"><i class="fa-solid fa-microphone" style="color: var(--accent-gold);"></i> In-room voice chat support</div>
+                <div class="feature-item"><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent-ai);"></i> CloudFurm.AI & Autocomplete</div>
+                <div class="feature-item"><i class="fa-solid fa-boxes-packing" style="color: var(--accent-android);"></i> Export APK & App Bundles</div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-num">V6</div>
+                    <div class="stat-label">Android</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num">v3.2</div>
+                    <div class="stat-label">iOS</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num">~100MB</div>
+                    <div class="stat-label">Install size</div>
+                </div>
+            </div>
             
-            <img src="https://i.redd.it/yp0b3bh2gdfd1.jpeg" alt="Allow and Restart Prompt" class="guide-img">
+            <div class="button-group">
+                <div>
+                    <button class="download-btn android-btn" id="androidBtn">
+                        <i class="fa-brands fa-android"></i>
+                        <span>Download Android</span>
+                        <span class="btn-version">V6</span>
+                        <span class="spinner" id="androidSpinner"></span>
+                    </button>
+                    <div class="status-msg" id="androidStatus"></div>
+                </div>
 
-            <details class="why-trust">
-                <summary>Why do I need to trust a profile?</summary>
-                <p>
-                    CloudFurm isn't distributed through the App Store, so iOS needs an explicit,
-                    one-time permission (a "configuration profile") before it will run apps installed
-                    this way. This is how CloudFurm reaches your device outside App Store review — only
-                    trust profiles from sources you actually recognize, since the same mechanism can be
-                    used to install unwanted software.
-                </p>
+                <div>
+                    <button class="download-btn ios-btn" id="iosBtn">
+                        <i class="fa-brands fa-apple"></i>
+                        <span>Direct Install (iOS)</span>
+                        <span class="btn-version">v3.2</span>
+                        <span class="spinner" id="iosSpinner"></span>
+                    </button>
+                    <div class="status-msg" id="iosStatus"></div>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <b>iOS Installation Steps:</b><br><br>
+                1. Click <b>Direct Install</b>, then open <b>Settings > General > VPN & Device Management</b> and trust the profile.<br><br>
+                2. After tapping Trust, a popup will ask to Allow and Restart. Tap <b>"Allow and restart"</b> to finish enabling the profile.
+                
+                <img src="https://i.redd.it/yp0b3bh2gdfd1.jpeg" alt="Allow and Restart Prompt" class="guide-img">
+
+                <details class="why-trust">
+                    <summary>Why do I need to trust a profile?</summary>
+                    <p>
+                        CloudFurm isn't distributed through the App Store, so iOS needs an explicit,
+                        one-time permission (a "configuration profile") before it will run apps installed
+                        this way. Only trust profiles from sources you recognize.
+                    </p>
+                </details>
+            </div>
+
+            <div class="section-heading">System Requirements</div>
+            <div class="req-table">
+                <div class="req-row"><span>Android</span><span>8.0 or later, 100 MB free</span></div>
+                <div class="req-row"><span>iOS</span><span>15.0 or later, 100 MB free</span></div>
+                <div class="req-row"><span>Connection</span><span>Needed for live collab & voice chat</span></div>
+                <div class="req-row"><span>Offline mode</span><span>Editing works without a connection</span></div>
+            </div>
+
+            <div class="section-heading">Permissions</div>
+            <div class="perm-list">
+                <div class="perm-item"><span class="perm-name">Microphone</span> Only requested when you start or join a voice chat.</div>
+                <div class="perm-item"><span class="perm-name">Storage</span> Used to save projects on-device and export files.</div>
+                <div class="perm-item"><span class="perm-name">Network</span> Used to sync projects live and relay calls.</div>
+            </div>
+
+            <div class="section-heading">Changelog</div>
+            <div class="changelog">
+                <div class="changelog-entry">
+                    <div class="cl-head"><span class="cl-version">Android V6</span><span class="cl-date">Latest</span></div>
+                    <ul>
+                        <li>Added room passcodes and moderation controls</li>
+                        <li>Integrated CloudFurm.AI workspace assistant</li>
+                        <li>Autocomplete added for HTML, CSS, and JS</li>
+                    </ul>
+                </div>
+                <div class="changelog-entry">
+                    <div class="cl-head"><span class="cl-version">iOS v3.2 Profile</span><span class="cl-date">Latest</span></div>
+                    <ul>
+                        <li>Fixed audio dropping during longer voice calls</li>
+                        <li>Improved sync reliability mid-session</li>
+                        <li>Minor UI fixes for smaller screens</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-heading">FAQ</div>
+            <details class="faq-item">
+                <summary>Is CloudFurm free to use?</summary>
+                <p>Yes, downloading and using the editor is completely free.</p>
             </details>
-        </div>
+            <details class="faq-item">
+                <summary>Will this appear in the App Store or Play Store?</summary>
+                <p>Not currently. CloudFurm is distributed directly by the developer via APK and iOS trusted profiles.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Can I use it offline?</summary>
+                <p>Yes — your projects are saved on-device so you can edit anytime offline.</p>
+            </details>
 
-        <div class="section-heading">System Requirements</div>
-        <div class="req-table">
-            <div class="req-row"><span>Android</span><span>8.0 or later, 100 MB free</span></div>
-            <div class="req-row"><span>iOS</span><span>15.0 or later, 100 MB free</span></div>
-            <div class="req-row"><span>Connection</span><span>Needed for live collab & voice chat</span></div>
-            <div class="req-row"><span>Offline mode</span><span>Editing works without a connection</span></div>
-        </div>
-
-        <div class="section-heading">Permissions</div>
-        <div class="perm-list">
-            <div class="perm-item"><span class="perm-name">Microphone</span> Only requested when you start or join a voice chat inside a collab room.</div>
-            <div class="perm-item"><span class="perm-name">Storage</span> Used to save your projects on-device and export .zip files.</div>
-            <div class="perm-item"><span class="perm-name">Network</span> Used to sync projects live and relay voice calls between devices.</div>
-        </div>
-
-        <div class="section-heading">Changelog</div>
-        <div class="changelog">
-            <div class="changelog-entry">
-                <div class="cl-head"><span class="cl-version">Android V6</span><span class="cl-date">Latest</span></div>
-                <ul>
-                    <li>Added room passcodes and device-level kick/ban for collab rooms</li>
-                    <li>New in-app voice chat with mute and ringing</li>
-                    <li>Autocomplete added for HTML, CSS, and JS</li>
-                </ul>
-            </div>
-            <div class="changelog-entry">
-                <div class="cl-head"><span class="cl-version">iOS v3.2 Profile</span><span class="cl-date">Latest</span></div>
-                <ul>
-                    <li>Fixed audio dropping during longer voice calls</li>
-                    <li>Improved sync reliability when switching projects mid-session</li>
-                    <li>Minor UI fixes for smaller screens</li>
-                </ul>
+            <div class="section-heading">Support & Links</div>
+            <div class="support-row">
+                <a class="support-btn" href="https://github.com/fazekreek-dev/CloudFurm" target="_blank">
+                    <i class="fa-brands fa-github"></i> Repository
+                    <span class="small">External Link</span>
+                </a>
+                <a class="support-btn" href="https://github.com/fazekreek-dev/CloudFurm/releases" target="_blank">
+                    <i class="fa-solid fa-list-check"></i> Releases
+                    <span class="small">Full History</span>
+                </a>
             </div>
         </div>
 
-        <div class="section-heading">FAQ</div>
-        <details class="faq-item">
-            <summary>Is CloudFurm free to use?</summary>
-            <p>Yes, downloading and using the editor is free. Live collaboration runs on a shared relay, so very heavy usage may be rate-limited.</p>
-        </details>
-        <details class="faq-item">
-            <summary>Will this appear in the App Store or Play Store?</summary>
-            <p>Not currently. CloudFurm is distributed directly by the developer, which is why Android uses an APK and iOS uses a trusted profile instead of a store listing.</p>
-        </details>
-        <details class="faq-item">
-            <summary>Can I use it without an internet connection?</summary>
-            <p>Yes — your projects are saved on-device, so you can keep editing offline. Live collaboration and voice chat need a connection.</p>
-        </details>
-        <details class="faq-item">
-            <summary>How do I uninstall it?</summary>
-            <p>Android: remove it like any other app from your app drawer. iOS: delete the app, then optionally remove the trusted profile in Settings &gt; General &gt; VPN &amp; Device Management.</p>
-        </details>
+        <!-- ANNOUNCEMENTS PAGE PANEL -->
+        <div class="page-panel" id="announcementsPanel">
+            <div style="text-align: left; margin-bottom: 24px;">
+                <h1 style="font-size: 28px;"><i class="fa-solid fa-bullhorn" style="color: var(--accent-gold);"></i> Announcements</h1>
+                <p style="font-size: 14px; color: var(--text-secondary);">Stay updated with the latest news, updates, and releases for CloudFurm.</p>
+            </div>
 
-        <div class="section-heading">Support</div>
-        <div class="support-row">
-            <a class="support-btn" href="https://github.com/fazekreek-dev/CloudFurm" target="_blank">
-                Report an Issue
-                <span class="small">GitHub</span>
-            </a>
-            <a class="support-btn" href="https://github.com/fazekreek-dev/CloudFurm/releases" target="_blank">
-                Release Notes
-                <span class="small">Full history</span>
-            </a>
+            <div class="announcement-card">
+                <span class="badge new">New Release</span>
+                <h3>CloudFurm V6 Released for Android!</h3>
+                <div class="date"><i class="fa-regular fa-calendar"></i> August 2026</div>
+                <p>We are thrilled to announce the rollout of CloudFurm Android V6! This massive update brings full integration with CloudFurm.AI, room passcodes, kick/ban controls for live collaboration, and full support for direct APK packaging built straight into the studio.</p>
+            </div>
+
+            <div class="announcement-card">
+                <span class="badge update">iOS Update</span>
+                <h3>iOS Profile v3.2 Stability Patch</h3>
+                <div class="date"><i class="fa-regular fa-calendar"></i> August 2026</div>
+                <p>The latest iOS profile (v3.2) resolves audio drop issues during extended voice calls in collaboration rooms and improves project sync reliability when switching files rapidly.</p>
+            </div>
+
+            <div class="announcement-card">
+                <span class="badge update">Community</span>
+                <h3>GitHub Collaboration & Feedback</h3>
+                <div class="date"><i class="fa-regular fa-calendar"></i> Ongoing</div>
+                <p>CloudFurm is continuously evolving. Have a feature request or bug to report? Head over to our official GitHub repository to open an issue or connect with other creators building on mobile!</p>
+            </div>
         </div>
 
         <div class="footer-note">
@@ -660,6 +1002,52 @@
     </div>
 
     <script>
+        // Navigation Drawer Logic
+        const menuToggle = document.getElementById('menuToggle');
+        const closeDrawer = document.getElementById('closeDrawer');
+        const navDrawer = document.getElementById('navDrawer');
+        const navOverlay = document.getElementById('navOverlay');
+
+        const navDownloads = document.getElementById('navDownloads');
+        const navAnnouncements = document.getElementById('navAnnouncements');
+
+        const downloadsPanel = document.getElementById('downloadsPanel');
+        const announcementsPanel = document.getElementById('announcementsPanel');
+
+        function toggleDrawer(open) {
+            if (open) {
+                navDrawer.classList.add('active');
+                navOverlay.classList.add('active');
+            } else {
+                navDrawer.classList.remove('active');
+                navOverlay.classList.remove('active');
+            }
+        }
+
+        menuToggle.addEventListener('click', () => toggleDrawer(true));
+        closeDrawer.addEventListener('click', () => toggleDrawer(false));
+        navOverlay.addEventListener('click', () => toggleDrawer(false));
+
+        // Switch Internal View Panels
+        function switchTab(page) {
+            toggleDrawer(false);
+
+            [downloadsPanel, announcementsPanel].forEach(p => p.classList.remove('active'));
+            [navDownloads, navAnnouncements].forEach(l => l.classList.remove('active'));
+
+            if (page === 'downloads') {
+                downloadsPanel.classList.add('active');
+                navDownloads.classList.add('active');
+            } else if (page === 'announcements') {
+                announcementsPanel.classList.add('active');
+                navAnnouncements.classList.add('active');
+            }
+        }
+
+        navDownloads.addEventListener('click', () => switchTab('downloads'));
+        navAnnouncements.addEventListener('click', () => switchTab('announcements'));
+
+        // Platform Detection and Download Handlers
         const androidBtn = document.getElementById('androidBtn');
         const iosBtn = document.getElementById('iosBtn');
         const androidSpinner = document.getElementById('androidSpinner');
@@ -671,7 +1059,6 @@
         const ANDROID_URL = "https://github.com/fazekreek-dev/CloudFurm/releases/download/2.0/CloudFurm.v6.apk";
         const IOS_MANIFEST_URL = "itms-services://?action=download-manifest&url=https://fazekreek-dev.github.io/CloudF/manifest.plist";
 
-        // --- Platform detection ---
         function detectPlatform() {
             const ua = navigator.userAgent || navigator.vendor || window.opera;
             if (/android/i.test(ua)) return 'android';
@@ -684,21 +1071,20 @@
 
             if (platform === 'android') {
                 androidBtn.classList.add('recommended');
-                detectedBanner.textContent = "Android device detected — recommended download highlighted below";
+                detectedBanner.innerHTML = `<i class="fa-brands fa-android"></i> Android device detected — download highlighted below`;
                 detectedBanner.classList.add('show');
             } else if (platform === 'ios') {
                 iosBtn.classList.add('recommended');
-                detectedBanner.textContent = "iOS device detected — recommended install highlighted below";
+                detectedBanner.innerHTML = `<i class="fa-brands fa-apple"></i> iOS device detected — recommended install highlighted below`;
                 detectedBanner.classList.add('show');
             } else {
-                detectedBanner.textContent = "You're on desktop — open this page on your phone, or send yourself this link, to install CloudFurm";
+                detectedBanner.innerHTML = `<i class="fa-solid fa-desktop"></i> Desktop detected — open on mobile or download packages directly`;
                 detectedBanner.classList.add('show');
             }
         }
 
         applyPlatformUI();
 
-        // --- Android download with feedback ---
         androidBtn.addEventListener('click', function() {
             androidStatus.textContent = '';
             androidStatus.className = 'status-msg';
@@ -711,27 +1097,26 @@
                     androidBtn.disabled = false;
                     androidSpinner.style.display = 'none';
                     if (!win) {
-                        androidStatus.textContent = 'Download blocked — allow pop-ups for this site and try again.';
+                        androidStatus.textContent = 'Download blocked — allow pop-ups and try again.';
                         androidStatus.classList.add('error');
                     } else {
-                        androidStatus.textContent = 'Download started. Check your notifications to install.';
+                        androidStatus.textContent = 'Download started. Check notifications to install.';
                         androidStatus.classList.add('success');
                     }
                 }, 600);
             } catch (err) {
                 androidBtn.disabled = false;
                 androidSpinner.style.display = 'none';
-                androidStatus.textContent = 'Something went wrong starting the download. Try again.';
+                androidStatus.textContent = 'Failed starting download. Try again.';
                 androidStatus.classList.add('error');
             }
         });
 
-        // --- iOS install with feedback ---
         iosBtn.addEventListener('click', function(e) {
             e.preventDefault();
 
             if (detectPlatform() !== 'ios') {
-                iosStatus.textContent = 'This install link only works on an iPhone or iPad.';
+                iosStatus.textContent = 'This install link only works on iOS devices.';
                 iosStatus.className = 'status-msg error';
                 return;
             }
@@ -743,7 +1128,7 @@
 
             setTimeout(function() {
                 window.location.href = IOS_MANIFEST_URL;
-                iosStatus.textContent = 'Opening install prompt — follow the steps below once it appears.';
+                iosStatus.textContent = 'Opening install prompt... follow steps below.';
                 iosStatus.classList.add('success');
                 setTimeout(() => {
                     iosBtn.disabled = false;
@@ -752,7 +1137,5 @@
             }, 100);
         });
     </script>
-
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"2f064c6d74a543479434a79d489b76b9","r":1}' crossorigin="anonymous"></script>
 </body>
 </html>
