@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CloudFurm</title>
 
+    <link rel="icon" type="image/webp" href="https://i.postimg.cc/zXPXv7tM/Boy-Cloudfurm.webp">
+    <link rel="shortcut icon" href="https://i.postimg.cc/zXPXv7tM/Boy-Cloudfurm.webp">
+
     <meta name="description" content="Download CloudFurm, the mobile code editor and live-collaboration studio. Get it for Android (V6) or iOS (v3.2).">
     <meta property="og:title" content="CloudFurm">
     <meta property="og:description" content="Mobile code editor with live collaboration, voice chat, and instant preview. Android V6 · iOS v3.2.">
     <meta property="og:type" content="website">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Fredoka for headings/UI and Quicksand for the clean, slim logo text -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@300;400&display=swap" rel="stylesheet">
@@ -54,12 +56,10 @@
             position: relative;
         }
 
-        /* Cartoony Typography Application */
         .cartoon-text, h1, .brand-text, .drawer-title, .stat-num {
             font-family: var(--font-cartoon);
         }
 
-        /* Pure CSS Logo accurately styled with thinner, rounded text geometry */
         .app-logo {
             background-color: #161616;
             border-radius: 26%;
@@ -68,7 +68,7 @@
             justify-content: center;
             color: #ffffff;
             font-family: var(--font-logo);
-            font-weight: 300; /* Thinner weight for rounded, slim look */
+            font-weight: 300;
             letter-spacing: -2px;
             user-select: none;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 0 0 2px rgba(255, 255, 255, 0.08);
@@ -95,7 +95,6 @@
             margin-bottom: 18px;
         }
 
-        /* Top Bar Header */
         .top-bar {
             position: fixed;
             top: 0;
@@ -141,7 +140,6 @@
             color: var(--text-primary);
         }
 
-        /* Navigation Drawer */
         .nav-overlay {
             position: fixed;
             top: 0;
@@ -233,7 +231,6 @@
             color: var(--accent-gold);
         }
 
-        /* Responsive Fluid Layout & Card Container */
         .container {
             text-align: center;
             background: var(--bg-surface);
@@ -249,7 +246,6 @@
             transition: max-width 0.3s ease, padding 0.3s ease;
         }
 
-        /* View Panels */
         .page-panel {
             display: none;
         }
@@ -273,7 +269,6 @@
             line-height: 1.5;
         }
 
-        /* Platform detection banner */
         .detected-banner {
             display: none;
             align-items: center;
@@ -291,7 +286,6 @@
 
         .detected-banner.show { display: flex; }
 
-        /* Feature highlights grid */
         .feature-list {
             text-align: left;
             display: grid;
@@ -431,7 +425,6 @@
             border: 1px solid var(--border-color);
         }
 
-        /* Collapsible Trust Details */
         .why-trust {
             margin-top: 14px;
             border-top: 1px solid var(--border-color);
@@ -468,7 +461,6 @@
             line-height: 1.5;
         }
 
-        /* Stats Grid */
         .stats-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -496,7 +488,6 @@
             margin-top: 2px;
         }
 
-        /* Section Headers */
         .section-heading {
             font-size: 12px;
             font-weight: 700;
@@ -517,7 +508,6 @@
             background: var(--border-color);
         }
 
-        /* System Requirements Table */
         .req-table {
             text-align: left;
             font-size: 13px;
@@ -540,7 +530,6 @@
         .req-row span:first-child { color: var(--text-secondary); }
         .req-row span:last-child { color: var(--text-primary); font-weight: 500; }
 
-        /* Changelog Card */
         .changelog {
             text-align: left;
             display: flex;
@@ -582,7 +571,6 @@
             line-height: 1.6;
         }
 
-        /* FAQ Accordion */
         .faq-item {
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -626,7 +614,6 @@
             text-align: left;
         }
 
-        /* Permissions */
         .perm-list {
             text-align: left;
             display: flex;
@@ -652,42 +639,6 @@
             flex-shrink: 0;
         }
 
-        /* Support Links */
-        .support-row {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .support-btn {
-            background: var(--bg-main);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 14px;
-            color: var(--text-primary);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .support-btn:hover {
-            border-color: var(--accent-gold);
-            background: var(--bg-tab-active);
-            transform: translateY(-2px);
-        }
-
-        .support-btn .small {
-            font-size: 11px;
-            color: var(--text-secondary);
-            font-weight: 400;
-        }
-
-        /* Announcements Panel */
         .announcement-card {
             background: var(--bg-main);
             border: 1px solid var(--border-color);
@@ -744,14 +695,12 @@
             color: var(--text-secondary);
         }
 
-        /* Tablet Optimization (min-width: 600px) */
         @media (min-width: 600px) {
             .button-group {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        /* Desktop Optimization (min-width: 900px) */
         @media (min-width: 900px) {
             body {
                 padding-top: 90px;
@@ -785,7 +734,6 @@
             }
         }
 
-        /* Ultra Wide Desktop Optimization */
         @media (min-width: 1200px) {
             .container {
                 max-width: 960px;
@@ -806,11 +754,6 @@
                 <span class="brand-text">CloudFurm</span>
             </div>
         </div>
-        <div>
-            <a href="https://github.com/fazekreek-dev/CloudFurm" target="_blank" class="menu-toggle" title="View GitHub Repository">
-                <i class="fa-brands fa-github"></i>
-            </a>
-        </div>
     </div>
 
     <!-- Slide-Out Navigation Drawer -->
@@ -827,9 +770,6 @@
             <div class="nav-link" id="navAnnouncements">
                 <i class="fa-solid fa-bullhorn"></i> Announcements
             </div>
-            <a href="https://github.com/fazekreek-dev/CloudFurm" target="_blank" class="nav-link">
-                <i class="fa-brands fa-github"></i> GitHub Repository <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 11px; margin-left: auto;"></i>
-            </a>
         </div>
     </div>
 
@@ -953,18 +893,6 @@
                 <summary>Can I use it offline?</summary>
                 <p>Yes — your projects are saved on-device so you can edit anytime offline.</p>
             </details>
-
-            <div class="section-heading">Support & Links</div>
-            <div class="support-row">
-                <a class="support-btn" href="https://github.com/fazekreek-dev/CloudFurm" target="_blank">
-                    <i class="fa-brands fa-github"></i> Repository
-                    <span class="small">External Link</span>
-                </a>
-                <a class="support-btn" href="https://github.com/fazekreek-dev/CloudFurm/releases" target="_blank">
-                    <i class="fa-solid fa-list-check"></i> Releases
-                    <span class="small">Full History</span>
-                </a>
-            </div>
         </div>
 
         <!-- ANNOUNCEMENTS PAGE PANEL -->
@@ -990,9 +918,9 @@
 
             <div class="announcement-card">
                 <span class="badge update">Community</span>
-                <h3>GitHub Collaboration & Feedback</h3>
+                <h3>Community Collaboration & Feedback</h3>
                 <div class="date"><i class="fa-regular fa-calendar"></i> Ongoing</div>
-                <p>CloudFurm is continuously evolving. Have a feature request or bug to report? Head over to our official GitHub repository to open an issue or connect with other creators building on mobile!</p>
+                <p>CloudFurm is continuously evolving. Have a feature request or bug to report? Stay tuned for official feedback forms and updates as we continue building for mobile creators!</p>
             </div>
         </div>
 
@@ -1002,7 +930,6 @@
     </div>
 
     <script>
-        // Navigation Drawer Logic
         const menuToggle = document.getElementById('menuToggle');
         const closeDrawer = document.getElementById('closeDrawer');
         const navDrawer = document.getElementById('navDrawer');
@@ -1028,7 +955,6 @@
         closeDrawer.addEventListener('click', () => toggleDrawer(false));
         navOverlay.addEventListener('click', () => toggleDrawer(false));
 
-        // Switch Internal View Panels
         function switchTab(page) {
             toggleDrawer(false);
 
@@ -1047,7 +973,6 @@
         navDownloads.addEventListener('click', () => switchTab('downloads'));
         navAnnouncements.addEventListener('click', () => switchTab('announcements'));
 
-        // Platform Detection and Download Handlers
         const androidBtn = document.getElementById('androidBtn');
         const iosBtn = document.getElementById('iosBtn');
         const androidSpinner = document.getElementById('androidSpinner');
