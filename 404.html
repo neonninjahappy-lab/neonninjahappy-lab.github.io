@@ -200,6 +200,36 @@
     .string { color: var(--accent-gold); }
     .number { color: var(--accent-orange); }
     .comment { color: #5c5c6d; font-style: italic; }
+
+    /* New Button Styles */
+    .action-row {
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .btn-home {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-home:hover {
+      background-color: var(--bg-tab-active);
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+    }
   </style>
 </head>
 <body>
@@ -244,6 +274,13 @@
 <span class="keyword">const</span> <span class="variable">response</span> = {
   <span class="variable">status</span>: <span class="number">404</span>, <span class="variable">error</span>: <span class="string">"Page Not Found"</span>
 };</div>
+        </div>
+
+        
+        <div class="action-row">
+          <a href="https://cloudfurm.com/" class="btn-home">
+            <i class="fa-solid fa-house"></i> Return to Homepage
+          </a>
         </div>
       </div>
 
