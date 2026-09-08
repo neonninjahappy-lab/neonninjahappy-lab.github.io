@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error 404</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-main: #121214;
+      --bg-surface: #1e1e24;
+      --bg-tab-active: #2a2a32;
+      --accent-gold: #ffb703;
+      --accent-play: #4cc9f0;
+      --accent-ai: #a06ee1;
+      --accent-orange: #ff7043;
+      --accent-red: #ff5555;
+      --text-primary: #f8f9fa;
+      --text-secondary: #a0a0ab;
+      --border-color: #2b2b36;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    .top-bar {
+      height: 50px;
+      min-height: 50px;
+      max-height: 50px;
+      background-color: var(--bg-surface);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border-color);
+      z-index: 100;
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-404 {
+      background: rgba(255, 85, 85, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(255, 85, 85, 0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: 'Fira Code', monospace;
+      font-weight: 700;
+    }
+
+    /* Main Container */
+    .error-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      width: 100%;
+    }
+
+    /* Main Card */
+    .hero-banner {
+      width: 100%;
+      max-width: 560px;
+      background: linear-gradient(135deg, #1e1e24 0%, #2a2a32 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-banner::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-red), var(--accent-orange), var(--accent-gold));
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      background-color: rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header-title {
+      font-size: 13px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .card-body {
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+
+    /* Big Glowing Display */
+    .error-code-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .error-icon-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: rgba(255, 183, 3, 0.1);
+      border: 1px solid rgba(255, 183, 3, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--accent-gold);
+    }
+
+    .error-code {
+      font-size: 52px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      color: var(--text-primary);
+      text-shadow: 0 0 20px rgba(255, 183, 3, 0.2);
+    }
+
+    .hero-subtitle {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Mock Code Snippet Block */
+    .code-block {
+      width: 100%;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 13px;
+      text-align: left;
+      display: flex;
+      gap: 12px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .line-numbers {
+      color: #4a4a5a;
+      user-select: none;
+      text-align: right;
+    }
+
+    .code-content {
+      color: var(--text-primary);
+      white-space: pre-wrap;
+    }
+
+    .keyword { color: var(--accent-ai); }
+    .variable { color: var(--accent-play); }
+    .string { color: var(--accent-gold); }
+    .number { color: var(--accent-orange); }
+    .comment { color: #5c5c6d; font-style: italic; }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="brand-title">
+      <i class="fa-solid fa-code" style="color: var(--accent-gold);"></i>
+      <span>CloudFurm</span>
+    </div>
+    <div class="badge-404">
+      <i class="fa-solid fa-bug"></i> HTTP 404
+    </div>
+  </div>
+
+  <div class="error-container">
+    <div class="hero-banner">
+      
+      <div class="card-header">
+        <div class="card-header-title">
+          <i class="fa-solid fa-file-circle-xmark" style="color: var(--accent-red);"></i>
+          <span>status_404.config</span>
+        </div>
+        <i class="fa-solid fa-ellipsis" style="color: var(--text-secondary);"></i>
+      </div>
+
+      <div class="card-body">
+        <div class="error-code-wrapper">
+          <div class="error-icon-box">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div class="error-code">404</div>
+        </div>
+
+        <div class="hero-subtitle">
+          The requested page or resource could not be found, servers might be over loaded please try again later this day or week.
+        </div>
+
+        <!-- Code Block Component to give it a rich editor feel -->
+        <div class="code-block">
+          <div class="line-numbers">1<br>2<br>3</div>
+          <div class="code-content"><span class="comment">// Target resolution result</span>
+<span class="keyword">const</span> <span class="variable">response</span> = {
+  <span class="variable">status</span>: <span class="number">404</span>, <span class="variable">error</span>: <span class="string">"Page Not Found"</span>
+};</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
