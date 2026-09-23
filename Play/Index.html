@@ -1,27 +1,1144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Hi</title>
+    <title>Roblox UI Full Width</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+    <!-- Supabase JavaScript v2 Browser Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        <style>
-            body {
-                  margin: 0;
-                        height: 100vh;
-                              display: flex;
-                                    justify-content: center;
-                                          align-items: center;
-                                                font-family: Arial, sans-serif;
-                                                    }
+        body {
+            background-color: #121214;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
 
-                                                        h1 {
-                                                              margin: 0;
-                                                                  }
-                                                                    </style>
-                                                                    </head>
+        .app-container {
+            width: 100%;
+            min-height: 100vh;
+            background-color: #121214;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
 
-                                                                    <body>
-                                                                      <h1>Hi</h1>
-                                                                      </body>
-                                                                      </html>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px 10px 20px;
+            background-color: #161618;
+            width: 100%;
+            z-index: 100;
+        }
+
+        .header-left, .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #ffffff 30%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+            text-decoration: none;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .icon-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: #ffffff;
+        }
+
+        .sub-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px 12px 20px;
+            background-color: #161618;
+            border-bottom: 1px solid #1f1f23;
+            width: 100%;
+            overflow-x: auto;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .sub-nav {
+                display: none;
+            }
+        }
+
+        .nav-item {
+            background: transparent;
+            border: none;
+            color: #73737b;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            padding-bottom: 2px;
+            letter-spacing: -0.2px;
+            white-space: nowrap;
+        }
+
+        .nav-item.active {
+            color: #ffffff;
+        }
+
+        .content {
+            flex: 1;
+            background-color: #121214;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #ffffff;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .template-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .box-thumbnail {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            background-color: #26262a;
+            border-radius: 12px;
+            transition: background-color 0.2s ease;
+        }
+
+        .template-box:hover .box-thumbnail {
+            background-color: #323238;
+        }
+
+        .box-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .box-subtitle {
+            font-size: 12px;
+            color: #73737b;
+        }
+
+        /* --- GAME DETAILS VIEW STYLES --- */
+        .game-details-view {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .game-details-view.active {
+            display: flex;
+        }
+
+        .details-thumbnail {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: #26262a;
+            border-radius: 12px;
+        }
+
+        /* Header Row: Game info on left, wide Play Button on the opposite side taking maximum space */
+        .details-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .details-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .details-game-name {
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .details-creator {
+            font-size: 14px;
+            color: #73737b;
+        }
+
+        .details-maturity {
+            font-size: 13px;
+            color: #55555d;
+        }
+
+        /* Exact solid green color #00b06f, wide layout taking maximum available space */
+        .details-play-btn {
+            background-color: #00b06f;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: none;
+            flex: 1.2;
+            max-width: 240px;
+        }
+
+        .details-play-btn svg {
+            width: 28px;
+            height: 28px;
+            fill: #ffffff;
+        }
+
+        /* Interaction Stats Bar matching reference style precisely without icon background frames */
+        .details-stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            align-items: center;
+            background-color: transparent;
+            padding: 10px 0;
+        }
+
+        .stat-btn-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #8e8e93;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stat-btn-col svg {
+            width: 24px;
+            height: 24px;
+            fill: #8e8e93;
+        }
+
+        .stat-btn-col:hover, .stat-btn-col:hover svg {
+            color: #ffffff;
+            fill: #ffffff;
+        }
+
+        .details-tabs {
+            display: flex;
+            justify-content: space-around;
+            border-bottom: 1px solid #1f1f23;
+            padding-bottom: 4px;
+            margin-top: 10px;
+        }
+
+        .details-tab-item {
+            background: transparent;
+            border: none;
+            color: #73737b;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 16px;
+            position: relative;
+        }
+
+        .details-tab-item.active {
+            color: #ffffff;
+        }
+
+        .details-tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #ffffff;
+            border-radius: 2px 2px 0 0;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(2px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .sidebar-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100vh;
+            background-color: #161618;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-profile {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px;
+            border-bottom: 1px solid #222226;
+        }
+
+        .sidebar-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: #2c2c33;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #3a3a42;
+            flex-shrink: 0;
+        }
+
+        .sidebar-avatar svg {
+            width: 32px;
+            height: 32px;
+            fill: #8e8e99;
+            margin-top: 6px;
+        }
+
+        .sidebar-username {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 0;
+            flex: 1;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            color: #d1d1d6;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: background-color 0.15s ease, color 0.15s ease;
+            background: transparent;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .sidebar-link:hover {
+            background-color: #222226;
+            color: #ffffff;
+        }
+
+        .sidebar-link-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .sidebar-link svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        .sidebar-badge {
+            background-color: #ffffff;
+            color: #161618;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .sidebar-action-container {
+            padding: 16px 20px;
+        }
+
+        .sidebar-plus-btn {
+            width: 100%;
+            background-color: #ffffff;
+            color: #121214;
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.15s ease, transform 0.1s ease;
+        }
+
+        .sidebar-plus-btn:hover {
+            background-color: #e5e5e5;
+        }
+
+        .sidebar-plus-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* --- AUTH MODAL STYLES --- */
+        .auth-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .auth-modal-overlay.open {
+            display: flex;
+        }
+
+        .auth-card {
+            background-color: #161618;
+            border: 1px solid #1f1f23;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .auth-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .auth-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .auth-close-btn {
+            background: transparent;
+            border: none;
+            color: #73737b;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 4px;
+        }
+
+        .auth-close-btn:hover {
+            color: #ffffff;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .auth-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .auth-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #73737b;
+        }
+
+        .auth-input {
+            background-color: #121214;
+            border: 1px solid #1f1f23;
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        .auth-input:focus {
+            border-color: #3b82f6;
+        }
+
+        .auth-submit-btn {
+            background-color: #3b82f6;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .auth-submit-btn:hover {
+            background-color: #2563eb;
+        }
+
+        .auth-message {
+            font-size: 13px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .auth-message.error {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            display: block;
+        }
+
+        .auth-message.success {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            display: block;
+        }
+
+        .auth-switch-text {
+            font-size: 14px;
+            color: #73737b;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        .auth-switch-link {
+            color: #3b82f6;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 0;
+            text-decoration: underline;
+        }
+
+        .auth-switch-link:hover {
+            color: #60a5fa;
+        }
+
+        .auth-forgot-link {
+            background: transparent;
+            border: none;
+            color: #73737b;
+            font-size: 13px;
+            cursor: pointer;
+            text-align: right;
+            padding: 0;
+        }
+
+        .auth-forgot-link:hover {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Auth Modal View Container -->
+    <div class="auth-modal-overlay" id="authModalOverlay">
+        <div class="auth-card" id="authCardContainer">
+            <!-- Dynamically injected active auth form view -->
+        </div>
+    </div>
+
+    <aside class="sidebar" id="sidebarDrawer">
+        <div class="sidebar-profile" id="sidebarProfileContainer">
+            <!-- Dynamically injected session profile data -->
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="#" class="sidebar-link" onclick="showHome(); return false;">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                    Home
+                </div>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    Profile
+                </div>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+                    Messages
+                </div>
+                <span class="sidebar-badge">20</span>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    Friends
+                </div>
+                <span class="sidebar-badge">53</span>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                    Avatar
+                </div>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 15H4V8h16v11z"/></svg>
+                    Inventory
+                </div>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M14.36 14.35L11 17.71V10h-2v7.71l-3.36-3.36L4.22 15.76 10.29 21.83c.39.39 1.02.39 1.41 0l6.07-6.07-1.41-1.41zM19.78 8.24L13.71 2.17c-.39-.39-1.02-.39-1.41 0L6.23 8.24l1.41 1.41L11 6.29V14h2V6.29l3.36 3.36 1.42-1.41z"/></svg>
+                    Trade
+                </div>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    Communities
+                </div>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                    Newsroom
+                </div>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                    Official Store
+                </div>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                    Buy Gift Cards
+                </div>
+            </a>
+            <!-- Logout Action Link Appears Dynamically When Logged In -->
+            <div id="sidebarLogoutContainer"></div>
+        </div>
+
+        <div class="sidebar-action-container">
+            <button class="sidebar-plus-btn">CloudFurm Premium</button>
+        </div>
+    </aside>
+
+    <div class="app-container">
+        <header class="header">
+            <div class="header-left">
+                <button class="icon-btn" aria-label="Menu" onclick="toggleSidebar()">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </button>
+                <a href="#" class="brand-logo" onclick="showHome(); return false;">CloudFurm</a>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn" aria-label="Search">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                </button>
+                <button class="icon-btn" aria-label="Settings" onclick="openAuthModal('login')">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <nav class="sub-nav" id="subNav">
+            <button class="nav-item active">Charts</button>
+            <button class="nav-item">Marketplace</button>
+            <button class="nav-item">Create</button>
+            <button class="nav-item">Robux</button>
+        </nav>
+
+        <main class="content" id="mainContent">
+            <div id="homeView">
+                <h2 class="section-title">Recommended For You</h2>
+                <div class="grid-container">
+                    <div class="template-box" onclick="openGameDetails('Template Game Name 1', '92% Rating')">
+                        <div class="box-thumbnail"></div>
+                        <div class="box-title">Template Game Name 1</div>
+                        <div class="box-subtitle">92% Rating</div>
+                    </div>
+                    <div class="template-box" onclick="openGameDetails('Template Game Name 2', '95% Rating')">
+                        <div class="box-thumbnail"></div>
+                        <div class="box-title">Template Game Name 2</div>
+                        <div class="box-subtitle">95% Rating</div>
+                    </div>
+                    <div class="template-box" onclick="openGameDetails('Template Game Name 3', '88% Rating')">
+                        <div class="box-thumbnail"></div>
+                        <div class="box-title">Template Game Name 3</div>
+                        <div class="box-subtitle">88% Rating</div>
+                    </div>
+                    <div class="template-box" onclick="openGameDetails('Template Game Name 4', '97% Rating')">
+                        <div class="box-thumbnail"></div>
+                        <div class="box-title">Template Game Name 4</div>
+                        <div class="box-subtitle">97% Rating</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Details View -->
+            <div id="gameDetailsView" class="game-details-view">
+                <div class="details-thumbnail"></div>
+
+                <!-- Header Row: Game title info on left, wide Play Button on the opposite side taking maximum space -->
+                <div class="details-header-row">
+                    <div class="details-title-group">
+                        <h1 class="details-game-name" id="detailsTitle">Template Game Name</h1>
+                        <div class="details-creator">By and Collect Rare Pets ✓</div>
+                        <div class="details-maturity">Maturity: Minimal</div>
+                    </div>
+                    <button class="details-play-btn" aria-label="Play">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                </div>
+
+                <!-- Interaction Stats Bar matching reference style precisely without icon background frames -->
+                <div class="details-stats-row">
+                    <button class="stat-btn-col">
+                        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        <span>Favorite</span>
+                    </button>
+                    <button class="stat-btn-col">
+                        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
+                        <span>Notify</span>
+                    </button>
+                    <button class="stat-btn-col">
+                        <svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+                        <span>386</span>
+                    </button>
+                    <button class="stat-btn-col">
+                        <svg viewBox="0 0 24 24"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>
+                        <span>220</span>
+                    </button>
+                </div>
+
+                <div class="details-tabs">
+                    <button class="details-tab-item active">About</button>
+                    <button class="details-tab-item">Store</button>
+                    <button class="details-tab-item">Servers</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Supabase Initialization
+        const SUPABASE_URL = 'https://sovoxfrckytkmrqwvraa.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_Nps2PC7MmBK9d9RcIQ_HQw_NSmIlgJF';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Sidebar & View Management
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebarDrawer');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+
+        function openGameDetails(gameTitle, gameRating) {
+            document.getElementById('detailsTitle').innerText = gameTitle;
+            document.getElementById('homeView').style.display = 'none';
+            document.getElementById('gameDetailsView').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showHome() {
+            document.getElementById('gameDetailsView').classList.remove('active');
+            document.getElementById('homeView').style.display = 'block';
+            
+            const sidebar = document.getElementById('sidebarDrawer');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- AUTHENTICATION UI & FLOWS ---
+        const authModalOverlay = document.getElementById('authModalOverlay');
+        const authCardContainer = document.getElementById('authCardContainer');
+        const sidebarProfileContainer = document.getElementById('sidebarProfileContainer');
+        const sidebarLogoutContainer = document.getElementById('sidebarLogoutContainer');
+
+        function openAuthModal(viewType) {
+            authModalOverlay.classList.add('open');
+            if (viewType === 'login') renderLoginView();
+            else if (viewType === 'signup') renderSignupView();
+            else if (viewType === 'forgot') renderForgotView();
+        }
+
+        function closeAuthModal() {
+            authModalOverlay.classList.remove('open');
+        }
+
+        // Close modal clicking outside
+        authModalOverlay.addEventListener('click', (e) => {
+            if (e.target === authModalOverlay) {
+                closeAuthModal();
+            }
+        });
+
+        // 1. Sign Up View Renderer
+        function renderSignupView(errorMessage = '', successMessage = '') {
+            authCardContainer.innerHTML = `
+                <div class="auth-header">
+                    <h3 class="auth-title">Create Account</h3>
+                    <button class="auth-close-btn" onclick="closeAuthModal()">×</button>
+                </div>
+                ${errorMessage ? `<div class="auth-message error">${errorMessage}</div>` : ''}
+                ${successMessage ? `<div class="auth-message success">${successMessage}</div>` : ''}
+                <form class="auth-form" onsubmit="handleSignUp(event)">
+                    <div class="auth-field">
+                        <label class="auth-label">Username</label>
+                        <input type="text" id="signupUsername" class="auth-input" placeholder="Enter username" required>
+                    </div>
+                    <div class="auth-field">
+                        <label class="auth-label">Email</label>
+                        <input type="email" id="signupEmail" class="auth-input" placeholder="Enter email" required>
+                    </div>
+                    <div class="auth-field">
+                        <label class="auth-label">Password</label>
+                        <input type="password" id="signupPassword" class="auth-input" placeholder="Enter password" required>
+                    </div>
+                    <div class="auth-field">
+                        <label class="auth-label">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" class="auth-input" placeholder="Confirm password" required>
+                    </div>
+                    <button type="submit" class="auth-submit-btn">Create Account</button>
+                </form>
+                <div class="auth-switch-text">
+                    Already have an account? <button class="auth-switch-link" onclick="openAuthModal('login')">Log In</button>
+                </div>
+            `;
+        }
+
+        // 2. Login View Renderer
+        function renderLoginView(errorMessage = '', successMessage = '') {
+            authCardContainer.innerHTML = `
+                <div class="auth-header">
+                    <h3 class="auth-title">Log In</h3>
+                    <button class="auth-close-btn" onclick="closeAuthModal()">×</button>
+                </div>
+                ${errorMessage ? `<div class="auth-message error">${errorMessage}</div>` : ''}
+                ${successMessage ? `<div class="auth-message success">${successMessage}</div>` : ''}
+                <form class="auth-form" onsubmit="handleLogin(event)">
+                    <div class="auth-field">
+                        <label class="auth-label">Email</label>
+                        <input type="email" id="loginEmail" class="auth-input" placeholder="Enter email" required>
+                    </div>
+                    <div class="auth-field">
+                        <label class="auth-label">Password</label>
+                        <input type="password" id="loginPassword" class="auth-input" placeholder="Enter password" required>
+                        <button type="button" class="auth-forgot-link" onclick="openAuthModal('forgot')">Forgot Password?</button>
+                    </div>
+                    <button type="submit" class="auth-submit-btn">Log In</button>
+                </form>
+                <div class="auth-switch-text">
+                    Don't have an account? <button class="auth-switch-link" onclick="openAuthModal('signup')">Sign Up</button>
+                </div>
+            `;
+        }
+
+        // 3. Forgot Password View Renderer
+        function renderForgotView(errorMessage = '', successMessage = '') {
+            authCardContainer.innerHTML = `
+                <div class="auth-header">
+                    <h3 class="auth-title">Reset Password</h3>
+                    <button class="auth-close-btn" onclick="closeAuthModal()">×</button>
+                </div>
+                ${errorMessage ? `<div class="auth-message error">${errorMessage}</div>` : ''}
+                ${successMessage ? `<div class="auth-message success">${successMessage}</div>` : ''}
+                <form class="auth-form" onsubmit="handlePasswordReset(event)">
+                    <div class="auth-field">
+                        <label class="auth-label">Email Address</label>
+                        <input type="email" id="resetEmail" class="auth-input" placeholder="Enter your registered email" required>
+                    </div>
+                    <button type="submit" class="auth-submit-btn">Send Reset Link</button>
+                </form>
+                <div class="auth-switch-text">
+                    Remembered your password? <button class="auth-switch-link" onclick="openAuthModal('login')">Log In</button>
+                </div>
+            `;
+        }
+
+        // --- AUTHENTICATION CONTROLLERS ---
+        async function handleSignUp(e) {
+            e.preventDefault();
+            const username = document.getElementById('signupUsername').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+            if (!username) {
+                renderSignupView('Username cannot be empty.');
+                return;
+            }
+            if (!email) {
+                renderSignupView('Email cannot be empty.');
+                return;
+            }
+            if (!password) {
+                renderSignupView('Password cannot be empty.');
+                return;
+            }
+            if (password !== confirmPassword) {
+                renderSignupView('Passwords do not match.');
+                return;
+            }
+
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        username: username
+                    }
+                }
+            });
+
+            if (error) {
+                renderSignupView(error.message);
+                return;
+            }
+
+            // Check if email confirmation is required or session is instantly active
+            if (data?.session) {
+                closeAuthModal();
+                updateUIState(data.session.user);
+            } else {
+                renderSignupView('', 'Account created. Check your email to verify your account.');
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                renderLoginView('Please enter both email and password.');
+                return;
+            }
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (error) {
+                renderLoginView(error.message);
+                return;
+            }
+
+            closeAuthModal();
+            updateUIState(data.session.user);
+        }
+
+        async function handlePasswordReset(e) {
+            e.preventDefault();
+            const email = document.getElementById('resetEmail').value.trim();
+
+            if (!email) {
+                renderForgotView('Please enter your email address.');
+                return;
+            }
+
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.href
+            });
+
+            if (error) {
+                renderForgotView(error.message);
+                return;
+            }
+
+            renderForgotView('', 'Password reset link sent to your email.');
+        }
+
+        async function handleLogout() {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                console.error('Error signing out:', error.message);
+                return;
+            }
+            updateUIState(null);
+        }
+
+        // --- DYNAMIC UI STATE MANAGER ---
+        function updateUIState(user) {
+            if (user) {
+                const username = user.user_metadata?.username || user.email.split('@')[0];
+                
+                // Logged In Sidebar Profile Display
+                sidebarProfileContainer.innerHTML = `
+                    <div class="sidebar-avatar">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <div class="sidebar-username">${username}</div>
+                `;
+
+                // Add Working Logout Option to Sidebar Menu
+                sidebarLogoutContainer.innerHTML = `
+                    <button class="sidebar-link" onclick="handleLogout()">
+                        <div class="sidebar-link-content">
+                            <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                            Logout
+                        </div>
+                    </button>
+                `;
+            } else {
+                // Logged Out Sidebar Profile Display
+                sidebarProfileContainer.innerHTML = `
+                    <div class="sidebar-avatar">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px; overflow: hidden;">
+                        <div class="sidebar-username">CloudFurm</div>
+                        <div style="font-size: 13px; color: #73737b;">Guest</div>
+                    </div>
+                `;
+
+                // Render Login / Sign Up options inside sidebar profile or action area safely
+                sidebarLogoutContainer.innerHTML = `
+                    <div style="display: flex; gap: 8px; padding: 12px 20px;">
+                        <button onclick="openAuthModal('login')" style="flex: 1; background: #3b82f6; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Log In</button>
+                        <button onclick="openAuthModal('signup')" style="flex: 1; background: #26262a; color: #fff; border: 1px solid #1f1f23; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Sign Up</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize Session Verification and Auth State Listener on Page Load
+        async function initAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            updateUIState(session?.user || null);
+
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                updateUIState(session?.user || null);
+            });
+        }
+
+        // Run initialization on load
+        window.addEventListener('DOMContentLoaded', initAuth);
+    </script>
+
+</body>
+</html>
