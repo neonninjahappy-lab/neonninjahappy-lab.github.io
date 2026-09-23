@@ -151,11 +151,14 @@
             aspect-ratio: 16 / 10;
             background-color: #26262a;
             border-radius: 12px;
-            transition: background-color 0.2s ease;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.2s ease;
         }
 
         .template-box:hover .box-thumbnail {
-            background-color: #323238;
+            transform: scale(1.02);
         }
 
         .box-title {
@@ -191,9 +194,11 @@
             aspect-ratio: 16 / 9;
             background-color: #26262a;
             border-radius: 12px;
+            background-size: cover;
+            background-position: center;
         }
 
-        /* Header Row: Game info on left, wide Play Button on the opposite side taking maximum space */
+        /* Header Row: Game info on left, balanced clean Play Button */
         .details-header-row {
             display: flex;
             justify-content: space-between;
@@ -228,29 +233,35 @@
             color: #55555d;
         }
 
-        /* Exact solid green color #00b06f, wide layout taking maximum available space */
+        /* Fixed Play Button height: reduced vertical padding so it isn't massive */
         .details-play-btn {
             background-color: #00b06f;
             color: #ffffff;
             border: none;
             border-radius: 12px;
-            padding: 16px 0;
+            padding: 12px 24px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: none;
-            flex: 1.2;
-            max-width: 240px;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .details-play-btn:hover {
+            background-color: #00965f;
         }
 
         .details-play-btn svg {
-            width: 28px;
-            height: 28px;
+            width: 22px;
+            height: 22px;
             fill: #ffffff;
         }
 
-        /* Interaction Stats Bar matching reference style precisely without icon background frames */
+        /* Interaction Stats Bar */
         .details-stats-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -765,23 +776,27 @@
             <div id="homeView">
                 <h2 class="section-title">Recommended For You</h2>
                 <div class="grid-container">
-                    <div class="template-box" onclick="openGameDetails('Template Game Name 1', '92% Rating')">
-                        <div class="box-thumbnail"></div>
+                    <!-- Game 1 -->
+                    <div class="template-box" onclick="openGameDetails('CloudFurm', '92% Rating', 'game1.png')">
+                        <div class="box-thumbnail" style="background-image: url('game1.png');"></div>
                         <div class="box-title">CloudFurm</div>
                         <div class="box-subtitle">92% Rating</div>
                     </div>
-                    <div class="template-box" onclick="openGameDetails('Template Game Name 2', '95% Rating')">
-                        <div class="box-thumbnail"></div>
+                    <!-- Game 2 -->
+                    <div class="template-box" onclick="openGameDetails('API obby', '95% Rating', 'game2.png')">
+                        <div class="box-thumbnail" style="background-image: url('game2.png');"></div>
                         <div class="box-title">API obby</div>
                         <div class="box-subtitle">95% Rating</div>
                     </div>
-                    <div class="template-box" onclick="openGameDetails('Template Game Name 3', '88% Rating')">
-                        <div class="box-thumbnail"></div>
+                    <!-- Game 3 -->
+                    <div class="template-box" onclick="openGameDetails('UCC Game', '88% Rating', 'game3.png')">
+                        <div class="box-thumbnail" style="background-image: url('game3.png');"></div>
                         <div class="box-title">UCC Game</div>
                         <div class="box-subtitle">88% Rating</div>
                     </div>
-                    <div class="template-box" onclick="openGameDetails('Template Game Name 4', '97% Rating')">
-                        <div class="box-thumbnail"></div>
+                    <!-- Game 4 -->
+                    <div class="template-box" onclick="openGameDetails('Default Hangout', '27% Rating', 'game4.png')">
+                        <div class="box-thumbnail" style="background-image: url('game4.png');"></div>
                         <div class="box-title">Default Hangout</div>
                         <div class="box-subtitle">27% Rating</div>
                     </div>
@@ -790,9 +805,9 @@
 
             <!-- Game Details View -->
             <div id="gameDetailsView" class="game-details-view">
-                <div class="details-thumbnail"></div>
+                <div class="details-thumbnail" id="detailsThumbnail"></div>
 
-                <!-- Header Row: Game title info on left, wide Play Button on the opposite side taking maximum space -->
+                <!-- Header Row: Game title info on left, standard Play Button -->
                 <div class="details-header-row">
                     <div class="details-title-group">
                         <h1 class="details-game-name" id="detailsTitle">Template Game Name</h1>
@@ -801,10 +816,11 @@
                     </div>
                     <button class="details-play-btn" aria-label="Play">
                         <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        Play
                     </button>
                 </div>
 
-                <!-- Interaction Stats Bar matching reference style precisely without icon background frames -->
+                <!-- Interaction Stats Bar -->
                 <div class="details-stats-row">
                     <button class="stat-btn-col">
                         <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
@@ -848,8 +864,9 @@
             overlay.classList.toggle('open');
         }
 
-        function openGameDetails(gameTitle, gameRating) {
+        function openGameDetails(gameTitle, gameRating, imageFileName) {
             document.getElementById('detailsTitle').innerText = gameTitle;
+            document.getElementById('detailsThumbnail').style.backgroundImage = `url('${imageFileName}')`;
             document.getElementById('homeView').style.display = 'none';
             document.getElementById('gameDetailsView').classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -885,14 +902,12 @@
             authModalOverlay.classList.remove('open');
         }
 
-        // Close modal clicking outside
         authModalOverlay.addEventListener('click', (e) => {
             if (e.target === authModalOverlay) {
                 closeAuthModal();
             }
         });
 
-        // 1. Sign Up View Renderer
         function renderSignupView(errorMessage = '', successMessage = '') {
             authCardContainer.innerHTML = `
                 <div class="auth-header">
@@ -926,7 +941,6 @@
             `;
         }
 
-        // 2. Login View Renderer
         function renderLoginView(errorMessage = '', successMessage = '') {
             authCardContainer.innerHTML = `
                 <div class="auth-header">
@@ -953,7 +967,6 @@
             `;
         }
 
-        // 3. Forgot Password View Renderer
         function renderForgotView(errorMessage = '', successMessage = '') {
             authCardContainer.innerHTML = `
                 <div class="auth-header">
@@ -975,7 +988,6 @@
             `;
         }
 
-        // --- AUTHENTICATION CONTROLLERS ---
         async function handleSignUp(e) {
             e.preventDefault();
             const username = document.getElementById('signupUsername').value.trim();
@@ -983,16 +995,8 @@
             const password = document.getElementById('signupPassword').value;
             const confirmPassword = document.getElementById('signupConfirmPassword').value;
 
-            if (!username) {
-                renderSignupView('Username cannot be empty.');
-                return;
-            }
-            if (!email) {
-                renderSignupView('Email cannot be empty.');
-                return;
-            }
-            if (!password) {
-                renderSignupView('Password cannot be empty.');
+            if (!username || !email || !password) {
+                renderSignupView('Please fill out all fields.');
                 return;
             }
             if (password !== confirmPassword) {
@@ -1003,11 +1007,7 @@
             const { data, error } = await supabaseClient.auth.signUp({
                 email: email,
                 password: password,
-                options: {
-                    data: {
-                        username: username
-                    }
-                }
+                options: { data: { username: username } }
             });
 
             if (error) {
@@ -1015,12 +1015,11 @@
                 return;
             }
 
-            // Check if email confirmation is required or session is instantly active
             if (data?.session) {
                 closeAuthModal();
                 updateUIState(data.session.user);
             } else {
-                renderSignupView('', 'Account created. Check your email to verify your account.');
+                renderSignupView('', 'Account created. Check your email to verify.');
             }
         }
 
@@ -1070,30 +1069,19 @@
         }
 
         async function handleLogout() {
-            const { error } = await supabaseClient.auth.signOut();
-            if (error) {
-                console.error('Error signing out:', error.message);
-                return;
-            }
+            await supabaseClient.auth.signOut();
             updateUIState(null);
         }
 
-        // --- DYNAMIC UI STATE MANAGER ---
         function updateUIState(user) {
             if (user) {
                 const username = user.user_metadata?.username || user.email.split('@')[0];
-                
-                // Logged In Sidebar Profile Display
                 sidebarProfileContainer.innerHTML = `
                     <div class="sidebar-avatar">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                        </svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                     </div>
                     <div class="sidebar-username">${username}</div>
                 `;
-
-                // Add Working Logout Option to Sidebar Menu
                 sidebarLogoutContainer.innerHTML = `
                     <button class="sidebar-link" onclick="handleLogout()">
                         <div class="sidebar-link-content">
@@ -1103,20 +1091,15 @@
                     </button>
                 `;
             } else {
-                // Logged Out Sidebar Profile Display
                 sidebarProfileContainer.innerHTML = `
                     <div class="sidebar-avatar">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                        </svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 4px; overflow: hidden;">
                         <div class="sidebar-username">CloudFurm</div>
                         <div style="font-size: 13px; color: #73737b;">Guest</div>
                     </div>
                 `;
-
-                // Render Login / Sign Up options inside sidebar profile or action area safely
                 sidebarLogoutContainer.innerHTML = `
                     <div style="display: flex; gap: 8px; padding: 12px 20px;">
                         <button onclick="openAuthModal('login')" style="flex: 1; background: #3b82f6; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Log In</button>
@@ -1126,7 +1109,6 @@
             }
         }
 
-        // Initialize Session Verification and Auth State Listener on Page Load
         async function initAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             updateUIState(session?.user || null);
@@ -1136,9 +1118,7 @@
             });
         }
 
-        // Run initialization on load
         window.addEventListener('DOMContentLoaded', initAuth);
     </script>
-
 </body>
 </html>
