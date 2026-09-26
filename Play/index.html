@@ -198,7 +198,6 @@
             background-position: center;
         }
 
-        /* Header Row: Game info on left, balanced clean Play Button */
         .details-header-row {
             display: flex;
             justify-content: space-between;
@@ -233,7 +232,6 @@
             color: #55555d;
         }
 
-        /* Fixed Play Button height: reduced vertical padding so it isn't massive */
         .details-play-btn {
             background-color: #00b06f;
             color: #ffffff;
@@ -261,7 +259,6 @@
             fill: #ffffff;
         }
 
-        /* Interaction Stats Bar */
         .details-stats-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -814,7 +811,7 @@
                         <div class="details-creator">CloudFurm</div>
                         <div class="details-maturity">Maturity: Minimal</div>
                     </div>
-                    <button class="details-play-btn" aria-label="Play">
+                    <button class="details-play-btn" aria-label="Play" onclick="handlePlayClick()">
                         <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                         Play
                     </button>
@@ -855,6 +852,9 @@
         const SUPABASE_KEY = 'sb_publishable_Nps2PC7MmBK9d9RcIQ_HQw_NSmIlgJF';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Track active game title
+        let currentGameTitle = '';
+
         // Sidebar & View Management
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebarDrawer');
@@ -865,11 +865,20 @@
         }
 
         function openGameDetails(gameTitle, gameRating, imageFileName) {
+            currentGameTitle = gameTitle;
             document.getElementById('detailsTitle').innerText = gameTitle;
             document.getElementById('detailsThumbnail').style.backgroundImage = `url('${imageFileName}')`;
             document.getElementById('homeView').style.display = 'none';
             document.getElementById('gameDetailsView').classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function handlePlayClick() {
+            if (currentGameTitle === 'Default Hangout') {
+                window.location.href = 'Game1.html';
+            } else {
+                alert('Launching ' + currentGameTitle + '...');
+            }
         }
 
         function showHome() {
