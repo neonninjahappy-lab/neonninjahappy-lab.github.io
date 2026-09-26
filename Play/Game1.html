@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Roblox Baseplate Game</title>
+    <style>
+        :root {
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000000;
+            font-family: var(--font-family);
+            color: #ffffff;
+        }
+
+        #webgl-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            outline: none;
+        }
+
+        /* Roblox In-Game TopBar UI */
+        .roblox-topbar {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: auto;
+        }
+
+        .roblox-logo-btn {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #60b9ff 0%, #1a75ff 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            border: none;
+            outline: none;
+            transition: transform 0.1s;
+        }
+
+        .roblox-logo-btn:active {
+            transform: scale(0.92);
+        }
+
+        .roblox-logo-btn svg {
+            width: 26px;
+            height: 26px;
+            fill: #ffffff;
+        }
+
+        .roblox-empty-capsule {
+            width: 80px;
+            height: 48px;
+            background: #111111;
+            border-radius: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        /* --- EXACT ROBLOX IN-GAME MENU MATCHING IMAGE --- */
+        #game-menu-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            transition: background 0.35s cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease;
+        }
+
+        #game-menu-overlay.active {
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            pointer-events: auto;
+        }
+
+        .menu-modal-window {
+            width: 720px;
+            height: 520px;
+            background: rgba(36, 41, 46, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px) scale(0.97);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+
+        #game-menu-overlay.active .menu-modal-window {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Top Navigation Tabs Header */
+        .menu-tabs-header {
+            height: 60px;
+            background: rgba(20, 24, 28, 0.9);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 28px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 100%;
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.55);
+            cursor: pointer;
+            position: relative;
+            background: none;
+            border: none;
+            outline: none;
+            transition: color 0.2s;
+        }
+
+        .menu-tab svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .menu-tab:hover {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .menu-tab.active {
+            color: #ffffff;
+        }
+
+        .menu-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #00a2ff;
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Content Area Body */
+        .menu-tab-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-tab-pane {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-tab-pane.active {
+            display: flex;
+        }
+
+        /* Invite Banner */
+        .invite-friends-banner {
+            background: rgba(50, 58, 66, 0.75);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+            cursor: pointer;
+            margin-bottom: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s;
+        }
+
+        .invite-friends-banner:hover {
+            background: rgba(65, 75, 85, 0.85);
+        }
+
+        .invite-friends-banner svg {
+            width: 18px;
+            height: 18px;
+            fill: #ffffff;
+        }
+
+        /* Player Row Style matching image */
+        .player-row-item {
+            background: rgba(45, 52, 60, 0.65);
+            border-radius: 8px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            justify-content: space-between;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .player-left-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Avatar render frame for pfp with green background, small view head-to-waist */
+        .player-avatar-render {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #2ecc71;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .player-avatar-render canvas {
+            width: 100% !important;
+            height: 100% !important;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .player-name-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .player-row-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-text-btn {
+            height: 36px;
+            padding: 0 18px;
+            background: rgba(55, 64, 75, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .action-text-btn:hover {
+            background: rgba(75, 85, 98, 0.9);
+        }
+
+        /* Generic Pane placeholders for Settings, Report, Help, Record */
+        .pane-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 250px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 15px;
+            font-weight: 500;
+            gap: 10px;
+        }
+
+        /* Bottom Action Toolbar matching image exactly */
+        .menu-footer-toolbar {
+            height: 76px;
+            background: rgba(20, 24, 28, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .footer-btn-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-action-card {
+            height: 44px;
+            background: rgba(50, 58, 66, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .footer-action-card:hover {
+            background: rgba(65, 75, 85, 0.95);
+        }
+
+        .key-badge {
+            width: 26px;
+            height: 26px;
+            background: rgba(20, 24, 28, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .footer-btn-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Custom Scrollbar for list */
+        .menu-tab-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .menu-tab-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .menu-tab-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        /* Mobile Controls Layout */
+        .mobile-controls-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 20px;
+            z-index: 5;
+        }
+
+        #roblox-joystick-base, #roblox-jump-btn {
+            width: 72px;
+            height: 72px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3), 0 4px 15px rgba(0, 0, 0, 0.3);
+            pointer-events: auto;
+        }
+
+        #roblox-joystick-base {
+            position: relative;
+            display: none;
+        }
+
+        #roblox-joystick-stick {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.45);
+            border: 2px solid rgba(255, 255, 255, 0.65);
+            border-radius: 50%;
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            transform: translate(0, 0);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+        }
+
+        #roblox-jump-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.1s, transform 0.1s;
+        }
+
+        #roblox-jump-btn:active {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0.92);
+        }
+
+        #roblox-jump-btn svg {
+            width: 26px;
+            height: 26px;
+            fill: #ffffff;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+        }
+
+        .hint {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.85);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(6px);
+            pointer-events: none;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: opacity 0.5s ease;
+            text-align: center;
+            z-index: 8;
+        }
+
+        /* Scaled down panel dimensions for smaller screens using CSS transform */
+        @media (max-width: 900px) {
+            #roblox-joystick-base { display: block; }
+            .hint { bottom: 100px; font-size: 11px; }
+            
+            .menu-modal-window {
+                width: 480px;
+                height: 360px;
+            }
+            .menu-tabs-header {
+                height: 44px;
+                padding: 0 12px;
+                gap: 16px;
+            }
+            .menu-tab {
+                font-size: 12px;
+                gap: 6px;
+            }
+            .menu-tab svg {
+                width: 16px;
+                height: 16px;
+            }
+            .menu-footer-toolbar {
+                height: 56px;
+                padding: 0 12px;
+            }
+            .footer-action-card {
+                height: 34px;
+                padding: 0 10px;
+                gap: 8px;
+            }
+            .key-badge {
+                width: 20px;
+                height: 20px;
+                font-size: 10px;
+            }
+            .footer-btn-label {
+                font-size: 11px;
+            }
+            .player-row-item {
+                height: 40px;
+                padding: 0 10px;
+            }
+            .player-avatar-render {
+                width: 28px;
+                height: 28px;
+            }
+            .player-name-text {
+                font-size: 12px;
+            }
+            .action-text-btn {
+                height: 28px;
+                padding: 0 10px;
+                font-size: 11px;
+            }
+            .invite-friends-banner {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            .invite-friends-banner svg {
+                width: 14px;
+                height: 14px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .menu-modal-window {
+                width: 90vw;
+                max-width: 380px;
+                height: 320px;
+            }
+        }
+    </style>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+    <div id="webgl-container"></div>
+
+    <!-- Roblox Top Bar UI -->
+    <div class="roblox-topbar">
+        <div class="topbar-left">
+            <button class="roblox-logo-btn" id="menu-btn" title="Menu">
+                <svg viewBox="0 0 24 24">
+                    <path fill="#ffffff" d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
+                </svg>
+            </button>
+            <div class="roblox-empty-capsule" id="empty-capsule-btn"></div>
+        </div>
+    </div>
+
+    <!-- In-Game Menu Modal Overlay Matching Screenshot EXACTLY -->
+    <div id="game-menu-overlay">
+        <div class="menu-modal-window">
+            <!-- Tabs Top Bar -->
+            <div class="menu-tabs-header">
+                <button class="menu-tab active" data-tab="players">
+                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    Players
+                </button>
+                <button class="menu-tab" data-tab="settings">
+                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    Settings
+                </button>
+                <button class="menu-tab" data-tab="report">
+                    <svg viewBox="0 0 24 24"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+                    Report
+                </button>
+                <button class="menu-tab" data-tab="help">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-2h2v2zm1.07-7.75l-.9.92C12.45 11.9 12 12.5 12 14h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.03-.42 1.98-1.07 2.75z"/></svg>
+                    Help
+                </button>
+                <button class="menu-tab" data-tab="record">
+                    <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zm2 2v8h12V8zm6 2a3 3 0 100 6 3 3 0 000-6z"/></svg>
+                    Record
+                </button>
+            </div>
+
+            <!-- Tab Content Body -->
+            <div class="menu-tab-content">
+                <!-- Players Tab Pane -->
+                <div class="menu-tab-pane active" id="pane-players">
+                    <div class="invite-friends-banner">
+                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        Invite friends to play
+                    </div>
+
+                    <!-- Player 1: 404Error (Local player with avatar pfp - Only player in server) -->
+                    <div class="player-row-item">
+                        <div class="player-left-info">
+                            <div class="player-avatar-render" id="pfp-container"></div>
+                            <div class="player-name-text">404Error (You)</div>
+                        </div>
+                        <div class="player-row-actions">
+                            <button class="action-text-btn" style="opacity: 0.6; cursor: default;">Local</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab Pane -->
+                <div class="menu-tab-pane" id="pane-settings">
+                    <div class="pane-placeholder">Game Settings Options</div>
+                </div>
+                <!-- Report Tab Pane -->
+                <div class="menu-tab-pane" id="pane-report">
+                    <div class="pane-placeholder">Player Reporting Menu</div>
+                </div>
+                <!-- Help Tab Pane -->
+                <div class="menu-tab-pane" id="pane-help">
+                    <div class="pane-placeholder">Controls & Help Guide</div>
+                </div>
+                <!-- Record Tab Pane -->
+                <div class="menu-tab-pane" id="pane-record">
+                    <div class="pane-placeholder">Video & Screenshot Recording Tools</div>
+                </div>
+            </div>
+
+            <!-- Bottom Action Toolbar Matching Screenshot EXACTLY -->
+            <div class="menu-footer-toolbar">
+                <div class="footer-action-card" id="modal-reset-btn" title="Reset Character">
+                    <div class="key-badge">R</div>
+                    <div class="footer-btn-label">Reset Character</div>
+                </div>
+                <div class="footer-btn-group">
+                    <div class="footer-action-card" id="modal-leave-btn" title="Leave Game">
+                        <div class="key-badge">L</div>
+                        <div class="footer-btn-label">Leave Game</div>
+                    </div>
+                    <div class="footer-action-card" id="modal-resume-btn" title="Resume Game">
+                        <div class="key-badge">ESC</div>
+                        <div class="footer-btn-label">Resume Game</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions Hint -->
+    <div class="hint" id="interaction-hint">Use WASD / Joystick to Move • Drag to Pan Camera • Space / Jump Button to Jump</div>
+
+    <!-- Mobile Virtual Controls -->
+    <div class="mobile-controls-layer">
+        <div id="roblox-joystick-base">
+            <div id="roblox-joystick-stick"></div>
+        </div>
+        <button id="roblox-jump-btn" title="Jump">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2L4 10h5v12h6V10h5L12 2Z"/>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        // --- 1. Scene Setup ---
+        const container = document.getElementById('webgl-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xdce5ed);
+        scene.fog = new THREE.FogExp2(0xdce5ed, 0.015);
+
+        // --- 2. Camera Setup (Smooth Roblox Follow Camera) ---
+        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+        let cameraTargetSpherical = { radius: 11, theta: Math.PI / 4, phi: Math.PI / 3.4 };
+        let cameraCurrentSpherical = { ...cameraTargetSpherical };
+
+        function updateCameraPosition(avatarPosition) {
+            cameraCurrentSpherical.radius += (cameraTargetSpherical.radius - cameraCurrentSpherical.radius) * 0.15;
+            cameraCurrentSpherical.theta += (cameraTargetSpherical.theta - cameraCurrentSpherical.theta) * 0.15;
+            cameraCurrentSpherical.phi += (cameraTargetSpherical.phi - cameraCurrentSpherical.phi) * 0.15;
+
+            cameraCurrentSpherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, cameraCurrentSpherical.phi));
+
+            const lookAtCenter = avatarPosition.clone().add(new THREE.Vector3(0, 1.8, 0));
+
+            const x = lookAtCenter.x + cameraCurrentSpherical.radius * Math.sin(cameraCurrentSpherical.phi) * Math.sin(cameraCurrentSpherical.theta);
+            const y = lookAtCenter.y + cameraCurrentSpherical.radius * Math.cos(cameraCurrentSpherical.phi);
+            const z = lookAtCenter.z + cameraCurrentSpherical.radius * Math.sin(cameraCurrentSpherical.phi) * Math.cos(cameraCurrentSpherical.theta);
+
+            camera.position.set(x, y, z);
+            camera.lookAt(lookAtCenter);
+        }
+
+        // --- 3. Renderer ---
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.1;
+        container.appendChild(renderer.domElement);
+
+        // --- 4. Lighting ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444455, 0.5);
+        hemiLight.position.set(0, 20, 0);
+        scene.add(hemiLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        dirLight.position.set(8, 16, 10);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 0.5;
+        dirLight.shadow.camera.far = 40;
+        const d = 12;
+        dirLight.shadow.camera.left = -d;
+        dirLight.shadow.camera.right = d;
+        dirLight.shadow.camera.top = d;
+        dirLight.shadow.camera.bottom = -d;
+        dirLight.shadow.bias = -0.0005;
+        scene.add(dirLight);
+
+        // --- Environment (Roblox Studio Baseplate & Studs Grid) ---
+        const baseplateSize = 80;
+        const baseplateGeo = new THREE.BoxGeometry(baseplateSize, 1, baseplateSize);
+        const baseplateMat = new THREE.MeshStandardMaterial({ 
+            color: 0xa3a3a3, 
+            roughness: 0.85, 
+            metalness: 0.05 
+        });
+        const baseplate = new THREE.Mesh(baseplateGeo, baseplateMat);
+        baseplate.position.y = -0.5;
+        baseplate.receiveShadow = true;
+        scene.add(baseplate);
+
+        const gridHelper = new THREE.GridHelper(baseplateSize, baseplateSize, 0x666666, 0x888888);
+        gridHelper.position.y = 0.001;
+        scene.add(gridHelper);
+
+        // Contact Shadow beneath avatar
+        function createContactShadowTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+            gradient.addColorStop(0, 'rgba(0, 0, 0, 0.65)');
+            gradient.addColorStop(0.4, 'rgba(0, 0, 0, 0.3)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 128, 128);
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        const shadowGeo = new THREE.PlaneGeometry(1.8, 1.8);
+        const shadowMat = new THREE.MeshBasicMaterial({
+            map: createContactShadowTexture(),
+            transparent: true,
+            depthWrite: false
+        });
+        const contactShadow = new THREE.Mesh(shadowGeo, shadowMat);
+        contactShadow.rotation.x = -Math.PI / 2;
+        contactShadow.position.y = 0.002;
+        scene.add(contactShadow);
+
+        // --- 5 & 6. Authentic Roblox R6 Avatar Construction ---
+        function createBeveledBoxGeometry(width, height, depth, radius, smoothness) {
+            const shape = new THREE.Shape();
+            const rad = Math.min(radius, width / 2, height / 2);
+            
+            shape.absarc(width / 2 - rad, height / 2 - rad, rad, Math.PI / 2, 0, true);
+            shape.absarc(width / 2 - rad, -height / 2 + rad, rad, 0, -Math.PI / 2, true);
+            shape.absarc(-width / 2 + rad, -height / 2 + rad, rad, -Math.PI / 2, -Math.PI, true);
+            shape.absarc(-width / 2 + rad, height / 2 - rad, rad, -Math.PI, -Math.PI * 3 / 2, true);
+
+            const extrudeSettings = {
+                steps: 1,
+                depth: depth - rad * 2,
+                bevelEnabled: true,
+                bevelThickness: rad,
+                bevelSize: rad,
+                bevelSegments: smoothness
+            };
+
+            const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            geom.center();
+            return geom;
+        }
+
+        const bodyMaterial = new THREE.MeshStandardMaterial({
+            color: 0xdfdfdf,
+            roughness: 0.65,
+            metalness: 0.05
+        });
+
+        const torsoMaterial = new THREE.MeshStandardMaterial({
+            color: 0x999b9e,
+            roughness: 0.6,
+            metalness: 0.05
+        });
+
+        function createFaceTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 512, 512);
+            ctx.fillStyle = '#111111';
+            
+            ctx.beginPath();
+            ctx.arc(175, 200, 22, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(337, 200, 22, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.lineWidth = 20;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#111111';
+            ctx.beginPath();
+            ctx.arc(256, 260, 95, 0.15 * Math.PI, 0.85 * Math.PI, false);
+            ctx.stroke();
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.encoding = THREE.sRGBEncoding;
+            return texture;
+        }
+
+        const headMaterial = [
+            bodyMaterial, bodyMaterial, bodyMaterial, bodyMaterial,
+            new THREE.MeshStandardMaterial({ color: 0xdfdfdf, roughness: 0.65, metalness: 0.05, map: createFaceTexture() }),
+            bodyMaterial
+        ];
+
+        let avatar = new THREE.Group();
+        scene.add(avatar);
+
+        let torso, headGroup, leftArmGroup, rightArmGroup, leftLegGroup, rightLegGroup;
+
+        function buildAvatarParts() {
+            const headGeo = createBeveledBoxGeometry(1.0, 1.0, 0.8, 0.12, 3);
+            const torsoGeo = createBeveledBoxGeometry(1.6, 1.6, 0.8, 0.1, 3);
+            const armGeo = createBeveledBoxGeometry(0.65, 1.6, 0.65, 0.1, 3);
+            const legGeo = createBeveledBoxGeometry(0.75, 1.6, 0.75, 0.1, 3);
+
+            torso = new THREE.Mesh(torsoGeo, torsoMaterial);
+            torso.position.y = 2.6;
+            torso.castShadow = true;
+            torso.receiveShadow = true;
+            avatar.add(torso);
+
+            headGroup = new THREE.Group();
+            headGroup.position.set(0, 3.5, 0);
+            const headMesh = new THREE.Mesh(headGeo, headMaterial);
+            headMesh.position.y = 0.5;
+            headMesh.castShadow = true;
+            headMesh.receiveShadow = true;
+            headGroup.add(headMesh);
+            avatar.add(headGroup);
+
+            leftArmGroup = new THREE.Group();
+            leftArmGroup.position.set(-1.15, 3.25, 0);
+            const leftArmMesh = new THREE.Mesh(armGeo, bodyMaterial);
+            leftArmMesh.position.y = -0.8;
+            leftArmMesh.castShadow = true;
+            leftArmMesh.receiveShadow = true;
+            leftArmGroup.add(leftArmMesh);
+            avatar.add(leftArmGroup);
+
+            rightArmGroup = new THREE.Group();
+            rightArmGroup.position.set(1.15, 3.25, 0);
+            const rightArmMesh = new THREE.Mesh(armGeo, bodyMaterial);
+            rightArmMesh.position.y = -0.8;
+            rightArmMesh.castShadow = true;
+            rightArmMesh.receiveShadow = true;
+            rightArmGroup.add(rightArmMesh);
+            avatar.add(rightArmGroup);
+
+            leftLegGroup = new THREE.Group();
+            leftLegGroup.position.set(-0.4, 1.8, 0);
+            const leftLegMesh = new THREE.Mesh(legGeo, bodyMaterial);
+            leftLegMesh.position.y = -0.8;
+            leftLegMesh.castShadow = true;
+            leftLegMesh.receiveShadow = true;
+            leftLegGroup.add(leftLegMesh);
+            avatar.add(leftLegGroup);
+
+            rightLegGroup = new THREE.Group();
+            rightLegGroup.position.set(0.4, 1.8, 0);
+            const rightLegMesh = new THREE.Mesh(legGeo, bodyMaterial);
+            rightLegMesh.position.y = -0.8;
+            rightLegMesh.castShadow = true;
+            rightLegMesh.receiveShadow = true;
+            rightLegGroup.add(rightLegMesh);
+            avatar.add(rightLegGroup);
+        }
+
+        buildAvatarParts();
+
+        // --- Death & Break-Into-Pieces Animation State ---
+        let isDead = false;
+        let deathPieces = [];
+
+        function triggerRespawn() {
+            if (isDead) return;
+            isDead = true;
+            const parts = [torso, headGroup, leftArmGroup, rightArmGroup, leftLegGroup, rightLegGroup];
+            const worldPos = new THREE.Vector3();
+
+            parts.forEach(part => {
+                if (!part) return;
+                part.getWorldPosition(worldPos);
+                avatar.remove(part);
+                part.position.copy(worldPos);
+                scene.add(part);
+
+                const velocity = new THREE.Vector3(
+                    (Math.random() - 0.5) * 6,
+                    Math.random() * 6 + 3,
+                    (Math.random() - 0.5) * 6
+                );
+                const rotSpeed = new THREE.Vector3(
+                    (Math.random() - 0.5) * 10,
+                    (Math.random() - 0.5) * 10,
+                    (Math.random() - 0.5) * 10
+                );
+                deathPieces.push({ mesh: part, velocity, rotSpeed });
+            });
+
+            scene.remove(avatar);
+            contactShadow.visible = false;
+
+            setTimeout(() => {
+                deathPieces.forEach(p => scene.remove(p));
+                deathPieces = [];
+                avatar = new THREE.Group();
+                scene.add(avatar);
+                buildAvatarParts();
+                avatar.position.set(0, 0, 0);
+                avatarVelocityY = 0;
+                isJumping = false;
+                isDead = false;
+                contactShadow.visible = true;
+            }, 2500);
+        }
+
+        // --- Game Input & Physics Variables ---
+        const keys = { w: false, a: false, s: false, d: false };
+        let avatarVelocityY = 0;
+        let isJumping = false;
+        let animationTime = 0;
+        let avatarRotationY = 0;
+
+        // --- Keyboard Controls ---
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyW' || e.code === 'ArrowUp') keys.w = true;
+            if (e.code === 'KeyS' || e.code === 'ArrowDown') keys.s = true;
+            if (e.code === 'KeyA' || e.code === 'ArrowLeft') keys.a = true;
+            if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.d = true;
+            if (e.code === 'Space') {
+                if (!isJumping && !isDead) {
+                    avatarVelocityY = 9.5;
+                    isJumping = true;
+                }
+            }
+            if (e.code === 'KeyR') {
+                triggerRespawn();
+            }
+            if (e.code === 'KeyL') {
+                window.location.href = 'https://CloudFurm.com/Play';
+            }
+            if (e.code === 'Escape') {
+                const overlay = document.getElementById('game-menu-overlay');
+                overlay.classList.toggle('active');
+                if (overlay.classList.contains('active')) {
+                    pfpRenderer.render(pfpScene, pfpCamera);
+                }
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'KeyW' || e.code === 'ArrowUp') keys.w = false;
+            if (e.code === 'KeyS' || e.code === 'ArrowDown') keys.s = false;
+            if (e.code === 'KeyA' || e.code === 'ArrowLeft') keys.a = false;
+            if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.d = false;
+        });
+
+        // --- Mobile Joystick Setup ---
+        const joystickBase = document.getElementById('roblox-joystick-base');
+        const joystickStick = document.getElementById('roblox-joystick-stick');
+        let joystickTouchId = null;
+        let joystickCenter = { x: 0, y: 0 };
+        let joystickVector = { x: 0, y: 0 };
+
+        joystickBase.addEventListener('touchstart', (e) => {
+            const touch = e.changedTouches[0];
+            joystickTouchId = touch.identifier;
+            const rect = joystickBase.getBoundingClientRect();
+            joystickCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+            updateJoystick(touch.clientX, touch.clientY);
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const touch = e.changedTouches[i];
+                if (touch.identifier === joystickTouchId) {
+                    updateJoystick(touch.clientX, touch.clientY);
+                }
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                if (e.changedTouches[i].identifier === joystickTouchId) {
+                    joystickTouchId = null;
+                    joystickVector = { x: 0, y: 0 };
+                    joystickStick.style.transform = `translate(0px, 0px)`;
+                }
+            }
+        });
+
+        function updateJoystick(clientX, clientY) {
+            const maxDist = 20;
+            let dx = clientX - joystickCenter.x;
+            let dy = clientY - joystickCenter.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist > maxDist) {
+                dx = (dx / dist) * maxDist;
+                dy = (dy / dist) * maxDist;
+            }
+
+            joystickStick.style.transform = `translate(${dx}px, ${dy}px)`;
+            joystickVector.x = dx / maxDist;
+            joystickVector.y = dy / maxDist;
+        }
+
+        document.getElementById('roblox-jump-btn').addEventListener('touchstart', () => {
+            if (!isJumping && !isDead) {
+                avatarVelocityY = 9.5;
+                isJumping = true;
+            }
+        });
+
+        // --- Camera Mouse/Touch Orbit Controls ---
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let previousTouchDistance = 0;
+
+        container.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+
+            cameraTargetSpherical.theta -= deltaX * 0.007;
+            cameraTargetSpherical.phi -= deltaY * 0.007;
+
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        container.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1 && e.target !== joystickBase && e.target !== joystickStick) {
+                isDragging = true;
+                previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            } else if (e.touches.length === 2) {
+                isDragging = false;
+                previousTouchDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+            if (isDragging && e.touches.length === 1) {
+                const deltaX = e.touches[0].clientX - previousMousePosition.x;
+                const deltaY = e.touches[0].clientY - previousMousePosition.y;
+
+                cameraTargetSpherical.theta -= deltaX * 0.007;
+                cameraTargetSpherical.phi -= deltaY * 0.007;
+
+                previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            } else if (e.touches.length === 2) {
+                const currentDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                const deltaDist = currentDistance - previousTouchDistance;
+                cameraTargetSpherical.radius = Math.max(4, Math.min(22, cameraTargetSpherical.radius - deltaDist * 0.04));
+                previousTouchDistance = currentDistance;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchend', () => { isDragging = false; });
+
+        container.addEventListener('wheel', (e) => {
+            cameraTargetSpherical.radius = Math.max(4, Math.min(22, cameraTargetSpherical.radius + e.deltaY * 0.005));
+        }, { passive: true });
+
+        const hintEl = document.getElementById('interaction-hint');
+        function dismissHint() {
+            if (hintEl) {
+                hintEl.style.opacity = '0';
+                setTimeout(() => hintEl.remove(), 500);
+            }
+        }
+        container.addEventListener('mousedown', dismissHint, { once: true });
+        container.addEventListener('touchstart', dismissHint, { once: true });
+
+        // --- Menu Modal Management & Tabs & PFP Render Setup ---
+        const menuOverlay = document.getElementById('game-menu-overlay');
+        const menuBtn = document.getElementById('menu-btn');
+        const resumeBtn = document.getElementById('modal-resume-btn');
+        const leaveBtn = document.getElementById('modal-leave-btn');
+        const resetBtn = document.getElementById('modal-reset-btn');
+        const pfpContainer = document.getElementById('pfp-container');
+
+        // Setup tabs functionality
+        const tabs = document.querySelectorAll('.menu-tab');
+        const panes = document.querySelectorAll('.menu-tab-pane');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                panes.forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                const targetPane = document.getElementById('pane-' + tab.getAttribute('data-tab'));
+                if (targetPane) targetPane.classList.add('active');
+            });
+        });
+
+        // Setup mini Three.js scene for PFP Render with green background, small view head-to-waist
+        const pfpRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        pfpRenderer.setSize(36, 36);
+        pfpRenderer.setPixelRatio(window.devicePixelRatio);
+        pfpContainer.appendChild(pfpRenderer.domElement);
+
+        const pfpScene = new THREE.Scene();
+        const pfpCamera = new THREE.PerspectiveCamera(40, 1, 0.1, 50);
+        pfpCamera.position.set(0, 3.4, 4.2);
+        pfpCamera.lookAt(0, 3.2, 0);
+
+        const pfpAmb = new THREE.AmbientLight(0xffffff, 0.95);
+        pfpScene.add(pfpAmb);
+        const pfpDir = new THREE.DirectionalLight(0xffffff, 1.2);
+        pfpDir.position.set(2, 6, 3);
+        pfpScene.add(pfpDir);
+
+        const pfpAvatarGroup = new THREE.Group();
+        const pfpTorsoGeo = createBeveledBoxGeometry(1.6, 1.6, 0.8, 0.1, 3);
+        const pfpTorso = new THREE.Mesh(pfpTorsoGeo, torsoMaterial);
+        pfpTorso.position.y = 2.6;
+        pfpAvatarGroup.add(pfpTorso);
+
+        const pfpHeadGeo = createBeveledBoxGeometry(1.0, 1.0, 0.8, 0.12, 3);
+        const pfpHead = new THREE.Mesh(pfpHeadGeo, headMaterial);
+        pfpHead.position.y = 4.0;
+        pfpAvatarGroup.add(pfpHead);
+
+        const pfpArmGeo = createBeveledBoxGeometry(0.65, 1.6, 0.65, 0.1, 3);
+        const pfpLeftArm = new THREE.Mesh(pfpArmGeo, bodyMaterial);
+        pfpLeftArm.position.set(-1.15, 2.45, 0);
+        pfpAvatarGroup.add(pfpLeftArm);
+
+        const pfpRightArm = new THREE.Mesh(pfpArmGeo, bodyMaterial);
+        pfpRightArm.position.set(1.15, 2.45, 0);
+        pfpAvatarGroup.add(pfpRightArm);
+
+        pfpScene.add(pfpAvatarGroup);
+
+        menuBtn.addEventListener('click', () => {
+            menuOverlay.classList.add('active');
+            pfpRenderer.render(pfpScene, pfpCamera);
+        });
+
+        resumeBtn.addEventListener('click', () => {
+            menuOverlay.classList.remove('active');
+        });
+
+        leaveBtn.addEventListener('click', () => {
+            window.location.href = 'https://CloudFurm.com/Play';
+        });
+
+        resetBtn.addEventListener('click', () => {
+            menuOverlay.classList.remove('active');
+            triggerRespawn();
+        });
+
+        // --- Main Game Loop ---
+        const clock = new THREE.Clock();
+        const moveSpeed = 7.5;
+        const gravity = -28;
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const dt = Math.min(clock.getDelta(), 0.1);
+
+            if (isDead) {
+                const groundY = -0.5;
+                deathPieces.forEach(p => {
+                    p.velocity.y += gravity * dt;
+                    p.mesh.position.addScaledVector(p.velocity, dt);
+                    p.mesh.rotation.x += p.rotSpeed.x * dt;
+                    p.mesh.rotation.y += p.rotSpeed.y * dt;
+                    p.mesh.rotation.z += p.rotSpeed.z * dt;
+
+                    if (p.mesh.position.y <= groundY) {
+                        p.mesh.position.y = groundY;
+                        p.velocity.y = -p.velocity.y * 0.3;
+                        p.velocity.x *= 0.85;
+                        p.velocity.z *= 0.85;
+                        p.rotSpeed.multiplyScalar(0.8);
+                    }
+                });
+            } else {
+                let inputX = (keys.d ? 1 : 0) - (keys.a ? 1 : 0) + joystickVector.x;
+                let inputZ = (keys.s ? 1 : 0) - (keys.w ? 1 : 0) + joystickVector.y;
+
+                let isMoving = (inputX !== 0 || inputZ !== 0);
+
+                if (isMoving) {
+                    const camHeading = cameraTargetSpherical.theta;
+                    const moveAngle = Math.atan2(inputX, inputZ) + camHeading;
+
+                    const vx = Math.sin(moveAngle) * moveSpeed * dt;
+                    const vz = Math.cos(moveAngle) * moveSpeed * dt;
+
+                    avatar.position.x += vx;
+                    avatar.position.z += vz;
+
+                    const limit = baseplateSize / 2 - 1.5;
+                    avatar.position.x = Math.max(-limit, Math.min(limit, avatar.position.x));
+                    avatar.position.z = Math.max(-limit, Math.min(limit, avatar.position.z));
+
+                    let targetRotationY = moveAngle;
+                    let diff = targetRotationY - avatarRotationY;
+                    while (diff < -Math.PI) diff += Math.PI * 2;
+                    while (diff > Math.PI) diff -= Math.PI * 2;
+                    avatarRotationY += diff * 18 * dt;
+                    avatar.rotation.y = avatarRotationY;
+                }
+
+                if (isJumping) {
+                    avatarVelocityY += gravity * dt;
+                    avatar.position.y += avatarVelocityY * dt;
+
+                    if (avatar.position.y <= 0) {
+                        avatar.position.y = 0;
+                        avatarVelocityY = 0;
+                        isJumping = false;
+                    }
+                }
+
+                animationTime += dt;
+                
+                headGroup.rotation.set(0, 0, 0);
+                torso.position.y = 2.6;
+                torso.rotation.set(0, 0, 0);
+                leftArmGroup.rotation.set(0, 0, 0);
+                rightArmGroup.rotation.set(0, 0, 0);
+                leftLegGroup.rotation.set(0, 0, 0);
+                rightLegGroup.rotation.set(0, 0, 0);
+
+                if (isJumping) {
+                    leftArmGroup.rotation.x = -0.7;
+                    rightArmGroup.rotation.x = -0.7;
+                    leftLegGroup.rotation.x = 0.35;
+                    rightLegGroup.rotation.x = 0.35;
+
+                    const s = Math.max(0.35, 1 - avatar.position.y * 0.45);
+                    contactShadow.scale.set(s, s, s);
+                } else if (isMoving) {
+                    const speed = 13;
+                    const swing = Math.sin(animationTime * speed) * 0.65;
+                    const bob = Math.abs(Math.cos(animationTime * speed)) * 0.12;
+
+                    torso.position.y = 2.6 + bob;
+                    headGroup.position.y = 3.5 + bob;
+
+                    leftArmGroup.rotation.x = swing;
+                    rightArmGroup.rotation.x = -swing;
+                    leftLegGroup.rotation.x = -swing * 0.85;
+                    rightLegGroup.rotation.x = swing * 0.85;
+
+                    torso.rotation.y = Math.sin(animationTime * speed) * 0.05;
+                    headGroup.rotation.y = -torso.rotation.y;
+
+                    const shadowScale = 1 - bob * 0.7;
+                    contactShadow.scale.set(shadowScale, shadowScale, shadowScale);
+                } else {
+                    const breath = Math.sin(animationTime * 2.2) * 0.025;
+                    torso.position.y = 2.6 + breath;
+                    headGroup.position.y = 3.5 + breath;
+                    
+                    leftArmGroup.rotation.z = 0.04 + Math.sin(animationTime * 1.8) * 0.01;
+                    rightArmGroup.rotation.z = -0.04 - Math.sin(animationTime * 1.8) * 0.01;
+                    headGroup.rotation.y = Math.sin(animationTime * 0.7) * 0.08;
+                    headGroup.rotation.x = Math.cos(animationTime * 1.1) * 0.03;
+
+                    contactShadow.scale.set(1, 1, 1);
+                }
+
+                contactShadow.position.x = avatar.position.x;
+                contactShadow.position.z = avatar.position.z;
+                updateCameraPosition(avatar.position);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        });
+
+        animate();
+    </script>
+</body>
+</html>
