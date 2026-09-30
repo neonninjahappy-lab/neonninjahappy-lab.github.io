@@ -469,6 +469,7 @@
             z-index: 8;
         }
 
+        /* Scaled down panel dimensions for smaller screens using CSS transform */
         @media (max-width: 900px) {
             #roblox-joystick-base { display: block; }
             .hint { bottom: 100px; font-size: 11px; }
@@ -560,9 +561,10 @@
         </div>
     </div>
 
-    <!-- In-Game Menu Modal Overlay -->
+    <!-- In-Game Menu Modal Overlay Matching Screenshot EXACTLY -->
     <div id="game-menu-overlay">
         <div class="menu-modal-window">
+            <!-- Tabs Top Bar -->
             <div class="menu-tabs-header">
                 <button class="menu-tab active" data-tab="players">
                     <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
@@ -586,12 +588,16 @@
                 </button>
             </div>
 
+            <!-- Tab Content Body -->
             <div class="menu-tab-content">
+                <!-- Players Tab Pane -->
                 <div class="menu-tab-pane active" id="pane-players">
                     <div class="invite-friends-banner">
                         <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                         Invite friends to play
                     </div>
+
+                    <!-- Player 1: 404Error (Local player with avatar pfp - Only player in server) -->
                     <div class="player-row-item">
                         <div class="player-left-info">
                             <div class="player-avatar-render" id="pfp-container"></div>
@@ -602,20 +608,26 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Settings Tab Pane -->
                 <div class="menu-tab-pane" id="pane-settings">
                     <div class="pane-placeholder">Game Settings Options</div>
                 </div>
+                <!-- Report Tab Pane -->
                 <div class="menu-tab-pane" id="pane-report">
                     <div class="pane-placeholder">Player Reporting Menu</div>
                 </div>
+                <!-- Help Tab Pane -->
                 <div class="menu-tab-pane" id="pane-help">
                     <div class="pane-placeholder">Controls & Help Guide</div>
                 </div>
+                <!-- Record Tab Pane -->
                 <div class="menu-tab-pane" id="pane-record">
                     <div class="pane-placeholder">Video & Screenshot Recording Tools</div>
                 </div>
             </div>
 
+            <!-- Bottom Action Toolbar Matching Screenshot EXACTLY -->
             <div class="menu-footer-toolbar">
                 <div class="footer-action-card" id="modal-reset-btn" title="Reset Character">
                     <div class="key-badge">R</div>
@@ -635,8 +647,10 @@
         </div>
     </div>
 
+    <!-- Instructions Hint -->
     <div class="hint" id="interaction-hint">Use WASD / Joystick to Move • Drag to Pan Camera • Space / Jump Button to Jump</div>
 
+    <!-- Mobile Virtual Controls -->
     <div class="mobile-controls-layer">
         <div id="roblox-joystick-base">
             <div id="roblox-joystick-stick"></div>
@@ -649,27 +663,13 @@
     </div>
 
     <script>
-        // --- MULTIPLAYER CHANNEL SYNC SETUP ---
-        const gameChannel = new BroadcastChannel('roblox_baseplate_sync');
-
-        const remoteMesh = new THREE.Mesh(
-            new THREE.BoxGeometry(1.6, 1.6, 0.8), 
-            new THREE.MeshStandardMaterial({ color: 0xe74c3c })
-        );
-        remoteMesh.position.y = 2.6;
-        scene.add(remoteMesh);
-
-        gameChannel.onmessage = (event) => {
-            remoteMesh.position.set(event.data.x, event.data.y, event.data.z);
-            remoteMesh.rotation.y = event.data.rot;
-        };
-        // -------------------------------------
-
+        // --- 1. Scene Setup ---
         const container = document.getElementById('webgl-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xdce5ed);
         scene.fog = new THREE.FogExp2(0xdce5ed, 0.015);
 
+        // --- 2. Camera Setup (Smooth Roblox Follow Camera) ---
         const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
         let cameraTargetSpherical = { radius: 11, theta: Math.PI / 4, phi: Math.PI / 3.4 };
         let cameraCurrentSpherical = { ...cameraTargetSpherical };
@@ -691,6 +691,7 @@
             camera.lookAt(lookAtCenter);
         }
 
+        // --- 3. Renderer ---
         const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -701,6 +702,7 @@
         renderer.toneMappingExposure = 1.1;
         container.appendChild(renderer.domElement);
 
+        // --- 4. Lighting ---
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
         scene.add(ambientLight);
 
@@ -723,6 +725,7 @@
         dirLight.shadow.bias = -0.0005;
         scene.add(dirLight);
 
+        // --- Environment (Roblox Studio Baseplate & Studs Grid) ---
         const baseplateSize = 80;
         const baseplateGeo = new THREE.BoxGeometry(baseplateSize, 1, baseplateSize);
         const baseplateMat = new THREE.MeshStandardMaterial({ 
@@ -739,6 +742,7 @@
         gridHelper.position.y = 0.001;
         scene.add(gridHelper);
 
+        // Contact Shadow beneath avatar
         function createContactShadowTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 128;
@@ -764,6 +768,7 @@
         contactShadow.position.y = 0.002;
         scene.add(contactShadow);
 
+        // --- 5 & 6. Authentic Roblox R6 Avatar Construction ---
         function createBeveledBoxGeometry(width, height, depth, radius, smoothness) {
             const shape = new THREE.Shape();
             const rad = Math.min(radius, width / 2, height / 2);
@@ -898,6 +903,7 @@
 
         buildAvatarParts();
 
+        // --- Death & Break-Into-Pieces Animation State ---
         let isDead = false;
         let deathPieces = [];
 
@@ -944,12 +950,14 @@
             }, 2500);
         }
 
+        // --- Game Input & Physics Variables ---
         const keys = { w: false, a: false, s: false, d: false };
         let avatarVelocityY = 0;
         let isJumping = false;
         let animationTime = 0;
         let avatarRotationY = 0;
 
+        // --- Keyboard Controls ---
         window.addEventListener('keydown', (e) => {
             if (e.code === 'KeyW' || e.code === 'ArrowUp') keys.w = true;
             if (e.code === 'KeyS' || e.code === 'ArrowDown') keys.s = true;
@@ -961,8 +969,12 @@
                     isJumping = true;
                 }
             }
-            if (e.code === 'KeyR') triggerRespawn();
-            if (e.code === 'KeyL') window.location.href = 'https://CloudFurm.com/Play';
+            if (e.code === 'KeyR') {
+                triggerRespawn();
+            }
+            if (e.code === 'KeyL') {
+                window.location.href = 'https://CloudFurm.com/Play';
+            }
             if (e.code === 'Escape') {
                 const overlay = document.getElementById('game-menu-overlay');
                 overlay.classList.toggle('active');
@@ -979,6 +991,7 @@
             if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.d = false;
         });
 
+        // --- Mobile Joystick Setup ---
         const joystickBase = document.getElementById('roblox-joystick-base');
         const joystickStick = document.getElementById('roblox-joystick-stick');
         let joystickTouchId = null;
@@ -1035,6 +1048,7 @@
             }
         });
 
+        // --- Camera Mouse/Touch Orbit Controls ---
         let isDragging = false;
         let previousMousePosition = { x: 0, y: 0 };
         let previousTouchDistance = 0;
@@ -1106,6 +1120,7 @@
         container.addEventListener('mousedown', dismissHint, { once: true });
         container.addEventListener('touchstart', dismissHint, { once: true });
 
+        // --- Menu Modal Management & Tabs & PFP Render Setup ---
         const menuOverlay = document.getElementById('game-menu-overlay');
         const menuBtn = document.getElementById('menu-btn');
         const resumeBtn = document.getElementById('modal-resume-btn');
@@ -1113,6 +1128,7 @@
         const resetBtn = document.getElementById('modal-reset-btn');
         const pfpContainer = document.getElementById('pfp-container');
 
+        // Setup tabs functionality
         const tabs = document.querySelectorAll('.menu-tab');
         const panes = document.querySelectorAll('.menu-tab-pane');
 
@@ -1126,6 +1142,7 @@
             });
         });
 
+        // Setup mini Three.js scene for PFP Render with green background, small view head-to-waist
         const pfpRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         pfpRenderer.setSize(36, 36);
         pfpRenderer.setPixelRatio(window.devicePixelRatio);
@@ -1182,6 +1199,7 @@
             triggerRespawn();
         });
 
+        // --- Main Game Loop ---
         const clock = new THREE.Clock();
         const moveSpeed = 7.5;
         const gravity = -28;
@@ -1299,14 +1317,6 @@
                 contactShadow.position.x = avatar.position.x;
                 contactShadow.position.z = avatar.position.z;
                 updateCameraPosition(avatar.position);
-
-                // --- BROADCAST POSITION UPDATE ---
-                gameChannel.postMessage({
-                    x: avatar.position.x,
-                    y: avatar.position.y,
-                    z: avatar.position.z,
-                    rot: avatar.rotation.y
-                });
             }
 
             renderer.render(scene, camera);
@@ -1323,3 +1333,4 @@
     </script>
 </body>
 </html>
+Btw dont mess this up it took me a long time to make this
