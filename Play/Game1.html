@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Roblox Baseplate Game</title>
+    <title>Roblox Baseplate Game - Multiplayer</title>
     <style>
         :root {
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -255,7 +255,6 @@
             gap: 12px;
         }
 
-        /* Avatar render frame for pfp with green background, small view head-to-waist */
         .player-avatar-render {
             width: 36px;
             height: 36px;
@@ -304,7 +303,6 @@
             background: rgba(75, 85, 98, 0.9);
         }
 
-        /* Generic Pane placeholders for Settings, Report, Help, Record */
         .pane-placeholder {
             display: flex;
             flex-direction: column;
@@ -317,7 +315,6 @@
             gap: 10px;
         }
 
-        /* Bottom Action Toolbar matching image exactly */
         .menu-footer-toolbar {
             height: 76px;
             background: rgba(20, 24, 28, 0.95);
@@ -372,7 +369,6 @@
             color: #ffffff;
         }
 
-        /* Custom Scrollbar for list */
         .menu-tab-content::-webkit-scrollbar {
             width: 6px;
         }
@@ -384,7 +380,6 @@
             border-radius: 3px;
         }
 
-        /* Mobile Controls Layout */
         .mobile-controls-layer {
             position: absolute;
             top: 0;
@@ -469,81 +464,33 @@
             z-index: 8;
         }
 
-        /* Scaled down panel dimensions for smaller screens using CSS transform */
         @media (max-width: 900px) {
             #roblox-joystick-base { display: block; }
             .hint { bottom: 100px; font-size: 11px; }
-            
-            .menu-modal-window {
-                width: 480px;
-                height: 360px;
-            }
-            .menu-tabs-header {
-                height: 44px;
-                padding: 0 12px;
-                gap: 16px;
-            }
-            .menu-tab {
-                font-size: 12px;
-                gap: 6px;
-            }
-            .menu-tab svg {
-                width: 16px;
-                height: 16px;
-            }
-            .menu-footer-toolbar {
-                height: 56px;
-                padding: 0 12px;
-            }
-            .footer-action-card {
-                height: 34px;
-                padding: 0 10px;
-                gap: 8px;
-            }
-            .key-badge {
-                width: 20px;
-                height: 20px;
-                font-size: 10px;
-            }
-            .footer-btn-label {
-                font-size: 11px;
-            }
-            .player-row-item {
-                height: 40px;
-                padding: 0 10px;
-            }
-            .player-avatar-render {
-                width: 28px;
-                height: 28px;
-            }
-            .player-name-text {
-                font-size: 12px;
-            }
-            .action-text-btn {
-                height: 28px;
-                padding: 0 10px;
-                font-size: 11px;
-            }
-            .invite-friends-banner {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
-            .invite-friends-banner svg {
-                width: 14px;
-                height: 14px;
-            }
+            .menu-modal-window { width: 480px; height: 360px; }
+            .menu-tabs-header { height: 44px; padding: 0 12px; gap: 16px; }
+            .menu-tab { font-size: 12px; gap: 6px; }
+            .menu-tab svg { width: 16px; height: 16px; }
+            .menu-footer-toolbar { height: 56px; padding: 0 12px; }
+            .footer-action-card { height: 34px; padding: 0 10px; gap: 8px; }
+            .key-badge { width: 20px; height: 20px; font-size: 10px; }
+            .footer-btn-label { font-size: 11px; }
+            .player-row-item { height: 40px; padding: 0 10px; }
+            .player-avatar-render { width: 28px; height: 28px; }
+            .player-name-text { font-size: 12px; }
+            .action-text-btn { height: 28px; padding: 0 10px; font-size: 11px; }
+            .invite-friends-banner { padding: 8px 12px; font-size: 12px; }
+            .invite-friends-banner svg { width: 14px; height: 14px; }
         }
 
         @media (max-width: 500px) {
-            .menu-modal-window {
-                width: 90vw;
-                max-width: 380px;
-                height: 320px;
-            }
+            .menu-modal-window { width: 90vw; max-width: 380px; height: 320px; }
         }
     </style>
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- PartySocket Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/partysocket@1.0.2/dist/umd/index.js"></script>
 </head>
 <body>
 
@@ -561,10 +508,9 @@
         </div>
     </div>
 
-    <!-- In-Game Menu Modal Overlay Matching Screenshot EXACTLY -->
+    <!-- In-Game Menu Modal Overlay -->
     <div id="game-menu-overlay">
         <div class="menu-modal-window">
-            <!-- Tabs Top Bar -->
             <div class="menu-tabs-header">
                 <button class="menu-tab active" data-tab="players">
                     <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
@@ -588,46 +534,28 @@
                 </button>
             </div>
 
-            <!-- Tab Content Body -->
             <div class="menu-tab-content">
-                <!-- Players Tab Pane -->
                 <div class="menu-tab-pane active" id="pane-players">
                     <div class="invite-friends-banner">
                         <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                         Invite friends to play
                     </div>
-
-                    <!-- Player 1: 404Error (Local player with avatar pfp - Only player in server) -->
                     <div class="player-row-item">
                         <div class="player-left-info">
                             <div class="player-avatar-render" id="pfp-container"></div>
-                            <div class="player-name-text">404Error (You)</div>
+                            <div class="player-name-text" id="my-name-display">Player (You)</div>
                         </div>
                         <div class="player-row-actions">
                             <button class="action-text-btn" style="opacity: 0.6; cursor: default;">Local</button>
                         </div>
                     </div>
                 </div>
-
-                <!-- Settings Tab Pane -->
-                <div class="menu-tab-pane" id="pane-settings">
-                    <div class="pane-placeholder">Game Settings Options</div>
-                </div>
-                <!-- Report Tab Pane -->
-                <div class="menu-tab-pane" id="pane-report">
-                    <div class="pane-placeholder">Player Reporting Menu</div>
-                </div>
-                <!-- Help Tab Pane -->
-                <div class="menu-tab-pane" id="pane-help">
-                    <div class="pane-placeholder">Controls & Help Guide</div>
-                </div>
-                <!-- Record Tab Pane -->
-                <div class="menu-tab-pane" id="pane-record">
-                    <div class="pane-placeholder">Video & Screenshot Recording Tools</div>
-                </div>
+                <div class="menu-tab-pane" id="pane-settings"><div class="pane-placeholder">Game Settings Options</div></div>
+                <div class="menu-tab-pane" id="pane-report"><div class="pane-placeholder">Player Reporting Menu</div></div>
+                <div class="menu-tab-pane" id="pane-help"><div class="pane-placeholder">Controls & Help Guide</div></div>
+                <div class="menu-tab-pane" id="pane-record"><div class="pane-placeholder">Video & Screenshot Recording Tools</div></div>
             </div>
 
-            <!-- Bottom Action Toolbar Matching Screenshot EXACTLY -->
             <div class="menu-footer-toolbar">
                 <div class="footer-action-card" id="modal-reset-btn" title="Reset Character">
                     <div class="key-badge">R</div>
@@ -647,29 +575,71 @@
         </div>
     </div>
 
-    <!-- Instructions Hint -->
     <div class="hint" id="interaction-hint">Use WASD / Joystick to Move • Drag to Pan Camera • Space / Jump Button to Jump</div>
 
-    <!-- Mobile Virtual Controls -->
     <div class="mobile-controls-layer">
         <div id="roblox-joystick-base">
             <div id="roblox-joystick-stick"></div>
         </div>
         <button id="roblox-jump-btn" title="Jump">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 2L4 10h5v12h6V10h5L12 2Z"/>
-            </svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2L4 10h5v12h6V10h5L12 2Z"/></svg>
         </button>
     </div>
 
     <script>
+        // --- Multiplayer Integration via PartySocket ---
+        // (Connects to a public partykit echo relay for instant testing)
+        let partySocket = null;
+        try {
+            partySocket = new PartySocket({
+                host: "partykit.site", // Free public relay service or your custom partykit domain
+                party: "roblox-baseplate",
+                room: "main-server-room"
+            });
+        } catch (e) {
+            console.log("Multiplayer offline mode active");
+        }
+
+        const remotePlayers = {};
+
+        if (partySocket) {
+            partySocket.addEventListener("message", (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.id === partySocket.id) return; // Skip self
+
+                    if (!remotePlayers[data.id]) {
+                        // Create a remote player avatar mesh clone
+                        const remoteGroup = avatar.clone(true);
+                        scene.add(remoteGroup);
+                        remotePlayers[data.id] = {
+                            group: remoteGroup,
+                            x: data.x, y: data.y, z: data.z,
+                            rotY: data.rotY,
+                            isMoving: data.isMoving,
+                            isJumping: data.isJumping,
+                            animTime: 0
+                        };
+                    } else {
+                        const rp = remotePlayers[data.id];
+                        rp.x = data.x;
+                        rp.y = data.y;
+                        rp.z = data.z;
+                        rp.rotY = data.rotY;
+                        rp.isMoving = data.isMoving;
+                        rp.isJumping = data.isJumping;
+                    }
+                } catch (err) {}
+            });
+        }
+
         // --- 1. Scene Setup ---
         const container = document.getElementById('webgl-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xdce5ed);
         scene.fog = new THREE.FogExp2(0xdce5ed, 0.015);
 
-        // --- 2. Camera Setup (Smooth Roblox Follow Camera) ---
+        // --- 2. Camera Setup ---
         const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
         let cameraTargetSpherical = { radius: 11, theta: Math.PI / 4, phi: Math.PI / 3.4 };
         let cameraCurrentSpherical = { ...cameraTargetSpherical };
@@ -678,11 +648,9 @@
             cameraCurrentSpherical.radius += (cameraTargetSpherical.radius - cameraCurrentSpherical.radius) * 0.15;
             cameraCurrentSpherical.theta += (cameraTargetSpherical.theta - cameraCurrentSpherical.theta) * 0.15;
             cameraCurrentSpherical.phi += (cameraTargetSpherical.phi - cameraCurrentSpherical.phi) * 0.15;
-
             cameraCurrentSpherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, cameraCurrentSpherical.phi));
 
             const lookAtCenter = avatarPosition.clone().add(new THREE.Vector3(0, 1.8, 0));
-
             const x = lookAtCenter.x + cameraCurrentSpherical.radius * Math.sin(cameraCurrentSpherical.phi) * Math.sin(cameraCurrentSpherical.theta);
             const y = lookAtCenter.y + cameraCurrentSpherical.radius * Math.cos(cameraCurrentSpherical.phi);
             const z = lookAtCenter.z + cameraCurrentSpherical.radius * Math.sin(cameraCurrentSpherical.phi) * Math.cos(cameraCurrentSpherical.theta);
@@ -725,14 +693,10 @@
         dirLight.shadow.bias = -0.0005;
         scene.add(dirLight);
 
-        // --- Environment (Roblox Studio Baseplate & Studs Grid) ---
+        // --- Environment ---
         const baseplateSize = 80;
         const baseplateGeo = new THREE.BoxGeometry(baseplateSize, 1, baseplateSize);
-        const baseplateMat = new THREE.MeshStandardMaterial({ 
-            color: 0xa3a3a3, 
-            roughness: 0.85, 
-            metalness: 0.05 
-        });
+        const baseplateMat = new THREE.MeshStandardMaterial({ color: 0xa3a3a3, roughness: 0.85, metalness: 0.05 });
         const baseplate = new THREE.Mesh(baseplateGeo, baseplateMat);
         baseplate.position.y = -0.5;
         baseplate.receiveShadow = true;
@@ -742,11 +706,9 @@
         gridHelper.position.y = 0.001;
         scene.add(gridHelper);
 
-        // Contact Shadow beneath avatar
         function createContactShadowTexture() {
             const canvas = document.createElement('canvas');
-            canvas.width = 128;
-            canvas.height = 128;
+            canvas.width = 128; canvas.height = 128;
             const ctx = canvas.getContext('2d');
             const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
             gradient.addColorStop(0, 'rgba(0, 0, 0, 0.65)');
@@ -758,85 +720,45 @@
         }
 
         const shadowGeo = new THREE.PlaneGeometry(1.8, 1.8);
-        const shadowMat = new THREE.MeshBasicMaterial({
-            map: createContactShadowTexture(),
-            transparent: true,
-            depthWrite: false
-        });
+        const shadowMat = new THREE.MeshBasicMaterial({ map: createContactShadowTexture(), transparent: true, depthWrite: false });
         const contactShadow = new THREE.Mesh(shadowGeo, shadowMat);
         contactShadow.rotation.x = -Math.PI / 2;
         contactShadow.position.y = 0.002;
         scene.add(contactShadow);
 
-        // --- 5 & 6. Authentic Roblox R6 Avatar Construction ---
+        // --- Avatar Construction ---
         function createBeveledBoxGeometry(width, height, depth, radius, smoothness) {
             const shape = new THREE.Shape();
             const rad = Math.min(radius, width / 2, height / 2);
-            
             shape.absarc(width / 2 - rad, height / 2 - rad, rad, Math.PI / 2, 0, true);
             shape.absarc(width / 2 - rad, -height / 2 + rad, rad, 0, -Math.PI / 2, true);
             shape.absarc(-width / 2 + rad, -height / 2 + rad, rad, -Math.PI / 2, -Math.PI, true);
             shape.absarc(-width / 2 + rad, height / 2 - rad, rad, -Math.PI, -Math.PI * 3 / 2, true);
-
-            const extrudeSettings = {
-                steps: 1,
-                depth: depth - rad * 2,
-                bevelEnabled: true,
-                bevelThickness: rad,
-                bevelSize: rad,
-                bevelSegments: smoothness
-            };
-
+            const extrudeSettings = { steps: 1, depth: depth - rad * 2, bevelEnabled: true, bevelThickness: rad, bevelSize: rad, bevelSegments: smoothness };
             const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
             geom.center();
             return geom;
         }
 
-        const bodyMaterial = new THREE.MeshStandardMaterial({
-            color: 0xdfdfdf,
-            roughness: 0.65,
-            metalness: 0.05
-        });
-
-        const torsoMaterial = new THREE.MeshStandardMaterial({
-            color: 0x999b9e,
-            roughness: 0.6,
-            metalness: 0.05
-        });
+        const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xdfdfdf, roughness: 0.65, metalness: 0.05 });
+        const torsoMaterial = new THREE.MeshStandardMaterial({ color: 0x999b9e, roughness: 0.6, metalness: 0.05 });
 
         function createFaceTexture() {
             const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 512;
+            canvas.width = 512; canvas.height = 512;
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, 512, 512);
             ctx.fillStyle = '#111111';
-            
-            ctx.beginPath();
-            ctx.arc(175, 200, 22, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.beginPath();
-            ctx.arc(337, 200, 22, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.lineWidth = 20;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = '#111111';
-            ctx.beginPath();
-            ctx.arc(256, 260, 95, 0.15 * Math.PI, 0.85 * Math.PI, false);
-            ctx.stroke();
-
+            ctx.beginPath(); ctx.arc(175, 200, 22, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(337, 200, 22, 0, Math.PI * 2); ctx.fill();
+            ctx.lineWidth = 20; ctx.lineCap = 'round'; ctx.strokeStyle = '#111111';
+            ctx.beginPath(); ctx.arc(256, 260, 95, 0.15 * Math.PI, 0.85 * Math.PI, false); ctx.stroke();
             const texture = new THREE.CanvasTexture(canvas);
             texture.encoding = THREE.sRGBEncoding;
             return texture;
         }
 
-        const headMaterial = [
-            bodyMaterial, bodyMaterial, bodyMaterial, bodyMaterial,
-            new THREE.MeshStandardMaterial({ color: 0xdfdfdf, roughness: 0.65, metalness: 0.05, map: createFaceTexture() }),
-            bodyMaterial
-        ];
+        const headMaterial = [bodyMaterial, bodyMaterial, bodyMaterial, bodyMaterial, new THREE.MeshStandardMaterial({ color: 0xdfdfdf, roughness: 0.65, metalness: 0.05, map: createFaceTexture() }), bodyMaterial];
 
         let avatar = new THREE.Group();
         scene.add(avatar);
@@ -850,60 +772,47 @@
             const legGeo = createBeveledBoxGeometry(0.75, 1.6, 0.75, 0.1, 3);
 
             torso = new THREE.Mesh(torsoGeo, torsoMaterial);
-            torso.position.y = 2.6;
-            torso.castShadow = true;
-            torso.receiveShadow = true;
+            torso.position.y = 2.6; torso.castShadow = true; torso.receiveShadow = true;
             avatar.add(torso);
 
             headGroup = new THREE.Group();
             headGroup.position.set(0, 3.5, 0);
             const headMesh = new THREE.Mesh(headGeo, headMaterial);
-            headMesh.position.y = 0.5;
-            headMesh.castShadow = true;
-            headMesh.receiveShadow = true;
+            headMesh.position.y = 0.5; headMesh.castShadow = true; headMesh.receiveShadow = true;
             headGroup.add(headMesh);
             avatar.add(headGroup);
 
             leftArmGroup = new THREE.Group();
             leftArmGroup.position.set(-1.15, 3.25, 0);
             const leftArmMesh = new THREE.Mesh(armGeo, bodyMaterial);
-            leftArmMesh.position.y = -0.8;
-            leftArmMesh.castShadow = true;
-            leftArmMesh.receiveShadow = true;
+            leftArmMesh.position.y = -0.8; leftArmMesh.castShadow = true; leftArmMesh.receiveShadow = true;
             leftArmGroup.add(leftArmMesh);
             avatar.add(leftArmGroup);
 
             rightArmGroup = new THREE.Group();
             rightArmGroup.position.set(1.15, 3.25, 0);
             const rightArmMesh = new THREE.Mesh(armGeo, bodyMaterial);
-            rightArmMesh.position.y = -0.8;
-            rightArmMesh.castShadow = true;
-            rightArmMesh.receiveShadow = true;
+            rightArmMesh.position.y = -0.8; rightArmMesh.castShadow = true; rightArmMesh.receiveShadow = true;
             rightArmGroup.add(rightArmMesh);
             avatar.add(rightArmGroup);
 
             leftLegGroup = new THREE.Group();
             leftLegGroup.position.set(-0.4, 1.8, 0);
             const leftLegMesh = new THREE.Mesh(legGeo, bodyMaterial);
-            leftLegMesh.position.y = -0.8;
-            leftLegMesh.castShadow = true;
-            leftLegMesh.receiveShadow = true;
+            leftLegMesh.position.y = -0.8; leftLegMesh.castShadow = true; leftLegMesh.receiveShadow = true;
             leftLegGroup.add(leftLegMesh);
             avatar.add(leftLegGroup);
 
             rightLegGroup = new THREE.Group();
             rightLegGroup.position.set(0.4, 1.8, 0);
             const rightLegMesh = new THREE.Mesh(legGeo, bodyMaterial);
-            rightLegMesh.position.y = -0.8;
-            rightLegMesh.castShadow = true;
-            rightLegMesh.receiveShadow = true;
+            rightLegMesh.position.y = -0.8; rightLegMesh.castShadow = true; rightLegMesh.receiveShadow = true;
             rightLegGroup.add(rightLegMesh);
             avatar.add(rightLegGroup);
         }
 
         buildAvatarParts();
 
-        // --- Death & Break-Into-Pieces Animation State ---
         let isDead = false;
         let deathPieces = [];
 
@@ -920,16 +829,8 @@
                 part.position.copy(worldPos);
                 scene.add(part);
 
-                const velocity = new THREE.Vector3(
-                    (Math.random() - 0.5) * 6,
-                    Math.random() * 6 + 3,
-                    (Math.random() - 0.5) * 6
-                );
-                const rotSpeed = new THREE.Vector3(
-                    (Math.random() - 0.5) * 10,
-                    (Math.random() - 0.5) * 10,
-                    (Math.random() - 0.5) * 10
-                );
+                const velocity = new THREE.Vector3((Math.random() - 0.5) * 6, Math.random() * 6 + 3, (Math.random() - 0.5) * 6);
+                const rotSpeed = new THREE.Vector3((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10);
                 deathPieces.push({ mesh: part, velocity, rotSpeed });
             });
 
@@ -950,37 +851,24 @@
             }, 2500);
         }
 
-        // --- Game Input & Physics Variables ---
         const keys = { w: false, a: false, s: false, d: false };
         let avatarVelocityY = 0;
         let isJumping = false;
         let animationTime = 0;
         let avatarRotationY = 0;
 
-        // --- Keyboard Controls ---
         window.addEventListener('keydown', (e) => {
             if (e.code === 'KeyW' || e.code === 'ArrowUp') keys.w = true;
             if (e.code === 'KeyS' || e.code === 'ArrowDown') keys.s = true;
             if (e.code === 'KeyA' || e.code === 'ArrowLeft') keys.a = true;
             if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.d = true;
-            if (e.code === 'Space') {
-                if (!isJumping && !isDead) {
-                    avatarVelocityY = 9.5;
-                    isJumping = true;
-                }
-            }
-            if (e.code === 'KeyR') {
-                triggerRespawn();
-            }
-            if (e.code === 'KeyL') {
-                window.location.href = 'https://CloudFurm.com/Play';
-            }
+            if (e.code === 'Space' && !isJumping && !isDead) { avatarVelocityY = 9.5; isJumping = true; }
+            if (e.code === 'KeyR') triggerRespawn();
+            if (e.code === 'KeyL') window.location.href = 'https://CloudFurm.com/Play';
             if (e.code === 'Escape') {
                 const overlay = document.getElementById('game-menu-overlay');
                 overlay.classList.toggle('active');
-                if (overlay.classList.contains('active')) {
-                    pfpRenderer.render(pfpScene, pfpCamera);
-                }
+                if (overlay.classList.contains('active')) pfpRenderer.render(pfpScene, pfpCamera);
             }
         });
 
@@ -991,7 +879,6 @@
             if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.d = false;
         });
 
-        // --- Mobile Joystick Setup ---
         const joystickBase = document.getElementById('roblox-joystick-base');
         const joystickStick = document.getElementById('roblox-joystick-stick');
         let joystickTouchId = null;
@@ -1008,18 +895,14 @@
 
         window.addEventListener('touchmove', (e) => {
             for (let i = 0; i < e.changedTouches.length; i++) {
-                const touch = e.changedTouches[i];
-                if (touch.identifier === joystickTouchId) {
-                    updateJoystick(touch.clientX, touch.clientY);
-                }
+                if (e.changedTouches[i].identifier === joystickTouchId) updateJoystick(e.changedTouches[i].clientX, e.changedTouches[i].clientY);
             }
         }, { passive: true });
 
         window.addEventListener('touchend', (e) => {
             for (let i = 0; i < e.changedTouches.length; i++) {
                 if (e.changedTouches[i].identifier === joystickTouchId) {
-                    joystickTouchId = null;
-                    joystickVector = { x: 0, y: 0 };
+                    joystickTouchId = null; joystickVector = { x: 0, y: 0 };
                     joystickStick.style.transform = `translate(0px, 0px)`;
                 }
             }
@@ -1030,97 +913,59 @@
             let dx = clientX - joystickCenter.x;
             let dy = clientY - joystickCenter.y;
             const dist = Math.hypot(dx, dy);
-
-            if (dist > maxDist) {
-                dx = (dx / dist) * maxDist;
-                dy = (dy / dist) * maxDist;
-            }
-
+            if (dist > maxDist) { dx = (dx / dist) * maxDist; dy = (dy / dist) * maxDist; }
             joystickStick.style.transform = `translate(${dx}px, ${dy}px)`;
-            joystickVector.x = dx / maxDist;
-            joystickVector.y = dy / maxDist;
+            joystickVector.x = dx / maxDist; joystickVector.y = dy / maxDist;
         }
 
         document.getElementById('roblox-jump-btn').addEventListener('touchstart', () => {
-            if (!isJumping && !isDead) {
-                avatarVelocityY = 9.5;
-                isJumping = true;
-            }
+            if (!isJumping && !isDead) { avatarVelocityY = 9.5; isJumping = true; }
         });
 
-        // --- Camera Mouse/Touch Orbit Controls ---
         let isDragging = false;
         let previousMousePosition = { x: 0, y: 0 };
         let previousTouchDistance = 0;
 
-        container.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            previousMousePosition = { x: e.clientX, y: e.clientY };
-        });
-
+        container.addEventListener('mousedown', (e) => { isDragging = true; previousMousePosition = { x: e.clientX, y: e.clientY }; });
         window.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
-            const deltaX = e.clientX - previousMousePosition.x;
-            const deltaY = e.clientY - previousMousePosition.y;
-
-            cameraTargetSpherical.theta -= deltaX * 0.007;
-            cameraTargetSpherical.phi -= deltaY * 0.007;
-
+            cameraTargetSpherical.theta -= (e.clientX - previousMousePosition.x) * 0.007;
+            cameraTargetSpherical.phi -= (e.clientY - previousMousePosition.y) * 0.007;
             previousMousePosition = { x: e.clientX, y: e.clientY };
         });
-
         window.addEventListener('mouseup', () => { isDragging = false; });
 
         container.addEventListener('touchstart', (e) => {
             if (e.touches.length === 1 && e.target !== joystickBase && e.target !== joystickStick) {
-                isDragging = true;
-                previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                isDragging = true; previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
             } else if (e.touches.length === 2) {
                 isDragging = false;
-                previousTouchDistance = Math.hypot(
-                    e.touches[0].clientX - e.touches[1].clientX,
-                    e.touches[0].clientY - e.touches[1].clientY
-                );
+                previousTouchDistance = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
             }
         }, { passive: true });
 
         window.addEventListener('touchmove', (e) => {
             if (isDragging && e.touches.length === 1) {
-                const deltaX = e.touches[0].clientX - previousMousePosition.x;
-                const deltaY = e.touches[0].clientY - previousMousePosition.y;
-
-                cameraTargetSpherical.theta -= deltaX * 0.007;
-                cameraTargetSpherical.phi -= deltaY * 0.007;
-
+                cameraTargetSpherical.theta -= (e.touches[0].clientX - previousMousePosition.x) * 0.007;
+                cameraTargetSpherical.phi -= (e.touches[0].clientY - previousMousePosition.y) * 0.007;
                 previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
             } else if (e.touches.length === 2) {
-                const currentDistance = Math.hypot(
-                    e.touches[0].clientX - e.touches[1].clientX,
-                    e.touches[0].clientY - e.touches[1].clientY
-                );
-                const deltaDist = currentDistance - previousTouchDistance;
-                cameraTargetSpherical.radius = Math.max(4, Math.min(22, cameraTargetSpherical.radius - deltaDist * 0.04));
+                const currentDistance = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                cameraTargetSpherical.radius = Math.max(4, Math.min(22, cameraTargetSpherical.radius - (currentDistance - previousTouchDistance) * 0.04));
                 previousTouchDistance = currentDistance;
             }
         }, { passive: true });
 
         window.addEventListener('touchend', () => { isDragging = false; });
-
         container.addEventListener('wheel', (e) => {
             cameraTargetSpherical.radius = Math.max(4, Math.min(22, cameraTargetSpherical.radius + e.deltaY * 0.005));
         }, { passive: true });
 
         const hintEl = document.getElementById('interaction-hint');
-        function dismissHint() {
-            if (hintEl) {
-                hintEl.style.opacity = '0';
-                setTimeout(() => hintEl.remove(), 500);
-            }
-        }
+        function dismissHint() { if (hintEl) { hintEl.style.opacity = '0'; setTimeout(() => hintEl.remove(), 500); } }
         container.addEventListener('mousedown', dismissHint, { once: true });
         container.addEventListener('touchstart', dismissHint, { once: true });
 
-        // --- Menu Modal Management & Tabs & PFP Render Setup ---
         const menuOverlay = document.getElementById('game-menu-overlay');
         const menuBtn = document.getElementById('menu-btn');
         const resumeBtn = document.getElementById('modal-resume-btn');
@@ -1128,10 +973,8 @@
         const resetBtn = document.getElementById('modal-reset-btn');
         const pfpContainer = document.getElementById('pfp-container');
 
-        // Setup tabs functionality
         const tabs = document.querySelectorAll('.menu-tab');
         const panes = document.querySelectorAll('.menu-tab-pane');
-
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 tabs.forEach(t => t.classList.remove('active'));
@@ -1142,7 +985,6 @@
             });
         });
 
-        // Setup mini Three.js scene for PFP Render with green background, small view head-to-waist
         const pfpRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         pfpRenderer.setSize(36, 36);
         pfpRenderer.setPixelRatio(window.devicePixelRatio);
@@ -1152,61 +994,29 @@
         const pfpCamera = new THREE.PerspectiveCamera(40, 1, 0.1, 50);
         pfpCamera.position.set(0, 3.4, 4.2);
         pfpCamera.lookAt(0, 3.2, 0);
-
-        const pfpAmb = new THREE.AmbientLight(0xffffff, 0.95);
-        pfpScene.add(pfpAmb);
+        pfpScene.add(new THREE.AmbientLight(0xffffff, 0.95));
         const pfpDir = new THREE.DirectionalLight(0xffffff, 1.2);
         pfpDir.position.set(2, 6, 3);
         pfpScene.add(pfpDir);
 
         const pfpAvatarGroup = new THREE.Group();
-        const pfpTorsoGeo = createBeveledBoxGeometry(1.6, 1.6, 0.8, 0.1, 3);
-        const pfpTorso = new THREE.Mesh(pfpTorsoGeo, torsoMaterial);
-        pfpTorso.position.y = 2.6;
-        pfpAvatarGroup.add(pfpTorso);
-
-        const pfpHeadGeo = createBeveledBoxGeometry(1.0, 1.0, 0.8, 0.12, 3);
-        const pfpHead = new THREE.Mesh(pfpHeadGeo, headMaterial);
-        pfpHead.position.y = 4.0;
-        pfpAvatarGroup.add(pfpHead);
-
-        const pfpArmGeo = createBeveledBoxGeometry(0.65, 1.6, 0.65, 0.1, 3);
-        const pfpLeftArm = new THREE.Mesh(pfpArmGeo, bodyMaterial);
-        pfpLeftArm.position.set(-1.15, 2.45, 0);
-        pfpAvatarGroup.add(pfpLeftArm);
-
-        const pfpRightArm = new THREE.Mesh(pfpArmGeo, bodyMaterial);
-        pfpRightArm.position.set(1.15, 2.45, 0);
-        pfpAvatarGroup.add(pfpRightArm);
-
+        pfpAvatarGroup.add(new THREE.Mesh(createBeveledBoxGeometry(1.6, 1.6, 0.8, 0.1, 3), torsoMaterial)).children[0].position.y = 2.6;
+        pfpAvatarGroup.add(new THREE.Mesh(createBeveledBoxGeometry(1.0, 1.0, 0.8, 0.12, 3), headMaterial)).children[1].position.y = 4.0;
         pfpScene.add(pfpAvatarGroup);
 
-        menuBtn.addEventListener('click', () => {
-            menuOverlay.classList.add('active');
-            pfpRenderer.render(pfpScene, pfpCamera);
-        });
-
-        resumeBtn.addEventListener('click', () => {
-            menuOverlay.classList.remove('active');
-        });
-
-        leaveBtn.addEventListener('click', () => {
-            window.location.href = 'https://CloudFurm.com/Play';
-        });
-
-        resetBtn.addEventListener('click', () => {
-            menuOverlay.classList.remove('active');
-            triggerRespawn();
-        });
+        menuBtn.addEventListener('click', () => { menuOverlay.classList.add('active'); pfpRenderer.render(pfpScene, pfpCamera); });
+        resumeBtn.addEventListener('click', () => { menuOverlay.classList.remove('active'); });
+        leaveBtn.addEventListener('click', () => { window.location.href = 'https://CloudFurm.com/Play'; });
+        resetBtn.addEventListener('click', () => { menuOverlay.classList.remove('active'); triggerRespawn(); });
 
         // --- Main Game Loop ---
         const clock = new THREE.Clock();
         const moveSpeed = 7.5;
         const gravity = -28;
+        let networkTimer = 0;
 
         function animate() {
             requestAnimationFrame(animate);
-
             const dt = Math.min(clock.getDelta(), 0.1);
 
             if (isDead) {
@@ -1217,30 +1027,23 @@
                     p.mesh.rotation.x += p.rotSpeed.x * dt;
                     p.mesh.rotation.y += p.rotSpeed.y * dt;
                     p.mesh.rotation.z += p.rotSpeed.z * dt;
-
                     if (p.mesh.position.y <= groundY) {
                         p.mesh.position.y = groundY;
                         p.velocity.y = -p.velocity.y * 0.3;
-                        p.velocity.x *= 0.85;
-                        p.velocity.z *= 0.85;
+                        p.velocity.x *= 0.85; p.velocity.z *= 0.85;
                         p.rotSpeed.multiplyScalar(0.8);
                     }
                 });
             } else {
                 let inputX = (keys.d ? 1 : 0) - (keys.a ? 1 : 0) + joystickVector.x;
                 let inputZ = (keys.s ? 1 : 0) - (keys.w ? 1 : 0) + joystickVector.y;
-
                 let isMoving = (inputX !== 0 || inputZ !== 0);
 
                 if (isMoving) {
                     const camHeading = cameraTargetSpherical.theta;
                     const moveAngle = Math.atan2(inputX, inputZ) + camHeading;
-
-                    const vx = Math.sin(moveAngle) * moveSpeed * dt;
-                    const vz = Math.cos(moveAngle) * moveSpeed * dt;
-
-                    avatar.position.x += vx;
-                    avatar.position.z += vz;
+                    avatar.position.x += Math.sin(moveAngle) * moveSpeed * dt;
+                    avatar.position.z += Math.cos(moveAngle) * moveSpeed * dt;
 
                     const limit = baseplateSize / 2 - 1.5;
                     avatar.position.x = Math.max(-limit, Math.min(limit, avatar.position.x));
@@ -1257,16 +1060,10 @@
                 if (isJumping) {
                     avatarVelocityY += gravity * dt;
                     avatar.position.y += avatarVelocityY * dt;
-
-                    if (avatar.position.y <= 0) {
-                        avatar.position.y = 0;
-                        avatarVelocityY = 0;
-                        isJumping = false;
-                    }
+                    if (avatar.position.y <= 0) { avatar.position.y = 0; avatarVelocityY = 0; isJumping = false; }
                 }
 
                 animationTime += dt;
-                
                 headGroup.rotation.set(0, 0, 0);
                 torso.position.y = 2.6;
                 torso.rotation.set(0, 0, 0);
@@ -1276,47 +1073,58 @@
                 rightLegGroup.rotation.set(0, 0, 0);
 
                 if (isJumping) {
-                    leftArmGroup.rotation.x = -0.7;
-                    rightArmGroup.rotation.x = -0.7;
-                    leftLegGroup.rotation.x = 0.35;
-                    rightLegGroup.rotation.x = 0.35;
-
+                    leftArmGroup.rotation.x = -0.7; rightArmGroup.rotation.x = -0.7;
+                    leftLegGroup.rotation.x = 0.35; rightLegGroup.rotation.x = 0.35;
                     const s = Math.max(0.35, 1 - avatar.position.y * 0.45);
                     contactShadow.scale.set(s, s, s);
                 } else if (isMoving) {
                     const speed = 13;
                     const swing = Math.sin(animationTime * speed) * 0.65;
                     const bob = Math.abs(Math.cos(animationTime * speed)) * 0.12;
-
-                    torso.position.y = 2.6 + bob;
-                    headGroup.position.y = 3.5 + bob;
-
-                    leftArmGroup.rotation.x = swing;
-                    rightArmGroup.rotation.x = -swing;
-                    leftLegGroup.rotation.x = -swing * 0.85;
-                    rightLegGroup.rotation.x = swing * 0.85;
-
+                    torso.position.y = 2.6 + bob; headGroup.position.y = 3.5 + bob;
+                    leftArmGroup.rotation.x = swing; rightArmGroup.rotation.x = -swing;
+                    leftLegGroup.rotation.x = -swing * 0.85; rightLegGroup.rotation.x = swing * 0.85;
                     torso.rotation.y = Math.sin(animationTime * speed) * 0.05;
                     headGroup.rotation.y = -torso.rotation.y;
-
                     const shadowScale = 1 - bob * 0.7;
                     contactShadow.scale.set(shadowScale, shadowScale, shadowScale);
                 } else {
                     const breath = Math.sin(animationTime * 2.2) * 0.025;
-                    torso.position.y = 2.6 + breath;
-                    headGroup.position.y = 3.5 + breath;
-                    
+                    torso.position.y = 2.6 + breath; headGroup.position.y = 3.5 + breath;
                     leftArmGroup.rotation.z = 0.04 + Math.sin(animationTime * 1.8) * 0.01;
                     rightArmGroup.rotation.z = -0.04 - Math.sin(animationTime * 1.8) * 0.01;
                     headGroup.rotation.y = Math.sin(animationTime * 0.7) * 0.08;
                     headGroup.rotation.x = Math.cos(animationTime * 1.1) * 0.03;
-
                     contactShadow.scale.set(1, 1, 1);
                 }
 
                 contactShadow.position.x = avatar.position.x;
                 contactShadow.position.z = avatar.position.z;
                 updateCameraPosition(avatar.position);
+
+                // Broadcast Position via PartySocket (throttled to ~20 times per second)
+                networkTimer += dt;
+                if (partySocket && partySocket.readyState === WebSocket.OPEN && networkTimer >= 0.05) {
+                    networkTimer = 0;
+                    partySocket.send(JSON.stringify({
+                        id: partySocket.id,
+                        x: avatar.position.x,
+                        y: avatar.position.y,
+                        z: avatar.position.z,
+                        rotY: avatar.rotation.y,
+                        isMoving: isMoving,
+                        isJumping: isJumping
+                    }));
+                }
+            }
+
+            // Animate Remote Players
+            for (let id in remotePlayers) {
+                const rp = remotePlayers[id];
+                if (rp.group) {
+                    rp.group.position.set(rp.x, rp.y, rp.z);
+                    rp.group.rotation.y = rp.rotY;
+                }
             }
 
             renderer.render(scene, camera);
