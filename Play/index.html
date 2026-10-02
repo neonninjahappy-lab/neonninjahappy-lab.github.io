@@ -513,6 +513,15 @@
             flex-shrink: 0;
         }
 
+        /* --- USERNAME & GUEST.PNG ICON LAYOUT --- */
+        .sidebar-user-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+        }
+
         .sidebar-username {
             font-size: 14px;
             font-weight: 700;
@@ -520,6 +529,15 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .guest-badge-icon {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
         }
 
         .sidebar-menu {
@@ -1149,7 +1167,9 @@
                 const username = user.user_metadata?.username || user.email.split('@')[0];
                 sidebarProfileContainer.innerHTML = `
                     <div class="sidebar-avatar"></div>
-                    <div class="sidebar-username">${username}</div>
+                    <div class="sidebar-user-row">
+                        <span class="sidebar-username">${username}</span>
+                    </div>
                 `;
                 sidebarLogoutContainer.innerHTML = `
                     <button class="sidebar-link" onclick="handleLogout()">
@@ -1162,7 +1182,10 @@
             } else {
                 sidebarProfileContainer.innerHTML = `
                     <div class="sidebar-avatar"></div>
-                    <div class="sidebar-username">CloudFurm Guest</div>
+                    <div class="sidebar-user-row">
+                        <span class="sidebar-username">Guest</span>
+                        <img src="Guest.png" alt="Guest" class="guest-badge-icon" onerror="this.style.display='none'">
+                    </div>
                 `;
                 sidebarLogoutContainer.innerHTML = `
                     <div style="display: flex; gap: 8px; padding: 10px 15px;">
