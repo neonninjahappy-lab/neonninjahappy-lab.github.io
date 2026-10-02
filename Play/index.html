@@ -77,36 +77,6 @@
             fill: #ffffff;
         }
 
-        /* Search Overlay bar inside Header */
-        .search-bar-container {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #0074bd;
-            padding: 0 20px;
-            align-items: center;
-            gap: 10px;
-            z-index: 110;
-        }
-
-        .search-bar-container.active {
-            display: flex;
-        }
-
-        .search-input-field {
-            flex: 1;
-            background: #ffffff;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 12px;
-            font-size: 14px;
-            color: #333333;
-            outline: none;
-        }
-
         .sub-nav {
             display: flex;
             justify-content: space-between;
@@ -209,92 +179,6 @@
         .box-subtitle {
             font-size: 11px;
             color: #666666;
-        }
-
-        /* --- FRIENDS VIEW STYLES --- */
-        .generic-view-container {
-            display: none;
-            flex-direction: column;
-            gap: 16px;
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 6px;
-            border: 1px solid #dcdcdc;
-        }
-
-        .generic-view-container.active {
-            display: flex;
-        }
-
-        .friends-search-row {
-            display: flex;
-            gap: 8px;
-        }
-
-        .friends-input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #cccccc;
-            border-radius: 4px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .friends-action-btn {
-            background-color: #0074bd;
-            color: #ffffff;
-            border: none;
-            padding: 0 16px;
-            border-radius: 4px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .friends-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .friend-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background: #f9f9f9;
-            border: 1px solid #eeeeee;
-            border-radius: 4px;
-        }
-
-        .friend-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .friend-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-image: url('CloudPlayer.png');
-            background-size: cover;
-            background-position: center;
-            background-color: #ccc;
-        }
-
-        .friend-name {
-            font-weight: 600;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .friend-status {
-            font-size: 11px;
-            color: #00b06f;
         }
 
         /* --- GAME DETAILS VIEW STYLES --- */
@@ -506,9 +390,6 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background-image: url('CloudPlayer.png');
-            background-size: cover;
-            background-position: center;
             background-color: #e0e0e0;
             display: flex;
             align-items: center;
@@ -516,6 +397,13 @@
             overflow: hidden;
             border: 2px solid #cccccc;
             flex-shrink: 0;
+        }
+
+        .sidebar-avatar svg {
+            width: 40px;
+            height: 40px;
+            fill: #888888;
+            margin-top: 8px;
         }
 
         .sidebar-username {
@@ -794,14 +682,14 @@
                     <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
                     Messages
                 </div>
-                <span class="sidebar-badge">0</span>
+                <span class="sidebar-badge">20</span>
             </a>
-            <a href="#" class="sidebar-link" onclick="showFriendsView(); return false;">
+            <a href="#" class="sidebar-link">
                 <div class="sidebar-link-content">
                     <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
                     Friends
                 </div>
-                <span class="sidebar-badge" id="friendCountBadge">0</span>
+                <span class="sidebar-badge">53</span>
             </a>
             <a href="#" class="sidebar-link">
                 <div class="sidebar-link-content">
@@ -813,6 +701,36 @@
                 <div class="sidebar-link-content">
                     <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 15H4V8h16v11z"/></svg>
                     Inventory
+                </div>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M14.36 14.35L11 17.71V10h-2v7.71l-3.36-3.36L4.22 15.76 10.29 21.83c.39.39 1.02.39 1.41 0l6.07-6.07-1.41-1.41zM19.78 8.24L13.71 2.17c-.39-.39-1.02-.39-1.41 0L6.23 8.24l1.41 1.41L11 6.29V14h2V6.29l3.36 3.36 1.42-1.41z"/></svg>
+                    Trade
+                </div>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    Communities
+                </div>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                    Newsroom
+                </div>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                    Official Store
+                </div>
+            </a>
+            <a href="#" class="sidebar-link">
+                <div class="sidebar-link-content">
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                    Buy Gift Cards
                 </div>
             </a>
             <!-- Logout Action Link Appears Dynamically When Logged In -->
@@ -834,17 +752,8 @@
                 </button>
                 <a href="#" class="brand-logo" onclick="showHome(); return false;">CloudFurm</a>
             </div>
-            
-            <!-- Search Overlay Bar Inside Header -->
-            <div class="search-bar-container" id="searchBarContainer">
-                <input type="text" id="headerSearchInput" class="search-input-field" placeholder="Search games..." oninput="filterGames(this.value)">
-                <button class="icon-btn" onclick="toggleSearchOverlay()">
-                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                </button>
-            </div>
-
-            <div class="header-right" id="headerRightActions">
-                <button class="icon-btn" aria-label="Search" onclick="toggleSearchOverlay()">
+            <div class="header-right">
+                <button class="icon-btn" aria-label="Search">
                     <svg viewBox="0 0 24 24">
                         <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
@@ -859,34 +768,35 @@
 
         <nav class="sub-nav" id="subNav">
             <button class="nav-item active">Games</button>
-            <button class="nav-item" onclick="showFriendsView()">Friends</button>
+            <button class="nav-item">Marketplace</button>
             <button class="nav-item">CloudAPI</button>
+            <button class="nav-item">CloudFurm</button>
         </nav>
 
         <main class="content" id="mainContent">
             <div id="homeView">
                 <h2 class="section-title">Recommended For You</h2>
-                <div class="grid-container" id="gamesGridContainer">
+                <div class="grid-container">
                     <!-- Game 1 -->
-                    <div class="template-box game-card-item" data-title="cloudfurm" onclick="openGameDetails('CloudFurm', '92% Rating', 'game1.png')">
+                    <div class="template-box" onclick="openGameDetails('CloudFurm', '92% Rating', 'game1.png')">
                         <div class="box-thumbnail" style="background-image: url('game1.png');"></div>
                         <div class="box-title">CloudFurm</div>
                         <div class="box-subtitle">92% Rating</div>
                     </div>
                     <!-- Game 2 -->
-                    <div class="template-box game-card-item" data-title="api obby" onclick="openGameDetails('API obby', '95% Rating', 'game2.png')">
+                    <div class="template-box" onclick="openGameDetails('API obby', '95% Rating', 'game2.png')">
                         <div class="box-thumbnail" style="background-image: url('game2.png');"></div>
                         <div class="box-title">API obby</div>
                         <div class="box-subtitle">95% Rating</div>
                     </div>
                     <!-- Game 3 -->
-                    <div class="template-box game-card-item" data-title="ucc game" onclick="openGameDetails('UCC Game', '88% Rating', 'game3.png')">
+                    <div class="template-box" onclick="openGameDetails('UCC Game', '88% Rating', 'game3.png')">
                         <div class="box-thumbnail" style="background-image: url('game3.png');"></div>
                         <div class="box-title">UCC Game</div>
                         <div class="box-subtitle">88% Rating</div>
                     </div>
                     <!-- Game 4 -->
-                    <div class="template-box game-card-item" data-title="default hangout" onclick="openGameDetails('Default Hangout', '27% Rating', 'game4.png')">
+                    <div class="template-box" onclick="openGameDetails('Default Hangout', '27% Rating', 'game4.png')">
                         <div class="box-thumbnail" style="background-image: url('game4.png');"></div>
                         <div class="box-title">Default Hangout</div>
                         <div class="box-subtitle">27% Rating</div>
@@ -894,22 +804,11 @@
                 </div>
             </div>
 
-            <!-- Friends View Section Container -->
-            <div id="friendsView" class="generic-view-container">
-                <h2 class="section-title">Friends List</h2>
-                <div class="friends-search-row">
-                    <input type="text" id="friendUsernameInput" class="friends-input" placeholder="Enter username to add friend...">
-                    <button class="friends-action-btn" onclick="sendFriendRequest()">Add Friend</button>
-                </div>
-                <div class="friends-list" id="friendsListContainer">
-                    <!-- Dynamically populated friends list -->
-                </div>
-            </div>
-
             <!-- Game Details View -->
             <div id="gameDetailsView" class="game-details-view">
                 <div class="details-thumbnail" id="detailsThumbnail"></div>
 
+                <!-- Header Row: Game title info on left, standard Play Button -->
                 <div class="details-header-row">
                     <div class="details-title-group">
                         <h1 class="details-game-name" id="detailsTitle">Template Game Name</h1>
@@ -922,6 +821,7 @@
                     </button>
                 </div>
 
+                <!-- Interaction Stats Bar -->
                 <div class="details-stats-row">
                     <button class="stat-btn-col">
                         <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
@@ -951,51 +851,28 @@
     </div>
 
     <script>
-        // Supabase Configuration Setup
+        // Supabase Initialization with New Project Credentials
         const SUPABASE_URL = 'https://rclhtycpyhpsajaxqnyu.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjbGh0eWNweWhwc2FqYXhxbnl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5NzU0NzQsImV4cCI6MjEwNjU1MTQ3NH0.mRbjw_3zFV5zCdByxCHGGLO53Tn84hwnHbsnlmbjzs0';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Track active game title
         let currentGameTitle = '';
-        let currentUserState = null;
-        let localFriendsList = JSON.parse(localStorage.getItem('cloudfurm_friends') || '[]');
 
+        // Sidebar & View Management
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebarDrawer');
             const overlay = document.getElementById('sidebarOverlay');
+            
             sidebar.classList.toggle('open');
             overlay.classList.toggle('open');
-        }
-
-        function toggleSearchOverlay() {
-            const searchBar = document.getElementById('searchBarContainer');
-            searchBar.classList.toggle('active');
-            if (searchBar.classList.contains('active')) {
-                document.getElementById('headerSearchInput').focus();
-            } else {
-                filterGames('');
-            }
-        }
-
-        function filterGames(query) {
-            const cards = document.querySelectorAll('.game-card-item');
-            const cleanQuery = query.toLowerCase().trim();
-            cards.forEach(card => {
-                const title = card.getAttribute('data-title');
-                if (title.includes(cleanQuery)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
         }
 
         function openGameDetails(gameTitle, gameRating, imageFileName) {
             currentGameTitle = gameTitle;
             document.getElementById('detailsTitle').innerText = gameTitle;
             document.getElementById('detailsThumbnail').style.backgroundImage = `url('${imageFileName}')`;
-            document.getElementById('homeView').style.display = 'block';
-            document.getElementById('friendsView').classList.remove('active');
+            document.getElementById('homeView').style.display = 'none';
             document.getElementById('gameDetailsView').classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -1010,24 +887,8 @@
 
         function showHome() {
             document.getElementById('gameDetailsView').classList.remove('active');
-            document.getElementById('friendsView').classList.remove('active');
             document.getElementById('homeView').style.display = 'block';
-            closeSidebarIfNeeded();
-        }
-
-        function showFriendsView() {
-            if (!currentUserState) {
-                openAuthModal('login');
-                return;
-            }
-            document.getElementById('homeView').style.display = 'none';
-            document.getElementById('gameDetailsView').classList.remove('active');
-            document.getElementById('friendsView').classList.add('active');
-            renderFriendsList();
-            closeSidebarIfNeeded();
-        }
-
-        function closeSidebarIfNeeded() {
+            
             const sidebar = document.getElementById('sidebarDrawer');
             const overlay = document.getElementById('sidebarOverlay');
             if (sidebar.classList.contains('open')) {
@@ -1037,57 +898,11 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function sendFriendRequest() {
-            const input = document.getElementById('friendUsernameInput');
-            const friendName = input.value.trim();
-            if (!friendName) return;
-
-            if (localFriendsList.some(f => f.name.toLowerCase() === friendName.toLowerCase())) {
-                alert('You are already friends with this user!');
-                return;
-            }
-
-            localFriendsList.push({ name: friendName, status: 'Online' });
-            localStorage.setItem('cloudfurm_friends', JSON.stringify(localFriendsList));
-            input.value = '';
-            renderFriendsList();
-        }
-
-        function renderFriendsList() {
-            const container = document.getElementById('friendsListContainer');
-            document.getElementById('friendCountBadge').innerText = localFriendsList.length;
-            
-            if (localFriendsList.length === 0) {
-                container.innerHTML = `<div style="font-size:13px; color:#666; text-align:center; padding:20px;">No friends added yet. Add someone above!</div>`;
-                return;
-            }
-
-            container.innerHTML = localFriendsList.map(friend => `
-                <div class="friend-item">
-                    <div class="friend-info">
-                        <div class="friend-avatar"></div>
-                        <div>
-                            <div class="friend-name">${friend.name}</div>
-                            <div class="friend-status">${friend.status}</div>
-                        </div>
-                    </div>
-                    <button style="background:#ff4d4d; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;" onclick="removeFriend('${friend.name}')">Remove</button>
-                </div>
-            `).join('');
-        }
-
-        function removeFriend(name) {
-            localFriendsList = localFriendsList.filter(f => f.name !== name);
-            localStorage.setItem('cloudfurm_friends', JSON.stringify(localFriendsList));
-            renderFriendsList();
-        }
-
-        // --- AUTH UI SYSTEM ---
+        // --- AUTHENTICATION UI & FLOWS ---
         const authModalOverlay = document.getElementById('authModalOverlay');
         const authCardContainer = document.getElementById('authCardContainer');
         const sidebarProfileContainer = document.getElementById('sidebarProfileContainer');
         const sidebarLogoutContainer = document.getElementById('sidebarLogoutContainer');
-        const headerRightActions = document.getElementById('headerRightActions');
 
         function openAuthModal(viewType) {
             authModalOverlay.classList.add('open');
@@ -1100,16 +915,19 @@
         }
 
         authModalOverlay.addEventListener('click', (e) => {
-            if (e.target === authModalOverlay) closeAuthModal();
+            if (e.target === authModalOverlay) {
+                closeAuthModal();
+            }
         });
 
-        function renderSignupView(errorMessage = '') {
+        function renderSignupView(errorMessage = '', successMessage = '') {
             authCardContainer.innerHTML = `
                 <div class="auth-header">
                     <h3 class="auth-title">Create Account</h3>
                     <button class="auth-close-btn" onclick="closeAuthModal()">×</button>
                 </div>
                 ${errorMessage ? `<div class="auth-message error">${errorMessage}</div>` : ''}
+                ${successMessage ? `<div class="auth-message success">${successMessage}</div>` : ''}
                 <form class="auth-form" onsubmit="handleSignUp(event)">
                     <div class="auth-field">
                         <label class="auth-label">Username</label>
@@ -1131,13 +949,14 @@
             `;
         }
 
-        function renderLoginView(errorMessage = '') {
+        function renderLoginView(errorMessage = '', successMessage = '') {
             authCardContainer.innerHTML = `
                 <div class="auth-header">
                     <h3 class="auth-title">Log In</h3>
                     <button class="auth-close-btn" onclick="closeAuthModal()">×</button>
                 </div>
                 ${errorMessage ? `<div class="auth-message error">${errorMessage}</div>` : ''}
+                ${successMessage ? `<div class="auth-message success">${successMessage}</div>` : ''}
                 <form class="auth-form" onsubmit="handleLogin(event)">
                     <div class="auth-field">
                         <label class="auth-label">Username</label>
@@ -1161,12 +980,18 @@
             const password = document.getElementById('signupPassword').value;
             const confirmPassword = document.getElementById('signupConfirmPassword').value;
 
+            if (!username || !password) {
+                renderSignupView('Please fill out all fields.');
+                return;
+            }
             if (password !== confirmPassword) {
                 renderSignupView('Passwords do not match.');
                 return;
             }
 
+            // Valid domain extension format used for Supabase compatibility
             const pseudoEmail = `${username}@cloudfurm.com`;
+
             const { data, error } = await supabaseClient.auth.signUp({
                 email: pseudoEmail,
                 password: password,
@@ -1179,7 +1004,9 @@
             }
 
             closeAuthModal();
-            if (data?.session) updateUIState(data.session.user);
+            if (data?.session) {
+                updateUIState(data.session.user);
+            }
         }
 
         async function handleLogin(e) {
@@ -1187,7 +1014,13 @@
             const username = document.getElementById('loginUsername').value.trim().toLowerCase();
             const password = document.getElementById('loginPassword').value;
 
+            if (!username || !password) {
+                renderLoginView('Please enter both username and password.');
+                return;
+            }
+
             const pseudoEmail = `${username}@cloudfurm.com`;
+
             const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: pseudoEmail,
                 password: password
@@ -1208,11 +1041,12 @@
         }
 
         function updateUIState(user) {
-            currentUserState = user;
             if (user) {
                 const username = user.user_metadata?.username || user.email.split('@')[0];
                 sidebarProfileContainer.innerHTML = `
-                    <div class="sidebar-avatar"></div>
+                    <div class="sidebar-avatar">
+                        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    </div>
                     <div class="sidebar-username">${username}</div>
                 `;
                 sidebarLogoutContainer.innerHTML = `
@@ -1223,16 +1057,15 @@
                         </div>
                     </button>
                 `;
-                headerRightActions.innerHTML = `
-                    <button class="icon-btn" aria-label="Search" onclick="toggleSearchOverlay()">
-                        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                    </button>
-                    <div style="width:32px; height:32px; border-radius:50%; background-image:url('CloudPlayer.png'); background-size:cover; background-position:center; background-color:#ccc; border:1px solid #fff;"></div>
-                `;
             } else {
                 sidebarProfileContainer.innerHTML = `
-                    <div class="sidebar-avatar"></div>
-                    <div class="sidebar-username">CloudFurm Guest</div>
+                    <div class="sidebar-avatar">
+                        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 2px; overflow: hidden;">
+                        <div class="sidebar-username">CloudFurm</div>
+                        <div style="font-size: 11px; color: #666666;">Guest</div>
+                    </div>
                 `;
                 sidebarLogoutContainer.innerHTML = `
                     <div style="display: flex; gap: 8px; padding: 10px 15px;">
@@ -1240,16 +1073,7 @@
                         <button onclick="openAuthModal('signup')" style="flex: 1; background: #f1f1f1; color: #333; border: 1px solid #cccccc; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">Sign Up</button>
                     </div>
                 `;
-                headerRightActions.innerHTML = `
-                    <button class="icon-btn" aria-label="Search" onclick="toggleSearchOverlay()">
-                        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                    </button>
-                    <button class="icon-btn" aria-label="Settings" onclick="openAuthModal('login')">
-                        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c-.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-                    </button>
-                `;
             }
-            renderFriendsList();
         }
 
         async function initAuth() {
