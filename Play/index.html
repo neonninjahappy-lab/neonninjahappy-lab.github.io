@@ -16,8 +16,8 @@
         }
 
         body {
-            background-color: #121214;
-            color: #ffffff;
+            background-color: #e3e3e3;
+            color: #111111;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             width: 100vw;
             min-height: 100vh;
@@ -29,7 +29,7 @@
         .app-container {
             width: 100%;
             min-height: 100vh;
-            background-color: #121214;
+            background-color: #e3e3e3;
             display: flex;
             flex-direction: column;
             position: relative;
@@ -39,10 +39,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 20px 10px 20px;
-            background-color: #161618;
+            padding: 10px 20px;
+            background-color: #0074bd;
             width: 100%;
             z-index: 100;
+            color: #ffffff;
         }
 
         .header-left, .header-right {
@@ -56,10 +57,7 @@
             font-size: 18px;
             font-weight: 800;
             letter-spacing: 0.5px;
-            background: linear-gradient(135deg, #ffffff 30%, #3b82f6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+            color: #ffffff;
             text-decoration: none;
         }
 
@@ -83,9 +81,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 20px 12px 20px;
-            background-color: #161618;
-            border-bottom: 1px solid #1f1f23;
+            padding: 8px 20px;
+            background-color: #005a96;
+            border-bottom: 1px solid #00487a;
             width: 100%;
             overflow-x: auto;
             gap: 20px;
@@ -100,7 +98,7 @@
         .nav-item {
             background: transparent;
             border: none;
-            color: #73737b;
+            color: #bce0fd;
             font-size: 15px;
             font-weight: 500;
             cursor: pointer;
@@ -111,20 +109,23 @@
 
         .nav-item.active {
             color: #ffffff;
+            font-weight: 700;
         }
 
         .content {
             flex: 1;
-            background-color: #121214;
+            background-color: #e3e3e3;
             width: 100%;
             padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .section-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 16px;
-            color: #ffffff;
+            margin-bottom: 12px;
+            color: #333333;
         }
 
         .grid-container {
@@ -142,15 +143,20 @@
         .template-box {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             cursor: pointer;
+            background: #ffffff;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #dcdcdc;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
         .box-thumbnail {
             width: 100%;
             aspect-ratio: 16 / 10;
-            background-color: #26262a;
-            border-radius: 12px;
+            background-color: #cccccc;
+            border-radius: 2px;
             overflow: hidden;
             background-size: cover;
             background-position: center;
@@ -158,21 +164,21 @@
         }
 
         .template-box:hover .box-thumbnail {
-            transform: scale(1.02);
+            transform: scale(1.01);
         }
 
         .box-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: #ffffff;
+            color: #0074bd;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .box-subtitle {
-            font-size: 12px;
-            color: #73737b;
+            font-size: 11px;
+            color: #666666;
         }
 
         /* --- GAME DETAILS VIEW STYLES --- */
@@ -183,6 +189,10 @@
             width: 100%;
             max-width: 800px;
             margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #dcdcdc;
         }
 
         .game-details-view.active {
@@ -192,8 +202,8 @@
         .details-thumbnail {
             width: 100%;
             aspect-ratio: 16 / 9;
-            background-color: #26262a;
-            border-radius: 12px;
+            background-color: #cccccc;
+            border-radius: 4px;
             background-size: cover;
             background-position: center;
         }
@@ -214,30 +224,30 @@
         }
 
         .details-game-name {
-            font-size: 26px;
-            font-weight: 800;
-            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+            color: #333333;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         .details-creator {
-            font-size: 14px;
-            color: #73737b;
+            font-size: 13px;
+            color: #0074bd;
         }
 
         .details-maturity {
-            font-size: 13px;
-            color: #55555d;
+            font-size: 12px;
+            color: #666666;
         }
 
         .details-play-btn {
             background-color: #00b06f;
             color: #ffffff;
             border: none;
-            border-radius: 12px;
-            padding: 12px 24px;
+            border-radius: 6px;
+            padding: 12px 28px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -263,38 +273,40 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             align-items: center;
-            background-color: transparent;
-            padding: 10px 0;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
         }
 
         .stat-btn-col {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             background: transparent;
             border: none;
             cursor: pointer;
-            color: #8e8e93;
-            font-size: 12px;
+            color: #666666;
+            font-size: 11px;
             font-weight: 600;
         }
 
         .stat-btn-col svg {
-            width: 24px;
-            height: 24px;
-            fill: #8e8e93;
+            width: 20px;
+            height: 20px;
+            fill: #666666;
         }
 
         .stat-btn-col:hover, .stat-btn-col:hover svg {
-            color: #ffffff;
-            fill: #ffffff;
+            color: #0074bd;
+            fill: #0074bd;
         }
 
         .details-tabs {
             display: flex;
             justify-content: space-around;
-            border-bottom: 1px solid #1f1f23;
+            border-bottom: 1px solid #dcdcdc;
             padding-bottom: 4px;
             margin-top: 10px;
         }
@@ -302,8 +314,8 @@
         .details-tab-item {
             background: transparent;
             border: none;
-            color: #73737b;
-            font-size: 16px;
+            color: #666666;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             padding: 8px 16px;
@@ -311,7 +323,7 @@
         }
 
         .details-tab-item.active {
-            color: #ffffff;
+            color: #0074bd;
         }
 
         .details-tab-item.active::after {
@@ -321,7 +333,7 @@
             left: 0;
             width: 100%;
             height: 3px;
-            background-color: #ffffff;
+            background-color: #0074bd;
             border-radius: 2px 2px 0 0;
         }
 
@@ -331,8 +343,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(2px);
+            background-color: rgba(0, 0, 0, 0.4);
             z-index: 999;
             opacity: 0;
             visibility: hidden;
@@ -347,16 +358,17 @@
         .sidebar {
             position: fixed;
             top: 0;
-            left: -300px;
-            width: 280px;
+            left: -250px;
+            width: 220px;
             height: 100vh;
-            background-color: #161618;
+            background-color: #ffffff;
             z-index: 1000;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5);
+            transition: left 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            border-right: 1px solid #dcdcdc;
         }
 
         .sidebar.open {
@@ -365,36 +377,39 @@
 
         .sidebar-profile {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 14px;
-            padding: 20px;
-            border-bottom: 1px solid #222226;
+            gap: 10px;
+            padding: 20px 15px;
+            border-bottom: 1px solid #eeeeee;
+            background: #f9f9f9;
+            text-align: center;
         }
 
         .sidebar-avatar {
-            width: 44px;
-            height: 44px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            background-color: #2c2c33;
+            background-color: #e0e0e0;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            border: 1px solid #3a3a42;
+            border: 2px solid #cccccc;
             flex-shrink: 0;
         }
 
         .sidebar-avatar svg {
-            width: 32px;
-            height: 32px;
-            fill: #8e8e99;
-            margin-top: 6px;
+            width: 40px;
+            height: 40px;
+            fill: #888888;
+            margin-top: 8px;
         }
 
         .sidebar-username {
-            font-size: 16px;
-            font-weight: 600;
-            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            color: #333333;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -403,7 +418,7 @@
         .sidebar-menu {
             display: flex;
             flex-direction: column;
-            padding: 10px 0;
+            padding: 5px 0;
             flex: 1;
         }
 
@@ -411,10 +426,10 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 20px;
-            color: #d1d1d6;
+            padding: 10px 15px;
+            color: #333333;
             text-decoration: none;
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 500;
             transition: background-color 0.15s ease, color 0.15s ease;
             background: transparent;
@@ -425,54 +440,55 @@
         }
 
         .sidebar-link:hover {
-            background-color: #222226;
+            background-color: #0074bd;
             color: #ffffff;
+        }
+
+        .sidebar-link:hover svg {
+            fill: #ffffff;
         }
 
         .sidebar-link-content {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
 
         .sidebar-link svg {
-            width: 22px;
-            height: 22px;
-            fill: currentColor;
+            width: 18px;
+            height: 18px;
+            fill: #666666;
         }
 
         .sidebar-badge {
-            background-color: #ffffff;
-            color: #161618;
-            font-size: 12px;
+            background-color: #0074bd;
+            color: #ffffff;
+            font-size: 10px;
             font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 12px;
+            padding: 2px 6px;
+            border-radius: 10px;
         }
 
         .sidebar-action-container {
-            padding: 16px 20px;
+            padding: 15px;
+            border-top: 1px solid #eeeeee;
         }
 
         .sidebar-plus-btn {
             width: 100%;
-            background-color: #ffffff;
-            color: #121214;
+            background-color: #0074bd;
+            color: #ffffff;
             border: none;
-            border-radius: 12px;
-            padding: 12px;
-            font-size: 15px;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 13px;
             font-weight: 700;
             cursor: pointer;
-            transition: background-color 0.15s ease, transform 0.1s ease;
+            transition: background-color 0.15s ease;
         }
 
         .sidebar-plus-btn:hover {
-            background-color: #e5e5e5;
-        }
-
-        .sidebar-plus-btn:active {
-            transform: scale(0.98);
+            background-color: #005a96;
         }
 
         /* --- AUTH MODAL STYLES --- */
@@ -482,8 +498,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(4px);
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 2000;
             display: none;
             align-items: center;
@@ -496,151 +511,154 @@
         }
 
         .auth-card {
-            background-color: #161618;
-            border: 1px solid #1f1f23;
-            border-radius: 16px;
+            background-color: #ffffff;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
             width: 100%;
             max-width: 400px;
-            padding: 24px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             max-height: 90vh;
             overflow-y: auto;
+            color: #333333;
         }
 
         .auth-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid #eeeeee;
+            padding-bottom: 8px;
         }
 
         .auth-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
-            color: #ffffff;
+            color: #333333;
         }
 
         .auth-close-btn {
             background: transparent;
             border: none;
-            color: #73737b;
+            color: #666666;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 18px;
             padding: 4px;
         }
 
         .auth-close-btn:hover {
-            color: #ffffff;
+            color: #111111;
         }
 
         .auth-form {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
 
         .auth-field {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
         }
 
         .auth-label {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            color: #73737b;
+            color: #555555;
         }
 
         .auth-input {
-            background-color: #121214;
-            border: 1px solid #1f1f23;
-            border-radius: 8px;
-            padding: 12px 14px;
-            color: #ffffff;
-            font-size: 15px;
+            background-color: #ffffff;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            padding: 10px;
+            color: #333333;
+            font-size: 14px;
             outline: none;
             width: 100%;
             transition: border-color 0.2s;
         }
 
         .auth-input:focus {
-            border-color: #3b82f6;
+            border-color: #0074bd;
         }
 
         .auth-submit-btn {
-            background-color: #3b82f6;
+            background-color: #0074bd;
             color: #ffffff;
             border: none;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 15px;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
-            margin-top: 6px;
+            margin-top: 4px;
             transition: background-color 0.2s;
         }
 
         .auth-submit-btn:hover {
-            background-color: #2563eb;
+            background-color: #005a96;
         }
 
         .auth-message {
-            font-size: 13px;
-            padding: 10px;
-            border-radius: 6px;
+            font-size: 12px;
+            padding: 8px;
+            border-radius: 4px;
             display: none;
         }
 
         .auth-message.error {
-            background-color: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
             display: block;
         }
 
         .auth-message.success {
-            background-color: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
             display: block;
         }
 
         .auth-switch-text {
-            font-size: 14px;
-            color: #73737b;
+            font-size: 13px;
+            color: #666666;
             text-align: center;
             margin-top: 4px;
         }
 
         .auth-switch-link {
-            color: #3b82f6;
+            color: #0074bd;
             background: transparent;
             border: none;
             cursor: pointer;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             padding: 0;
             text-decoration: underline;
         }
 
         .auth-switch-link:hover {
-            color: #60a5fa;
+            color: #005a96;
         }
 
         .auth-forgot-link {
             background: transparent;
             border: none;
-            color: #73737b;
-            font-size: 13px;
+            color: #0074bd;
+            font-size: 12px;
             cursor: pointer;
             text-align: right;
             padding: 0;
         }
 
         .auth-forgot-link:hover {
-            color: #ffffff;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -1104,15 +1122,15 @@
                     <div class="sidebar-avatar">
                         <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 4px; overflow: hidden;">
+                    <div style="display: flex; flex-direction: column; gap: 2px; overflow: hidden;">
                         <div class="sidebar-username">CloudFurm</div>
-                        <div style="font-size: 13px; color: #73737b;">Guest</div>
+                        <div style="font-size: 11px; color: #666666;">Guest</div>
                     </div>
                 `;
                 sidebarLogoutContainer.innerHTML = `
-                    <div style="display: flex; gap: 8px; padding: 12px 20px;">
-                        <button onclick="openAuthModal('login')" style="flex: 1; background: #3b82f6; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Log In</button>
-                        <button onclick="openAuthModal('signup')" style="flex: 1; background: #26262a; color: #fff; border: 1px solid #1f1f23; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Sign Up</button>
+                    <div style="display: flex; gap: 8px; padding: 10px 15px;">
+                        <button onclick="openAuthModal('login')" style="flex: 1; background: #0074bd; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">Log In</button>
+                        <button onclick="openAuthModal('signup')" style="flex: 1; background: #f1f1f1; color: #333; border: 1px solid #cccccc; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">Sign Up</button>
                     </div>
                 `;
             }
