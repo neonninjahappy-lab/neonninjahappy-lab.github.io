@@ -989,8 +989,8 @@
                 return;
             }
 
-            // Generate an automatic pseudo-email so Supabase accepts the account
-            const pseudoEmail = `${username}@cloudfurm.local`;
+            // Valid domain extension format used for Supabase compatibility
+            const pseudoEmail = `${username}@cloudfurm.com`;
 
             const { data, error } = await supabaseClient.auth.signUp({
                 email: pseudoEmail,
@@ -1019,8 +1019,7 @@
                 return;
             }
 
-            // Reconstruct the pseudo-email for Supabase login
-            const pseudoEmail = `${username}@cloudfurm.local`;
+            const pseudoEmail = `${username}@cloudfurm.com`;
 
             const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: pseudoEmail,
