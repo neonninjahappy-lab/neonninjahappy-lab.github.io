@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect API</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Background circle decorations */
+        .decorations {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .circle-1 {
+            width: 230px;
+            height: 230px;
+            background: #f0ebff;
+            top: -90px;
+            left: -75px;
+        }
+
+        .circle-2 {
+            width: 150px;
+            height: 150px;
+            background: #f7f3ff;
+            top: 18%;
+            right: -65px;
+        }
+
+        .circle-3 {
+            width: 280px;
+            height: 280px;
+            background: #f5f1ff;
+            bottom: -145px;
+            right: -80px;
+        }
+
+        .circle-4 {
+            width: 115px;
+            height: 115px;
+            background: #eee8ff;
+            bottom: 15%;
+            left: -55px;
+        }
+
+        .circle-5 {
+            width: 48px;
+            height: 48px;
+            background: #e7ddff;
+            top: 23%;
+            left: 17%;
+        }
+
+        .circle-6 {
+            width: 28px;
+            height: 28px;
+            background: #f0eaff;
+            bottom: 25%;
+            right: 19%;
+        }
+
+        .circle-7 {
+            width: 75px;
+            height: 75px;
+            background: #faf8ff;
+            top: 8%;
+            right: 22%;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            width: 90%;
+            max-width: 350px;
+        }
+
+        .circle {
+            width: 100px;
+            height: 100px;
+            border: 4px solid #eee9ff;
+            border-radius: 50%;
+            margin: 0 auto 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .circle-inner {
+            width: 65px;
+            height: 65px;
+            border: 4px solid #7657ff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            background: #7657ff;
+            border-radius: 50%;
+        }
+
+        /* Loading animation */
+        .loading .circle {
+            border-top-color: #7657ff;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading .circle-inner {
+            animation: spin 1.5s linear infinite reverse;
+        }
+
+        .loading .dot {
+            animation: pulse .6s ease-in-out infinite alternate;
+        }
+
+        .loading .dot:nth-child(2) {
+            animation-delay: .2s;
+        }
+
+        .loading .dot:nth-child(3) {
+            animation-delay: .4s;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            from {
+                opacity: .3;
+                transform: scale(.7);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Smaller centered button */
+        button {
+            display: block;
+            width: 190px;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 13px 18px;
+            border: none;
+            border-radius: 9px;
+            background: #7657ff;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background .2s, transform .2s;
+        }
+
+        button:hover {
+            background: #6243e8;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: scale(.98);
+        }
+
+        button:disabled {
+            opacity: .7;
+            cursor: wait;
+            transform: none;
+        }
+
+        #error {
+            color: #ef3030;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 22px;
+            display: none;
+        }
+
+        #error.show {
+            display: block;
+            animation: appear .3s ease;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .circle-1 {
+                width: 180px;
+                height: 180px;
+            }
+
+            .circle-3 {
+                width: 220px;
+                height: 220px;
+            }
+
+            .circle-5 {
+                left: 8%;
+            }
+
+            .circle-7 {
+                right: 10%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .loading .circle,
+            .loading .circle-inner,
+            .loading .dot,
+            #error.show {
+                animation-duration: 2.5s;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="decorations" aria-hidden="true">
+        <div class="bg-circle circle-1"></div>
+        <div class="bg-circle circle-2"></div>
+        <div class="bg-circle circle-3"></div>
+        <div class="bg-circle circle-4"></div>
+        <div class="bg-circle circle-5"></div>
+        <div class="bg-circle circle-6"></div>
+        <div class="bg-circle circle-7"></div>
+    </div>
+
+    <main class="container" id="app">
+
+        <div class="circle">
+            <div class="circle-inner">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+
+        <button id="connectButton" onclick="connectAPI()">
+            Connect API
+        </button>
+
+        <div id="error" role="alert">
+            Error: No APIs found
+        </div>
+
+    </main>
+
+    <script>
+        let loading = false;
+
+        function connectAPI() {
+            if (loading) return;
+
+            loading = true;
+
+            const app = document.getElementById("app");
+            const button = document.getElementById("connectButton");
+            const error = document.getElementById("error");
+
+            error.classList.remove("show");
+            app.classList.add("loading");
+
+            button.disabled = true;
+            button.textContent = "Connecting...";
+
+            setTimeout(() => {
+                app.classList.remove("loading");
+
+                button.disabled = false;
+                button.textContent = "Connect API";
+
+                error.classList.add("show");
+                loading = false;
+            }, 2500);
+        }
+    </script>
+
+</body>
+</html>
