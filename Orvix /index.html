@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Orvix — Technology, Refined.</title>
+
+<style>
+:root {
+  --text: #171717;
+  --muted: #737373;
+  --line: #e9e9e9;
+  --surface: #f5f5f3;
+  --blue: #2768dc;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: var(--text);
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 62px;
+  padding: 0 7%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.brand {
+  font-size: 24px;
+  font-weight: 750;
+  letter-spacing: -1.5px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  font-size: 13px;
+  color: #444;
+}
+
+.nav-links a:hover {
+  color: #888;
+}
+
+.nav-action {
+  padding: 9px 16px;
+  border: 1px solid #ddd;
+  border-radius: 24px;
+}
+
+.menu-button {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.hero {
+  text-align: center;
+  padding: 95px 20px 55px;
+}
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.hero h1 {
+  font-size: clamp(52px, 9vw, 100px);
+  font-weight: 650;
+  letter-spacing: -.075em;
+  line-height: .98;
+}
+
+.hero p {
+  max-width: 440px;
+  margin: 24px auto 28px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-block;
+  padding: 13px 21px;
+  border-radius: 25px;
+  font-size: 13px;
+  transition: background .2s;
+}
+
+.btn-dark {
+  background: #171717;
+  color: white;
+}
+
+.btn-dark:hover {
+  background: #444;
+}
+
+.btn-light {
+  border: 1px solid #ddd;
+}
+
+.btn-light:hover {
+  background: #f5f5f5;
+}
+
+.hero-visual {
+  width: 88%;
+  max-width: 1200px;
+  height: clamp(300px, 48vw, 550px);
+  margin: 0 auto;
+  background: #f4f4f2;
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-visual img {
+  width: 85%;
+  height: 88%;
+  object-fit: contain;
+}
+
+/* Infinite product gallery */
+
+.gallery-section {
+  padding: 100px 0 95px;
+  overflow: hidden;
+}
+
+.section-heading {
+  padding: 0 7%;
+  margin-bottom: 38px;
+}
+
+.section-heading h2 {
+  font-size: clamp(36px, 5vw, 58px);
+  letter-spacing: -.065em;
+  line-height: 1.08;
+  font-weight: 600;
+}
+
+.section-heading p {
+  color: var(--muted);
+  margin-top: 14px;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.gallery-viewport {
+  width: 100%;
+  overflow: hidden;
+}
+
+.gallery-track {
+  display: flex;
+  width: max-content;
+  animation: galleryMove 32s linear infinite;
+  will-change: transform;
+}
+
+/* No hover pause: animation runs continuously */
+
+.gallery-group {
+  display: flex;
+  gap: 18px;
+  padding-right: 18px;
+}
+
+.gallery-card {
+  flex: 0 0 clamp(260px, 35vw, 430px);
+  min-width: 0;
+}
+
+.gallery-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #f3f3f1;
+  border: 1px solid #e9e9e7;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-image img {
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  object-fit: contain;
+  display: block;
+}
+
+.gallery-info {
+  padding: 17px 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.gallery-info h3 {
+  font-size: 15px;
+  font-weight: 550;
+}
+
+.gallery-info span {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+@keyframes galleryMove {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Products */
+
+.products {
+  padding: 25px 7% 100px;
+}
+
+.products-heading {
+  margin-bottom: 32px;
+}
+
+.products-heading h2 {
+  font-size: clamp(36px, 5vw, 52px);
+  font-weight: 600;
+  letter-spacing: -.06em;
+}
+
+.products-heading p {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.product-card {
+  background: var(--surface);
+  border-radius: 5px;
+  overflow: hidden;
+  text-align: center;
+  padding: 34px 20px 30px;
+}
+
+.product-card h3 {
+  font-size: 29px;
+  font-weight: 600;
+  letter-spacing: -1px;
+}
+
+.product-card p {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 9px;
+}
+
+.product-image {
+  height: 300px;
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.product-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--blue);
+}
+
+.product-link:hover {
+  text-decoration: underline;
+}
+
+/* Brand statement */
+
+.statement {
+  margin: 0 7% 90px;
+  padding: 85px 20px;
+  text-align: center;
+  background: #f5f5f3;
+  border-radius: 5px;
+}
+
+.statement h2 {
+  max-width: 720px;
+  margin: auto;
+  font-size: clamp(38px, 6vw, 68px);
+  line-height: 1.08;
+  letter-spacing: -.065em;
+  font-weight: 600;
+}
+
+.statement p {
+  max-width: 470px;
+  margin: 20px auto 25px;
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+footer {
+  border-top: 1px solid var(--line);
+  padding: 30px 7%;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  color: #666;
+  font-size: 12px;
+}
+
+.footer-note {
+  color: var(--muted);
+  margin-top: 24px;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+@media (max-width: 700px) {
+  .navbar {
+    height: 58px;
+    padding: 0 6%;
+  }
+
+  .menu-button {
+    display: block;
+  }
+
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 57px;
+    left: 0;
+    right: 0;
+    padding: 24px 6%;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .hero {
+    padding: 75px 18px 42px;
+  }
+
+  .hero-visual {
+    width: 90%;
+    height: 300px;
+  }
+
+  .gallery-section {
+    padding: 75px 0;
+  }
+
+  .section-heading {
+    padding: 0 6%;
+  }
+
+  .gallery-card {
+    flex-basis: 270px;
+  }
+
+  .gallery-group {
+    gap: 12px;
+    padding-right: 12px;
+  }
+
+  .products {
+    padding: 15px 6% 75px;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+    gap: 13px;
+  }
+
+  .product-image {
+    height: 270px;
+  }
+
+  .statement {
+    margin: 0 6% 65px;
+    padding: 60px 22px;
+  }
+
+  footer {
+    padding: 28px 6%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="navbar">
+  <a class="brand" href="#home">orvix</a>
+
+  <button class="menu-button" id="menuButton"
+    aria-label="Open navigation" aria-expanded="false">☰</button>
+
+  <nav class="nav-links" id="navLinks">
+    <a href="#products">Products</a>
+    <a href="#gallery">Discover</a>
+    <a href="#about">Our approach</a>
+    <a class="nav-action" href="#products">Explore Orvix</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero" id="home">
+    <div class="eyebrow">Introducing Orvix</div>
+    <h1>Less, but<br>better.</h1>
+
+    <p>
+      Thoughtful technology. Considered design.
+      Made for the way you live.
+    </p>
+
+    <div class="buttons">
+      <a class="btn btn-dark" href="#products">Explore products ↗</a>
+      <a class="btn btn-light" href="#about">Discover Orvix</a>
+    </div>
+  </section>
+
+  <section class="hero-visual">
+    <img src="OrvixPro.png" alt="Orvix Pro phone">
+  </section>
+
+  <section class="gallery-section" id="gallery">
+    <div class="section-heading">
+      <div class="eyebrow">A closer look</div>
+      <h2>Meet the collection.</h2>
+      <p>
+        Two products. One considered approach to design.
+      </p>
+    </div>
+
+    <div class="gallery-viewport">
+      <div class="gallery-track">
+
+        <!-- First set -->
+        <div class="gallery-group">
+
+          <article class="gallery-card">
+            <div class="gallery-image">
+              <img src="OrvixPro.png" alt="Orvix Pro phone">
+            </div>
+            <div class="gallery-info">
+              <h3>Orvix Pro</h3>
+              <span>01 / Phone</span>
+            </div>
+          </article>
+
+          <article class="gallery-card">
+            <div class="gallery-image">
+              <img src="OrvixPC.png" alt="Orvix PC monitor">
+            </div>
+            <div class="gallery-info">
+              <h3>Orvix PC</h3>
+              <span>02 / Monitor</span>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- Duplicate set for the seamless infinite loop -->
+        <div class="gallery-group" aria-hidden="true">
+
+          <article class="gallery-card">
+            <div class="gallery-image">
+              <img src="OrvixPro.png" alt="">
+            </div>
+            <div class="gallery-info">
+              <h3>Orvix Pro</h3>
+              <span>01 / Phone</span>
+            </div>
+          </article>
+
+          <article class="gallery-card">
+            <div class="gallery-image">
+              <img src="OrvixPC.png" alt="">
+            </div>
+            <div class="gallery-info">
+              <h3>Orvix PC</h3>
+              <span>02 / Monitor</span>
+            </div>
+          </article>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="products" id="products">
+    <div class="products-heading">
+      <div class="eyebrow">The collection</div>
+      <h2>Designed around you.</h2>
+      <p>Discover the Orvix product lineup.</p>
+    </div>
+
+    <div class="product-grid">
+
+      <article class="product-card">
+        <h3>Orvix Pro</h3>
+        <p>Your everyday, reimagined.</p>
+
+        <div class="product-image">
+          <img src="OrvixPro.png" alt="Orvix Pro smartphone">
+        </div>
+
+        <a class="product-link" href="#about">
+          Discover Orvix Pro ↗
+        </a>
+      </article>
+
+      <article class="product-card">
+        <h3>Orvix PC</h3>
+        <p>A different view of your world.</p>
+
+        <div class="product-image">
+          <img src="OrvixPC.png" alt="Orvix PC monitor">
+        </div>
+
+        <a class="product-link" href="#about">
+          Discover Orvix PC ↗
+        </a>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="statement" id="about">
+    <div class="eyebrow">The Orvix philosophy</div>
+
+    <h2>Technology should feel natural.</h2>
+
+    <p>
+      We believe great products don't need to shout.
+      Every detail should have a purpose, every design
+      should feel considered, and every experience
+      should feel effortless.
+    </p>
+
+    <div class="buttons">
+      <a class="btn btn-dark" href="#home">Back to the beginning ↑</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-top">
+    <a class="brand" href="#home">orvix</a>
+
+    <div class="footer-links">
+      <a href="#products">Products</a>
+      <a href="#gallery">Discover</a>
+      <a href="#about">About</a>
+    </div>
+  </div>
+
+  <p class="footer-note">
+    © <span id="year"></span> Orvix. All rights reserved.<br>
+    Product images and designs belong to their respective owners.
+  </p>
+</footer>
+
+<script>
+const menuButton = document.getElementById("menuButton");
+const navLinks = document.getElementById("navLinks");
+
+document.getElementById("year").textContent =
+  new Date().getFullYear();
+
+menuButton.addEventListener("click", () => {
+  const isOpen = navLinks.classList.toggle("open");
+
+  menuButton.textContent = isOpen ? "×" : "☰";
+  menuButton.setAttribute("aria-expanded", String(isOpen));
+});
+
+navLinks.querySelectorAll("a").forEach(link => {
+  link.addEventListener("click", () => {
+    navLinks.classList.remove("open");
+    menuButton.textContent = "☰";
+    menuButton.setAttribute("aria-expanded", "false");
+  });
+});
+</script>
+
+</body>
+</html>
