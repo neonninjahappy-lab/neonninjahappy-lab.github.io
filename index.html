@@ -8,16 +8,16 @@
     <link rel="icon" type="image/webp" href="https://i.postimg.cc/zXPXv7tM/Boy-Cloudfurm.webp">
     <link rel="shortcut icon" href="https://i.postimg.cc/zXPXv7tM/Boy-Cloudfurm.webp">
 
-    <meta name="description" content="Download CloudFurm, the mobile code editor and live-collaboration studio. Get it for Android (V6) or iOS (v3.2).">
+    <meta name="description" content="CloudFurm, the mobile code editor and live-collaboration studio.">
     <meta property="og:title" content="CloudFurm">
-    <meta property="og:description" content="Mobile code editor with live collaboration, voice chat, and instant preview. Android V6 · iOS v3.2.">
+    <meta property="og:description" content="Mobile code editor with live collaboration, voice chat, and instant preview.">
     <meta property="og:type" content="website">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@300;400&display=swap" rel="stylesheet">
-    
+
     <style>
         :root {
             --bg-main: #121214;
@@ -269,22 +269,21 @@
             line-height: 1.5;
         }
 
-        .detected-banner {
-            display: none;
+        .gone-notice {
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            background: var(--bg-main);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-size: 13px;
-            color: var(--accent-play);
+            gap: 12px;
+            background: rgba(255, 77, 77, 0.1);
+            border: 2px solid var(--accent-ios);
+            color: var(--accent-ios);
+            border-radius: 14px;
+            padding: 22px 20px;
+            font-family: var(--font-cartoon);
+            font-size: 20px;
+            font-weight: 700;
             margin-bottom: 24px;
-            font-weight: 500;
         }
-
-        .detected-banner.show { display: flex; }
 
         .feature-list {
             text-align: left;
@@ -310,155 +309,6 @@
             font-size: 15px;
             width: 20px;
             text-align: center;
-        }
-
-        .button-group {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 14px;
-        }
-
-        .download-btn {
-            background: var(--bg-tab-active);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            padding: 16px 20px;
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-decoration: none;
-            position: relative;
-        }
-
-        .download-btn:hover {
-            border-color: var(--accent-gold);
-            transform: translateY(-2px);
-            background: var(--border-color);
-        }
-
-        .download-btn.android-btn {
-            background: rgba(61, 220, 132, 0.1);
-            border-color: var(--accent-android);
-            color: var(--accent-android);
-        }
-
-        .download-btn.android-btn:hover {
-            background: rgba(61, 220, 132, 0.2);
-        }
-
-        .download-btn.ios-btn {
-            background: rgba(255, 77, 77, 0.1);
-            border-color: var(--accent-ios);
-            color: var(--accent-ios);
-        }
-
-        .download-btn.ios-btn:hover {
-            background: rgba(255, 77, 77, 0.2);
-        }
-
-        .download-btn.recommended {
-            box-shadow: 0 0 16px rgba(255, 183, 3, 0.25);
-            border-width: 2px;
-        }
-
-        .download-btn:disabled {
-            opacity: 0.6;
-            cursor: wait;
-        }
-
-        .btn-version {
-            font-size: 11px;
-            font-weight: 600;
-            opacity: 0.8;
-            background: rgba(0,0,0,0.25);
-            padding: 3px 8px;
-            border-radius: 6px;
-        }
-
-        .spinner {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.35);
-            border-top-color: #fff;
-            animation: spin 0.7s linear infinite;
-            display: none;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .status-msg {
-            font-size: 12px;
-            margin-top: 6px;
-            min-height: 16px;
-            font-weight: 500;
-        }
-
-        .status-msg.error { color: #ff5555; }
-        .status-msg.success { color: var(--accent-android); }
-
-        .instructions {
-            margin-top: 28px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border-color);
-            text-align: left;
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        .instructions b {
-            color: var(--text-primary);
-        }
-
-        .guide-img {
-            width: 100%;
-            border-radius: 12px;
-            margin-top: 14px;
-            border: 1px solid var(--border-color);
-        }
-
-        .why-trust {
-            margin-top: 14px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 12px;
-        }
-
-        .why-trust summary {
-            cursor: pointer;
-            font-size: 13px;
-            color: var(--accent-play);
-            font-weight: 500;
-            list-style: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .why-trust summary::-webkit-details-marker { display: none; }
-
-        .why-trust summary::before {
-            content: '▸';
-            transition: transform 0.15s ease;
-            display: inline-block;
-        }
-
-        .why-trust[open] summary::before {
-            transform: rotate(90deg);
-        }
-
-        .why-trust p {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin: 8px 0 0 0;
-            line-height: 1.5;
         }
 
         .stats-row {
@@ -695,12 +545,6 @@
             color: var(--text-secondary);
         }
 
-        @media (min-width: 600px) {
-            .button-group {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
         @media (min-width: 900px) {
             body {
                 padding-top: 90px;
@@ -726,10 +570,6 @@
             }
 
             .feature-item {
-                font-size: 14.5px;
-            }
-
-            .instructions {
                 font-size: 14.5px;
             }
         }
@@ -765,7 +605,7 @@
         </div>
         <div class="nav-menu">
             <div class="nav-link active" id="navDownloads">
-                <i class="fa-solid fa-download"></i> Downloads
+                <i class="fa-solid fa-house"></i> Home
             </div>
             <div class="nav-link" id="navAnnouncements">
                 <i class="fa-solid fa-bullhorn"></i> Announcements
@@ -775,14 +615,17 @@
 
     <!-- Main Container Panel -->
     <div class="container">
-        
-        <!-- DOWNLOADS PAGE PANEL -->
+
+        <!-- HOME PAGE PANEL -->
         <div class="page-panel active" id="downloadsPanel">
             <div class="app-logo large">&lt;/&gt;</div>
             <h1>CloudFurm</h1>
             <p class="subtitle">Code from your phone. Build, preview, and collaborate live — no desktop required.</p>
 
-            <div class="detected-banner" id="detectedBanner"></div>
+            <div class="gone-notice">
+                <i class="fa-solid fa-ghost"></i>
+                <span>Gone do to red guys retirement</span>
+            </div>
 
             <div class="feature-list">
                 <div class="feature-item"><i class="fa-solid fa-users" style="color: var(--accent-play);"></i> Live multi-device collaboration</div>
@@ -804,45 +647,6 @@
                     <div class="stat-num">~100MB</div>
                     <div class="stat-label">Install size</div>
                 </div>
-            </div>
-            
-            <div class="button-group">
-                <div>
-                    <button class="download-btn android-btn" id="androidBtn">
-                        <i class="fa-brands fa-android"></i>
-                        <span>Download Android</span>
-                        <span class="btn-version">V6</span>
-                        <span class="spinner" id="androidSpinner"></span>
-                    </button>
-                    <div class="status-msg" id="androidStatus"></div>
-                </div>
-
-                <div>
-                    <button class="download-btn ios-btn" id="iosBtn">
-                        <i class="fa-brands fa-apple"></i>
-                        <span>Direct Install (iOS)</span>
-                        <span class="btn-version">v3.2</span>
-                        <span class="spinner" id="iosSpinner"></span>
-                    </button>
-                    <div class="status-msg" id="iosStatus"></div>
-                </div>
-            </div>
-
-            <div class="instructions">
-                <b>iOS Installation Steps:</b><br><br>
-                1. Click <b>Direct Install</b>, then open <b>Settings > General > VPN & Device Management</b> and trust the profile.<br><br>
-                2. After tapping Trust, a popup will ask to Allow and Restart. Tap <b>"Allow and restart"</b> to finish enabling the profile.
-                
-                <img src="https://i.redd.it/yp0b3bh2gdfd1.jpeg" alt="Allow and Restart Prompt" class="guide-img">
-
-                <details class="why-trust">
-                    <summary>Why do I need to trust a profile?</summary>
-                    <p>
-                        CloudFurm isn't distributed through the App Store, so iOS needs an explicit,
-                        one-time permission (a "configuration profile") before it will run apps installed
-                        this way. Only trust profiles from sources you recognize.
-                    </p>
-                </details>
             </div>
 
             <div class="section-heading">System Requirements</div>
@@ -883,11 +687,11 @@
             <div class="section-heading">FAQ</div>
             <details class="faq-item">
                 <summary>Is CloudFurm free to use?</summary>
-                <p>Yes, downloading and using the editor is completely free.</p>
+                <p>Yes, using the editor is completely free.</p>
             </details>
             <details class="faq-item">
                 <summary>Will this appear in the App Store or Play Store?</summary>
-                <p>Not currently. CloudFurm is distributed directly by the developer via APK and iOS trusted profiles.</p>
+                <p>Not currently.</p>
             </details>
             <details class="faq-item">
                 <summary>Can I use it offline?</summary>
@@ -972,95 +776,6 @@
 
         navDownloads.addEventListener('click', () => switchTab('downloads'));
         navAnnouncements.addEventListener('click', () => switchTab('announcements'));
-
-        const androidBtn = document.getElementById('androidBtn');
-        const iosBtn = document.getElementById('iosBtn');
-        const androidSpinner = document.getElementById('androidSpinner');
-        const iosSpinner = document.getElementById('iosSpinner');
-        const androidStatus = document.getElementById('androidStatus');
-        const iosStatus = document.getElementById('iosStatus');
-        const detectedBanner = document.getElementById('detectedBanner');
-
-        const ANDROID_URL = "https://github.com/fazekreek-dev/CloudFurm/releases/download/2.0/CloudFurm.v6.apk";
-        const IOS_MANIFEST_URL = "itms-services://?action=download-manifest&url=https://fazekreek-dev.github.io/CloudF/manifest.plist";
-
-        function detectPlatform() {
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            if (/android/i.test(ua)) return 'android';
-            if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'ios';
-            return 'desktop';
-        }
-
-        function applyPlatformUI() {
-            const platform = detectPlatform();
-
-            if (platform === 'android') {
-                androidBtn.classList.add('recommended');
-                detectedBanner.innerHTML = `<i class="fa-brands fa-android"></i> Android device detected — download highlighted below`;
-                detectedBanner.classList.add('show');
-            } else if (platform === 'ios') {
-                iosBtn.classList.add('recommended');
-                detectedBanner.innerHTML = `<i class="fa-brands fa-apple"></i> iOS device detected — recommended install highlighted below`;
-                detectedBanner.classList.add('show');
-            } else {
-                detectedBanner.innerHTML = `<i class="fa-solid fa-desktop"></i> Desktop detected — open on mobile or download packages directly`;
-                detectedBanner.classList.add('show');
-            }
-        }
-
-        applyPlatformUI();
-
-        androidBtn.addEventListener('click', function() {
-            androidStatus.textContent = '';
-            androidStatus.className = 'status-msg';
-            androidBtn.disabled = true;
-            androidSpinner.style.display = 'inline-block';
-
-            try {
-                const win = window.open(ANDROID_URL, '_blank');
-                setTimeout(() => {
-                    androidBtn.disabled = false;
-                    androidSpinner.style.display = 'none';
-                    if (!win) {
-                        androidStatus.textContent = 'Download blocked — allow pop-ups and try again.';
-                        androidStatus.classList.add('error');
-                    } else {
-                        androidStatus.textContent = 'Download started. Check notifications to install.';
-                        androidStatus.classList.add('success');
-                    }
-                }, 600);
-            } catch (err) {
-                androidBtn.disabled = false;
-                androidSpinner.style.display = 'none';
-                androidStatus.textContent = 'Failed starting download. Try again.';
-                androidStatus.classList.add('error');
-            }
-        });
-
-        iosBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            if (detectPlatform() !== 'ios') {
-                iosStatus.textContent = 'This install link only works on iOS devices.';
-                iosStatus.className = 'status-msg error';
-                return;
-            }
-
-            iosStatus.textContent = '';
-            iosStatus.className = 'status-msg';
-            iosBtn.disabled = true;
-            iosSpinner.style.display = 'inline-block';
-
-            setTimeout(function() {
-                window.location.href = IOS_MANIFEST_URL;
-                iosStatus.textContent = 'Opening install prompt... follow steps below.';
-                iosStatus.classList.add('success');
-                setTimeout(() => {
-                    iosBtn.disabled = false;
-                    iosSpinner.style.display = 'none';
-                }, 1500);
-            }, 100);
-        });
     </script>
 </body>
 </html>
