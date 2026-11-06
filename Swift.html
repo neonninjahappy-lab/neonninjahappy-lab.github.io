@@ -16,6 +16,7 @@
       --accent-green: #2ec4b6;
       --accent-orange: #ff7043;
       --accent-android: #3ddc84;
+      --accent-cc: #2ec4b6;
       --text-primary: #f8f9fa;
       --text-secondary: #a0a0ab;
       --border-color: #2b2b36;
@@ -496,6 +497,7 @@
 
     .tab-icon { font-size: 12px; }
     .tab-icon.html { color: #e44d26; }
+    .tab-icon.cc { color: var(--accent-cc); }
     .tab-icon.folder { color: #ffb703; }
     .tab-icon.file { color: #4cc9f0; }
 
@@ -509,7 +511,7 @@
     /* Main Editor Workspace */
     .workspace {
       flex: 1;
-      min-height: 0; /* CRITICAL: Allows flex child to shrink and enable inner scrolling */
+      min-height: 0;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -518,7 +520,7 @@
 
     .editor-container {
       flex: 1;
-      min-height: 0; /* CRITICAL: Enables scrolling inside code container instead of extending body */
+      min-height: 0;
       display: flex;
       background-color: var(--bg-main);
       font-family: 'Fira Code', 'Courier New', monospace;
@@ -670,7 +672,7 @@
         <button class="icon-btn" id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
         <div class="dropdown-menu" id="dropdownMenu">
           <button class="dropdown-item" onclick="createItem('file')">
-            <i class="fa-solid fa-file-circle-plus"></i> New File
+            <i class="fa-solid fa-file-circle-plus"></i> New File (.html or .cc)
           </button>
           <button class="dropdown-item" onclick="createItem('folder')">
             <i class="fa-solid fa-folder-plus"></i> New Folder
@@ -904,7 +906,13 @@
           name: 'My Workspace',
           activeFileId: 101,
           items: [
-            { id: 101, name: 'index.html', type: 'file', content: '<h1>Hello World</h1>' }
+            { id: 101, name: 'index.html', type: 'file', content: '<h1>Hello World</h1>' },
+            { 
+              id: 102, 
+              name: 'Main.cc', 
+              type: 'file', 
+              content: '<install-cloudcode>\n\n# CloudFurm Welcome Page\n\nPage.Title; "CloudFurm"\n\nCreate.Element.Frame_True\nElementName; "Main"\nSize; "350x400"\nBackground; "#202020"\nCorner; true\n\nCreate.Element.Text_True\nElementName; "Welcome"\nText; "Welcome to CloudFurm!"\nColor; "#FFFFFF"\nFontSize; 24\n\nCreate.Element.Button_True\nElementName; "Start"\nText; "Get Started"\nBackground; "#307AEF"\n\nButton.OnClick; "Start"\n    Console.Print; "Button clicked!"\n\n<end-cloudcode>' 
+            }
           ]
         }
       ],
@@ -1031,7 +1039,6 @@
           clearInterval(interval);
           buildStatusText.textContent = `Build complete! Downloading ${appName}.${format}...`;
 
-          // Generate Manifest Config File + Asset Manifest Bundle download
           const manifestContent = JSON.stringify({
             appName,
             packageId,
@@ -1073,7 +1080,6 @@
 
         const parts = cmdText.split(' ');
         const mainCmd = parts[0].toLowerCase();
-        const arg = parts.slice(1).join(' ');
 
         switch (mainCmd) {
           case 'help':
@@ -1082,7 +1088,6 @@
             printTerminal('  clear             - Clear output screen');
             printTerminal('  run               - Launch live project preview');
             printTerminal('  files             - List all current project files');
-            printTerminal('  new [filename]    - Create a new file');
             printTerminal('  build             - Launch APK & App Bundle Builder');
             break;
 
@@ -1131,7 +1136,6 @@
     drawerBtn.addEventListener('click', () => toggleSidebar(true));
     closeSidebar.addEventListener('click', () => toggleSidebar(false));
 
-    // AI Helper Panel Toggle
     function toggleAiPanel(open) {
       if (open) {
         aiPanel.classList.add('active');
@@ -1150,7 +1154,6 @@
       toggleAiPanel(false);
     });
 
-    // Groq API Fetch Handler
     async function askGroqAI(messages) {
       const apiKey = groqApiKeyInput.value.trim();
       if (!apiKey) {
@@ -1184,7 +1187,6 @@
       }
     }
 
-    // AI Chat Messaging
     function addChatMessage(role, text) {
       const msgDiv = document.createElement('div');
       msgDiv.className = `chat-msg ${role}`;
@@ -1210,7 +1212,6 @@
       }
     });
 
-    // Auto-Fix Code
     aiFixCodeBtn.addEventListener('click', async () => {
       const file = getActiveFile();
       if (!file) return alert('No file is currently open!');
@@ -1219,7 +1220,7 @@
       addChatMessage('user', `Fix and optimize my ${file.name} code.`);
 
       const aiReply = await askGroqAI([
-        { role: 'system', content: 'You are CloudFurm.AI, a professional code cleaner. Return ONLY the improved raw code without any markdown wrappers like ```html.' },
+        { role: 'system', content: 'You are CloudFurm.AI, a professional code cleaner. Return ONLY the improved raw code without markdown wrappers.' },
         { role: 'user', content: `Here is my current code:\n${codeArea.innerText}` }
       ]);
 
@@ -1232,7 +1233,6 @@
       }
     });
 
-    // Projects Manager
     newProjectBtn.addEventListener('click', () => {
       const name = prompt('Enter new project name:', 'New Project');
       if (!name) return;
@@ -1274,7 +1274,6 @@
       });
     }
 
-    // Dropdown Menu
     menuBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       dropdownMenu.classList.toggle('show');
@@ -1293,7 +1292,7 @@
 
     function createItem(type) {
       dropdownMenu.classList.remove('show');
-      const name = prompt(`Enter ${type} name:`, type === 'file' ? 'index.html' : 'New Folder');
+      const name = prompt(`Enter ${type} name (use .html or .cc for files):`, type === 'file' ? 'main.cc' : 'New Folder');
       if (!name) return;
 
       const proj = getActiveProject();
@@ -1301,7 +1300,7 @@
         id: Date.now(),
         name: name.trim(),
         type: type,
-        content: type === 'file' ? '<h1>New File</h1>' : ''
+        content: type === 'file' ? (name.endsWith('.cc') ? '<install-cloudcode>\n\n# New CloudCode Program\n\nPage.Title; "My App"\n\n<end-cloudcode>' : '<h1>New File</h1>') : ''
       };
 
       proj.items.push(newItem);
@@ -1383,7 +1382,6 @@
       URL.revokeObjectURL(url);
     }
 
-    // Tabs & Workspace
     function setActiveTab(id) {
       saveCurrentEditorText();
       const proj = getActiveProject();
@@ -1426,6 +1424,7 @@
         let iconClass = 'fa-file file';
         if (item.type === 'folder') iconClass = 'fa-folder folder';
         else if (item.name.endsWith('.html')) iconClass = 'fa-code html';
+        else if (item.name.endsWith('.cc')) iconClass = 'fa-download cc';
 
         tab.innerHTML = `
           <i class="fa-solid ${iconClass} tab-icon"></i>
@@ -1442,7 +1441,8 @@
       const file = getActiveFile();
       if (file) {
         renameBtn.style.display = 'flex';
-        playBtn.style.display = file.name.toLowerCase().endsWith('.html') ? 'flex' : 'none';
+        const lowerName = file.name.toLowerCase();
+        playBtn.style.display = (lowerName.endsWith('.html') || lowerName.endsWith('.cc')) ? 'flex' : 'none';
       } else {
         renameBtn.style.display = 'none';
         playBtn.style.display = 'none';
@@ -1459,12 +1459,138 @@
       lineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
     }
 
+    // --- Official CloudCode Interpreter / Translator to HTML ---
+    function translateCloudCodeToHTML(ccCode) {
+      let pageTitle = "CloudCode App";
+      let elementsHTML = "";
+      let consoleLogs = [];
+
+      const lines = ccCode.split('\n').map(l => l.trim());
+      let currentElement = null;
+      let activeOnClick = null;
+
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        if (!line || line.startsWith('#') || line.startsWith('<install-cloudcode>') || line.startsWith('<end-cloudcode>')) continue;
+
+        if (line.startsWith('Page.Title;')) {
+          let match = line.match(/Page\.Title;\s*"([^"]+)"/);
+          if (match) pageTitle = match[1];
+        } 
+        else if (line.startsWith('Create.Element.')) {
+          if (currentElement) {
+            elementsHTML += renderCCElement(currentElement);
+          }
+          let type = line.split('.')[2].split('_')[0].toLowerCase();
+          currentElement = { type: type, props: {} };
+        } 
+        else if (line.startsWith('Button.OnClick;')) {
+          if (currentElement) {
+            elementsHTML += renderCCElement(currentElement);
+            currentElement = null;
+          }
+          let match = line.match(/Button\.OnClick;\s*"([^"]+)"/);
+          if (match) activeOnClick = match[1];
+        }
+        else if (line.includes(';')) {
+          let parts = line.split(';');
+          let pName = parts[0].trim();
+          let pVal = parts.slice(1).join(';').trim();
+          if (pVal.startsWith('"') && pVal.endsWith('"')) {
+            pVal = pVal.slice(1, -1);
+          } else if (pVal === 'true') {
+            pVal = true;
+          } else if (pVal === 'false') {
+            pVal = false;
+          } else if (!isNaN(pVal)) {
+            pVal = Number(pVal);
+          }
+
+          if (currentElement) {
+            currentElement.props[pName] = pVal;
+          } else if (activeOnClick && pName === 'Text') {
+            // Append behavior for click actions
+            elementsHTML += `<script>
+              document.addEventListener("DOMContentLoaded", () => {
+                const btn = document.getElementById("${activeOnClick}");
+                if(btn) btn.addEventListener("click", () => {
+                  // Action updated text or console log
+                  console.log("${pVal}");
+                });
+              });
+            <\/script>`;
+          }
+        } 
+        else if (line.startsWith('Console.Print;')) {
+          let match = line.match(/Console\.Print;\s*"([^"]+)"/) || line.match(/Console\.Print;\s*(.+)/);
+          if (match) consoleLogs.push(match[1]);
+        }
+      }
+
+      if (currentElement) {
+        elementsHTML += renderCCElement(currentElement);
+      }
+
+      // Wrap translated output into a fully valid HTML layout structure
+      return `<!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <title>${pageTitle}</title>
+        <style>
+          body { background-color: #121214; color: #fff; padding: 20px; font-family: sans-serif; }
+        </style>
+      </head>
+      <body>
+        <h2>${pageTitle}</h2>
+        ${elementsHTML}
+        ${consoleLogs.length ? `<div style="margin-top:20px; background:#0b0b0e; color:#39ff14; padding:10px; font-family:monospace; border-radius:4px;">[Console Output]:<br>` + consoleLogs.join('<br>') + `</div>` : ''}
+      </body>
+      </html>`;
+    }
+
+    function renderCCElement(el) {
+      let style = "margin-bottom: 12px; padding: 15px; box-sizing: border-box;";
+      let w = "100%", h = "auto";
+
+      if (el.props.Size) {
+        let dims = el.props.Size.split('x');
+        if (dims.length === 2) { w = dims[0] + 'px'; h = dims[1] + 'px'; }
+      }
+      if (el.props.Width) w = el.props.Width + 'px';
+      if (el.props.Height) h = el.props.Height + 'px';
+      if (el.props.Background) style += ` background-color: ${el.props.Background};`;
+      if (el.props.Color) style += ` color: ${el.props.Color};`;
+      if (el.props.Corner) style += ` border-radius: 8px;`;
+      if (el.props.FontSize) style += ` font-size: ${el.props.FontSize}px;`;
+      style += ` width: ${w}; height: ${h};`;
+
+      let idAttr = el.props.ElementName ? `id="${el.props.ElementName}"` : '';
+
+      if (el.type === 'frame' || el.type === 'container') {
+        return `<div ${idAttr} style="${style} border: 1px solid #333;">${el.props.Text || ''}</div>`;
+      } else if (el.type === 'text') {
+        return `<div ${idAttr} style="${style}">${el.props.Text || ''}</div>`;
+      } else if (el.type === 'button') {
+        let bg = el.props.Background || '#307AEF';
+        return `<button ${idAttr} style="background: ${bg}; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-bottom: 10px;">${el.props.Text || 'Button'}</button>`;
+      }
+      return '';
+    }
+
     function loadPreviewCode() {
       const file = getActiveFile();
       if (!file) return;
 
       addressUrl.textContent = `localhost:8158/${file.name}`;
-      previewFrame.srcdoc = codeArea.innerText;
+      
+      const lowerName = file.name.toLowerCase();
+      if (lowerName.endsWith('.cc')) {
+        // Translate .cc code into executable HTML layout via interpreter translator
+        previewFrame.srcdoc = translateCloudCodeToHTML(codeArea.innerText);
+      } else {
+        previewFrame.srcdoc = codeArea.innerText;
+      }
     }
 
     playBtn.addEventListener('click', () => {
@@ -1480,4 +1606,4 @@
     switchProject(appState.activeProjectId);
   </script>
 </body>
-</html> 
+</html>
