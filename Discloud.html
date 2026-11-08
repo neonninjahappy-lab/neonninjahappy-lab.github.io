@@ -51,6 +51,85 @@
       position: relative;
     }
 
+    /* Auth Screen Overlay */
+    .auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: var(--bg-main);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-overlay.hidden {
+      display: none;
+    }
+
+    .auth-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 32px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .auth-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background-color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #ffffff;
+    }
+
+    .auth-title {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .auth-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .btn-discord-login {
+      width: 100%;
+      padding: 12px 20px;
+      background-color: var(--accent-blue);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background-color 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn-discord-login:hover {
+      background-color: var(--accent-blue-hover);
+    }
+
     /* Top Navigation Bar */
     .top-bar {
       height: var(--header-height);
@@ -285,7 +364,12 @@
       font-weight: 500;
     }
 
-    /* Active Voice Overlay Panel in Channels */
+    .channel-item.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Voice Overlay Panel */
     .voice-control-panel {
       background-color: #16161a;
       border-top: 1px solid var(--border-color);
@@ -307,7 +391,7 @@
     }
 
     .voice-status-label {
-      color: var(--accent-online);
+      color: var(--accent-red);
       font-weight: 600;
       display: flex;
       align-items: center;
@@ -329,19 +413,15 @@
       border-radius: 4px;
       color: var(--text-primary);
       font-size: 12px;
-      cursor: pointer;
+      cursor: not-allowed;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 4px;
+      opacity: 0.6;
     }
 
-    .voice-action-btn.danger {
-      color: var(--accent-red);
-      border-color: rgba(255, 112, 67, 0.3);
-    }
-
-    /* User Profile Bar (Read-Only) */
+    /* User Profile Bar */
     .user-profile-bar {
       height: 52px;
       background-color: #141417;
@@ -392,16 +472,12 @@
       position: absolute;
       bottom: -1px;
       right: -1px;
-      width: 10px;
+      width: 100px;
       height: 10px;
       border-radius: 50%;
       background-color: var(--accent-online);
       border: 2px solid var(--bg-surface);
     }
-
-    .status-dot.idle { background-color: var(--accent-idle); }
-    .status-dot.dnd { background-color: var(--accent-dnd); }
-    .status-dot.offline { background-color: var(--accent-offline); }
 
     .user-details {
       display: flex;
@@ -489,6 +565,15 @@
       word-break: break-word;
     }
 
+    .message-attachment {
+      max-width: 280px;
+      max-height: 200px;
+      border-radius: 6px;
+      margin-top: 6px;
+      border: 1px solid var(--border-color);
+      object-fit: cover;
+    }
+
     /* Message Input Box */
     .message-input-area {
       padding: 12px;
@@ -521,6 +606,11 @@
       font-size: 13px;
       max-height: 120px;
       resize: none;
+    }
+
+    .message-input:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     /* Custom Emoji Picker Popup */
@@ -593,70 +683,6 @@
       background-color: var(--bg-tab-active);
     }
 
-    /* Home / Friends View Styling */
-    .home-view-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background-color: var(--bg-main);
-      height: 100%;
-      overflow: hidden;
-    }
-
-    .friends-header-tabs {
-      height: 48px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      gap: 16px;
-      background-color: var(--bg-surface);
-    }
-
-    .friend-tab-btn {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-
-    .friend-tab-btn.active {
-      color: var(--text-primary);
-      background-color: var(--bg-tab-active);
-    }
-
-    .friends-content-body {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-    }
-
-    .friends-list-pane {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .friend-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 12px;
-      border-radius: 6px;
-      border-top: 1px solid rgba(255,255,255,0.03);
-    }
-
-    .friend-row:hover {
-      background-color: var(--bg-surface);
-    }
-
     /* Desktop Members Sidebar */
     .members-sidebar {
       width: var(--members-sidebar-width);
@@ -691,19 +717,6 @@
       color: var(--text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-    }
-
-    .member-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 6px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .member-item:hover {
-      background-color: var(--bg-surface-hover);
     }
 
     /* Profile Read-Only Drawer Sheet */
@@ -794,152 +807,113 @@
       color: var(--text-secondary);
     }
 
-    /* Authentication & Info Modals */
+    .btn-logout {
+      width: 100%;
+      padding: 10px;
+      background-color: rgba(255, 112, 67, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(255, 112, 67, 0.3);
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.15s ease;
+    }
+
+    .btn-logout:hover {
+      background-color: rgba(255, 112, 67, 0.25);
+    }
+
+    /* API Documentation / Notice Modal */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.7);
       z-index: 500;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       padding: 16px;
     }
 
-    .modal-overlay.hidden { display: none; }
+    .modal-overlay.active { display: flex; }
 
     .app-modal {
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       background-color: var(--bg-surface);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
+      border-radius: 10px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 12px 36px rgba(0,0,0,0.6);
     }
 
     .modal-header {
-      height: 52px;
+      height: 48px;
       background-color: var(--bg-main);
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 16px;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       border-bottom: 1px solid var(--border-color);
     }
 
     .modal-body {
-      padding: 20px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       font-size: 13px;
       color: var(--text-secondary);
+      line-height: 1.4;
     }
 
-    .auth-input-group {
+    /* UI State Containers */
+    .state-container {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-    }
-
-    .auth-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-    }
-
-    .auth-input {
-      width: 100%;
-      background-color: var(--bg-main);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 10px 12px;
-      color: var(--text-primary);
-      outline: none;
-      font-size: 13px;
-    }
-
-    .auth-input:focus { border-color: var(--accent-blue); }
-
-    .auth-btn {
-      background-color: var(--accent-blue);
-      color: #fff;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-    }
-
-    .auth-btn:hover { background-color: var(--accent-blue-hover); }
-    .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    .auth-error-msg {
-      background: rgba(255, 112, 67, 0.1);
-      border: 1px solid rgba(255, 112, 67, 0.3);
-      color: var(--accent-red);
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      display: none;
-    }
-
-    .auth-toggle-text {
+      padding: 32px 16px;
       text-align: center;
-      font-size: 12px;
+      gap: 12px;
       color: var(--text-secondary);
-      cursor: pointer;
+      flex: 1;
     }
 
-    .auth-toggle-text span { color: var(--accent-blue); font-weight: 600; }
-    .auth-toggle-text span:hover { text-decoration: underline; }
+    .state-container i {
+      font-size: 28px;
+      color: var(--text-secondary);
+    }
+
+    .state-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
   </style>
 </head>
 <body>
 
-  <!-- Authentication Modal -->
-  <div class="modal-overlay" id="authModalOverlay">
-    <div class="app-modal">
-      <div class="modal-header">
-        <span id="authModalTitle"><i class="fa-solid fa-right-to-bracket" style="color: var(--accent-blue);"></i> Welcome to DisCloud</span>
+  <!-- Discord OAuth2 Login Screen -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <i class="fa-brands fa-discord"></i>
       </div>
-      <div class="modal-body">
-        <div class="auth-error-msg" id="authErrorMsg"></div>
-        
-        <div class="auth-input-group" id="usernameFieldGroup" style="display: none;">
-          <label class="auth-label">Username</label>
-          <input type="text" class="auth-input" id="authUsernameInput" placeholder="Choose a username" autocomplete="username" />
-        </div>
-
-        <div class="auth-input-group">
-          <label class="auth-label">Email</label>
-          <input type="email" class="auth-input" id="authEmailInput" placeholder="Enter your email" autocomplete="email" />
-        </div>
-
-        <div class="auth-input-group">
-          <label class="auth-label">Password</label>
-          <input type="password" class="auth-input" id="authPasswordInput" placeholder="Enter your password" autocomplete="current-password" />
-        </div>
-
-        <button class="auth-btn" id="authSubmitBtn">Log In</button>
-
-        <div class="auth-toggle-text" id="authToggleText">
-          Need an account? <span id="authToggleAction">Register</span>
-        </div>
-      </div>
+      <div class="auth-title">Welcome to DisCloud</div>
+      <div class="auth-desc">Connect your Discord account to view your servers, text channels, and live messages in real time.</div>
+      <button class="btn-discord-login" id="loginBtn">
+        <i class="fa-brands fa-discord"></i> Continue with Discord
+      </button>
     </div>
   </div>
 
@@ -949,11 +923,12 @@
       <button class="icon-btn" id="toggleNavBtn" title="Toggle Navigation"><i class="fa-solid fa-bars"></i></button>
       <div class="channel-title-header">
         <i class="fa-solid fa-hashtag" id="channelHeaderIcon" style="color: var(--text-secondary);"></i>
-        <span id="headerChannelName">friends</span>
+        <span id="headerChannelName">Select a channel</span>
       </div>
     </div>
     <div class="top-bar-right">
-      <button class="icon-btn" id="logoutBtn" title="Log Out"><i class="fa-solid fa-right-from-bracket"></i></button>
+      <button class="icon-btn" id="refreshBtn" title="Refresh Channel Messages"><i class="fa-solid fa-rotate-right"></i></button>
+      <button class="icon-btn" id="apiInfoBtn" title="Discord API Info"><i class="fa-solid fa-circle-info"></i></button>
       <button class="icon-btn" id="toggleMembersBtn" title="Toggle Members List"><i class="fa-solid fa-users"></i></button>
     </div>
   </div>
@@ -964,36 +939,32 @@
     <div class="nav-wrapper" id="navWrapper">
       <!-- Servers Rail -->
       <div class="server-sidebar" id="serverSidebar">
-        <div class="server-icon active" title="Home / Direct Messages"><i class="fa-solid fa-user-group"></i></div>
+        <!-- Servers rendered dynamically -->
       </div>
 
       <!-- Channels List Sidebar -->
       <div class="channel-sidebar" id="channelSidebarContainer">
         <div class="channel-header">
-          <span id="serverTitleText">Direct Messages</span>
+          <span id="serverTitleText">Select a Server</span>
         </div>
 
         <div class="channel-list" id="channelListContainer">
-          <div class="channel-category">
-            <div class="category-header"><span>Direct Messages</span></div>
-            <div class="channel-item active" data-id="friends"><i class="fa-solid fa-user"></i> <span>Friends</span></div>
-          </div>
-          <div class="channel-category" style="margin-top: 10px;">
-            <div class="category-header"><span>Text Channels</span></div>
-            <div class="channel-item" data-id="general"><i class="fa-solid fa-hashtag"></i> <span>general</span></div>
+          <div class="state-container">
+            <span class="state-title">No Server Selected</span>
+            <span>Select a server from the sidebar to view channels.</span>
           </div>
         </div>
 
-        <!-- Voice Call Status Control Bar -->
+        <!-- Voice Call Status Control Bar (Disabled) -->
         <div class="voice-control-panel" id="voiceControlPanel">
           <div class="voice-status-info">
-            <span class="voice-status-label"><i class="fa-solid fa-signal"></i> Voice Connected</span>
-            <span id="connectedVoiceChannelName" style="color: var(--text-secondary);">/ General</span>
+            <span class="voice-status-label"><i class="fa-solid fa-triangle-exclamation"></i> Voice Unavailable</span>
+            <span style="color: var(--text-secondary);">Native Voice Off</span>
           </div>
           <div class="voice-actions">
-            <button class="voice-action-btn" id="voiceMuteBtn"><i class="fa-solid fa-microphone"></i> Mute</button>
-            <button class="voice-action-btn" id="voiceDeafenBtn"><i class="fa-solid fa-headphones"></i> Deafen</button>
-            <button class="voice-action-btn danger" id="voiceDisconnectBtn"><i class="fa-solid fa-phone-slash"></i></button>
+            <button class="voice-action-btn" disabled><i class="fa-solid fa-microphone"></i> Mute</button>
+            <button class="voice-action-btn" disabled><i class="fa-solid fa-headphones"></i> Deafen</button>
+            <button class="voice-action-btn" disabled><i class="fa-solid fa-phone-slash"></i></button>
           </div>
         </div>
 
@@ -1001,12 +972,12 @@
         <div class="user-profile-bar" id="userProfileBar">
           <div class="user-info">
             <div class="avatar-wrap">
-              <div class="avatar" id="barAvatar">U</div>
-              <div class="status-dot" id="barStatusDot"></div>
+              <div class="avatar" id="barAvatar">?</div>
+              <div class="status-dot"></div>
             </div>
             <div class="user-details">
               <div class="user-name" id="barUserName">Loading...</div>
-              <div class="user-tag" id="barUserTag">#0000</div>
+              <div class="user-tag" id="barUserTag">@...</div>
             </div>
           </div>
           <i class="fa-solid fa-id-badge" style="color: var(--text-secondary); font-size: 14px;"></i>
@@ -1014,24 +985,21 @@
       </div>
     </div>
 
-    <!-- Dynamic Workspace Area -->
+    <!-- Dynamic Main Workspace Area -->
     <div class="chat-area" id="mainWorkspaceArea">
-      <!-- Rendered dynamically -->
+      <div class="state-container">
+        <i class="fa-solid fa-comments"></i>
+        <span class="state-title">Welcome to DisCloud</span>
+        <span>Select a server and channel to start reading and sending messages.</span>
+      </div>
     </div>
 
     <!-- Desktop Members List -->
     <div class="members-sidebar" id="membersSidebar">
-      <div class="members-group-title">Online Members</div>
+      <div class="members-group-title">Channel Details</div>
       <div id="membersListContainer">
-        <div class="member-item">
-          <div class="avatar-wrap">
-            <div class="avatar" style="background:#2ec4b6;">U</div>
-            <div class="status-dot"></div>
-          </div>
-          <div class="user-details">
-            <div class="user-name" id="memberUserName">User</div>
-            <div class="user-tag">Online</div>
-          </div>
+        <div style="font-size: 12px; color: var(--text-secondary); padding: 8px;">
+          Member lists are restricted by Discord Bot Gateway intents. Select channels to read live messages.
         </div>
       </div>
     </div>
@@ -1042,71 +1010,61 @@
   <div class="profile-sheet" id="profileSheet">
     <div class="sheet-header-banner">
       <div class="sheet-avatar-wrap">
-        <div class="avatar" id="sheetAvatar">U</div>
-        <div class="status-dot" id="sheetStatusDot"></div>
+        <div class="avatar" id="sheetAvatar">?</div>
       </div>
     </div>
     <div class="sheet-body">
       <div class="profile-card-user">
         <div class="profile-card-title">
-          <span id="sheetUserName">User</span>
+          <span id="sheetUserName">Discord User</span>
           <i class="fa-solid fa-circle-check" style="color: var(--accent-blue); font-size: 14px;"></i>
         </div>
-        <div class="profile-card-sub" id="sheetUserEmail">user@example.com</div>
+        <div class="profile-card-sub" id="sheetUserTag">@user · ID: <span id="sheetUserId">000000000</span></div>
       </div>
       <div style="font-size: 12px; color: var(--text-secondary); background: var(--bg-main); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
-        <i class="fa-solid fa-shield-halved" style="color: var(--accent-blue); margin-right: 6px;"></i> Connected securely to Supabase Backend Edge Function.
+        <i class="fa-solid fa-shield-halved" style="color: var(--accent-blue); margin-right: 6px;"></i> Profile editing is disabled in DisCloud to comply with Discord API security guidelines. Use the official Discord client to update account settings.
+      </div>
+      <button class="btn-logout" id="logoutBtn">
+        <i class="fa-solid fa-right-from-bracket"></i> Log Out of DisCloud
+      </button>
+    </div>
+  </div>
+
+  <!-- API Limitations / Architecture Info Modal -->
+  <div class="modal-overlay" id="apiModal">
+    <div class="app-modal">
+      <div class="modal-header">
+        <span><i class="fa-solid fa-circle-info" style="color: var(--accent-blue);"></i> DisCloud & Discord API Architecture</span>
+        <button class="icon-btn" id="closeApiModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Official OAuth2 & Backend:</strong> DisCloud connects via official Discord OAuth2 authorization tokens routed through a secure backend proxy to protect client secrets and eliminate token exposure risks.</p>
+        <p><strong>Voice Limitations:</strong> Native browser voice streaming is disabled as third-party client media routing requires WebRTC gateway media server node infrastructure.</p>
+        <p><strong>Real-time Synchronization:</strong> DisCloud synchronizes your authorized Discord servers, channel categories, and message streams cleanly directly from your account.</p>
       </div>
     </div>
   </div>
 
   <script>
-    // API Configuration
-    const API_BASE_URL = 'https://aiwobjgrgqsgjirueaqa.supabase.co/functions/v1/discloud-native-api';
+    // Project Configuration Constants
+    const API_BASE_URL = "https://aiwobjgrgqsgjirueaqa.supabase.co/functions/v1/discloud-api";
 
-    // State Store Management
-    let authToken = localStorage.getItem('discloud_auth_token') || null;
-    let currentUser = null;
-    let currentChannelId = 'friends';
-    let isRegisterMode = false;
+    // Application State Management
+    const appState = {
+      authenticated: false,
+      user: null,
+      servers: [],
+      currentServerId: null,
+      channels: [],
+      currentChannel: null,
+      messages: [],
+      isLoadingServers: false,
+      isLoadingChannels: false,
+      isLoadingMessages: false,
+      isSendingMessage: false
+    };
 
-    // DOM Elements
-    const authModalOverlay = document.getElementById('authModalOverlay');
-    const authModalTitle = document.getElementById('authModalTitle');
-    const authErrorMsg = document.getElementById('authErrorMsg');
-    const usernameFieldGroup = document.getElementById('usernameFieldGroup');
-    const authUsernameInput = document.getElementById('authUsernameInput');
-    const authEmailInput = document.getElementById('authEmailInput');
-    const authPasswordInput = document.getElementById('authPasswordInput');
-    const authSubmitBtn = document.getElementById('authSubmitBtn');
-    const authToggleText = document.getElementById('authToggleText');
-    const authToggleAction = document.getElementById('authToggleAction');
-
-    const toggleNavBtn = document.getElementById('toggleNavBtn');
-    const toggleMembersBtn = document.getElementById('toggleMembersBtn');
-    const navWrapper = document.getElementById('navWrapper');
-    const membersSidebar = document.getElementById('membersSidebar');
-    const channelListContainer = document.getElementById('channelListContainer');
-    const mainWorkspaceArea = document.getElementById('mainWorkspaceArea');
-    const headerChannelName = document.getElementById('headerChannelName');
-    const channelHeaderIcon = document.getElementById('channelHeaderIcon');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    // Profile UI Elements
-    const userProfileBar = document.getElementById('userProfileBar');
-    const profileOverlay = document.getElementById('profileOverlay');
-    const profileSheet = document.getElementById('profileSheet');
-    const barAvatar = document.getElementById('barAvatar');
-    const barUserName = document.getElementById('barUserName');
-    const barUserTag = document.getElementById('barUserTag');
-    const barStatusDot = document.getElementById('barStatusDot');
-    const sheetAvatar = document.getElementById('sheetAvatar');
-    const sheetUserName = document.getElementById('sheetUserName');
-    const sheetUserEmail = document.getElementById('sheetUserEmail');
-    const sheetStatusDot = document.getElementById('sheetStatusDot');
-    const memberUserName = document.getElementById('memberUserName');
-
-    // Utility XSS Escaper
+    // Helper: Safe HTML Escaping
     function escapeHTML(str) {
       if (!str) return '';
       return String(str).replace(/[&<>"']/g, function(m) {
@@ -1120,7 +1078,73 @@
       });
     }
 
-    // Toggle Navigation & Sidebar Drawers
+    // Helper: Unified Secure API Request Handler
+    async function apiRequest(endpoint, method = 'GET', body = null) {
+      const options = {
+        method,
+        headers: {},
+        credentials: 'include' // Send HttpOnly session cookie cross-origin
+      };
+
+      if (body) {
+        options.headers['Content-Type'] = 'application/json';
+        options.body = JSON.stringify(body);
+      }
+
+      try {
+        const res = await fetch(`${API_BASE_URL}${endpoint}`, options);
+        if (res.status === 401) {
+          showAuthOverlay();
+          throw new Error("Unauthorized or session expired.");
+        }
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || errData.error || `HTTP error ${res.status}`);
+        }
+        return await res.json();
+      } catch (err) {
+        console.error(`API Error [${method} ${endpoint}]:`, err);
+        throw err;
+      }
+    }
+
+    // DOM Elements
+    const authOverlay = document.getElementById('authOverlay');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const toggleNavBtn = document.getElementById('toggleNavBtn');
+    const toggleMembersBtn = document.getElementById('toggleMembersBtn');
+    const navWrapper = document.getElementById('navWrapper');
+    const membersSidebar = document.getElementById('membersSidebar');
+    const serverSidebar = document.getElementById('serverSidebar');
+    const channelListContainer = document.getElementById('channelListContainer');
+    const mainWorkspaceArea = document.getElementById('mainWorkspaceArea');
+    const headerChannelName = document.getElementById('headerChannelName');
+    const channelHeaderIcon = document.getElementById('channelHeaderIcon');
+    const serverTitleText = document.getElementById('serverTitleText');
+
+    // Profile UI Elements
+    const userProfileBar = document.getElementById('userProfileBar');
+    const profileOverlay = document.getElementById('profileOverlay');
+    const profileSheet = document.getElementById('profileSheet');
+    const barAvatar = document.getElementById('barAvatar');
+    const barUserName = document.getElementById('barUserName');
+    const barUserTag = document.getElementById('barUserTag');
+    const sheetAvatar = document.getElementById('sheetAvatar');
+    const sheetUserName = document.getElementById('sheetUserName');
+    const sheetUserTag = document.getElementById('sheetUserTag');
+    const sheetUserId = document.getElementById('sheetUserId');
+
+    // Modal Elements
+    const apiInfoBtn = document.getElementById('apiInfoBtn');
+    const apiModal = document.getElementById('apiModal');
+    const closeApiModalBtn = document.getElementById('closeApiModalBtn');
+
+    // Navigation & UI Event Listeners
+    apiInfoBtn.addEventListener('click', () => apiModal.classList.add('active'));
+    closeApiModalBtn.addEventListener('click', () => apiModal.classList.remove('active'));
+
     toggleNavBtn.addEventListener('click', () => {
       navWrapper.classList.toggle('active');
       membersSidebar.classList.remove('mobile-open');
@@ -1131,10 +1155,11 @@
       navWrapper.classList.remove('active');
     });
 
-    // Profile Sheet Drawer Handlers
     userProfileBar.addEventListener('click', () => {
-      profileOverlay.classList.add('active');
-      profileSheet.classList.add('active');
+      if (appState.user) {
+        profileOverlay.classList.add('active');
+        profileSheet.classList.add('active');
+      }
     });
 
     profileOverlay.addEventListener('click', () => {
@@ -1142,315 +1167,474 @@
       profileSheet.classList.remove('active');
     });
 
-    // Auth Mode Toggler (Login vs Register)
-    authToggleAction.addEventListener('click', () => {
-      isRegisterMode = !isRegisterMode;
-      authErrorMsg.style.display = 'none';
-      if (isRegisterMode) {
-        authModalTitle.innerHTML = '<i class="fa-solid fa-user-plus" style="color: var(--accent-blue);"></i> Create DisCloud Account';
-        usernameFieldGroup.style.display = 'flex';
-        authSubmitBtn.textContent = 'Register';
-        authToggleText.innerHTML = 'Already have an account? <span id="authToggleAction">Log In</span>';
-      } else {
-        authModalTitle.innerHTML = '<i class="fa-solid fa-right-to-bracket" style="color: var(--accent-blue);"></i> Welcome to DisCloud';
-        usernameFieldGroup.style.display = 'none';
-        authSubmitBtn.textContent = 'Log In';
-        authToggleText.innerHTML = 'Need an account? <span id="authToggleAction">Register</span>';
-      }
-      document.getElementById('authToggleAction').addEventListener('click', arguments.callee);
+    loginBtn.addEventListener('click', () => {
+      window.location.href = `${API_BASE_URL}/auth/login`;
     });
 
-    // Rebind toggle action safely
-    authToggleText.addEventListener('click', (e) => {
-      if (e.target.id === 'authToggleAction') {
-        isRegisterMode = !isRegisterMode;
-        authErrorMsg.style.display = 'none';
-        if (isRegisterMode) {
-          authModalTitle.innerHTML = '<i class="fa-solid fa-user-plus" style="color: var(--accent-blue);"></i> Create DisCloud Account';
-          usernameFieldGroup.style.display = 'flex';
-          authSubmitBtn.textContent = 'Register';
-          authToggleText.innerHTML = 'Already have an account? <span id="authToggleAction">Log In</span>';
-        } else {
-          authModalTitle.innerHTML = '<i class="fa-solid fa-right-to-bracket" style="color: var(--accent-blue);"></i> Welcome to DisCloud';
-          usernameFieldGroup.style.display = 'none';
-          authSubmitBtn.textContent = 'Log In';
-          authToggleText.innerHTML = 'Need an account? <span id="authToggleAction">Register</span>';
-        }
-      }
-    });
-
-    // Handle Authentication Submit (Login / Register)
-    authSubmitBtn.addEventListener('click', async () => {
-      authErrorMsg.style.display = 'none';
-      const email = authEmailInput.value.trim();
-      const password = authPasswordInput.value.trim();
-      const username = authUsernameInput.value.trim();
-
-      if (!email || !password || (isRegisterMode && !username)) {
-        authErrorMsg.textContent = 'Please fill out all required fields.';
-        authErrorMsg.style.display = 'block';
-        return;
-      }
-
-      authSubmitBtn.disabled = true;
-      authSubmitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
-
-      const endpoint = isRegisterMode ? '/register' : '/login';
-      const payload = isRegisterMode ? { username, email, password } : { email, password };
-
-      try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.error || data.message || 'Authentication failed');
-        }
-
-        // Save Token & User Session
-        authToken = data.token || data.access_token;
-        if (!authToken) throw new Error('No access token returned from backend.');
-
-        localStorage.setItem('discloud_auth_token', authToken);
-        authModalOverlay.classList.add('hidden');
-        await fetchUserDataAndApp();
-      } catch (err) {
-        authErrorMsg.textContent = err.message;
-        authErrorMsg.style.display = 'block';
-      } finally {
-        authSubmitBtn.disabled = false;
-        authSubmitBtn.textContent = isRegisterMode ? 'Register' : 'Log In';
-      }
-    });
-
-    // Handle Logout
     logoutBtn.addEventListener('click', async () => {
       try {
-        if (authToken) {
-          await fetch(`${API_BASE_URL}/logout`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${authToken}` }
-          });
-        }
+        await apiRequest('/auth/logout', 'POST');
       } catch (e) {
-        console.error('Logout error:', e);
-      } finally {
-        localStorage.removeItem('discloud_auth_token');
-        authToken = null;
-        currentUser = null;
-        authModalOverlay.classList.remove('hidden');
+        console.warn("Logout endpoint error:", e);
+      }
+      appState.authenticated = false;
+      appState.user = null;
+      appState.servers = [];
+      appState.channels = [];
+      appState.messages = [];
+      profileOverlay.classList.remove('active');
+      profileSheet.classList.remove('active');
+      showAuthOverlay();
+    });
+
+    refreshBtn.addEventListener('click', () => {
+      if (appState.currentChannel) {
+        fetchMessages(appState.currentChannel.id);
       }
     });
 
-    // Session Verification & User Profile Loader
-    async function fetchUserDataAndApp() {
-      if (!authToken) {
-        authModalOverlay.classList.remove('hidden');
-        return;
-      }
+    // Auth Overlay Visibility
+    function showAuthOverlay() {
+      authOverlay.classList.remove('hidden');
+    }
 
+    function hideAuthOverlay() {
+      authOverlay.classList.add('hidden');
+    }
+
+    // Check Session (/auth/me)
+    async function checkAuthSession() {
       try {
-        const res = await fetch(`${API_BASE_URL}/me`, {
-          method: 'GET',
-          headers: { 'Authorization': `Bearer ${authToken}` }
-        });
-
-        if (!res.ok) throw new Error('Session expired or invalid');
-        const data = await res.json();
-        currentUser = data.user || data;
-
-        updateUserProfileUI();
-        authModalOverlay.classList.add('hidden');
-        renderWorkspace();
-        setupChannelListeners();
+        const data = await apiRequest('/auth/me');
+        if (data && (data.user || data.id)) {
+          appState.user = data.user || data;
+          appState.authenticated = true;
+          hideAuthOverlay();
+          updateUserProfileUI();
+          fetchServers();
+        } else {
+          showAuthOverlay();
+        }
       } catch (err) {
-        console.error('Session validation failed:', err);
-        localStorage.removeItem('discloud_auth_token');
-        authToken = null;
-        authModalOverlay.classList.remove('hidden');
+        showAuthOverlay();
       }
     }
 
+    // Update Profile UI
     function updateUserProfileUI() {
-      if (!currentUser) return;
-      const uname = currentUser.username || currentUser.email || 'User';
-      const utag = currentUser.tag || '#1337';
-      const uemail = currentUser.email || 'user@example.com';
-      const initial = uname.charAt(0).toUpperCase();
+      const u = appState.user;
+      if (!u) return;
 
-      barUserName.textContent = uname;
-      barUserTag.textContent = utag;
-      barAvatar.textContent = initial;
+      const username = u.global_name || u.username || 'Discord User';
+      const userTag = u.discriminator && u.discriminator !== '0' ? `#${u.discriminator}` : `@${u.username}`;
+      const avatarUrl = u.avatar ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png` : null;
 
-      sheetUserName.textContent = uname;
-      sheetUserEmail.textContent = uemail;
-      sheetAvatar.textContent = initial;
-      memberUserName.textContent = uname;
-    }
+      barUserName.textContent = username;
+      barUserTag.textContent = userTag;
+      sheetUserName.textContent = username;
+      sheetUserTag.textContent = `${userTag} · ID: ${u.id}`;
+      sheetUserId.textContent = u.id;
 
-    // Setup Channel Switching
-    function setupChannelListeners() {
-      document.querySelectorAll('.channel-item').forEach(item => {
-        item.addEventListener('click', () => {
-          document.querySelectorAll('.channel-item').forEach(i => i.classList.remove('active'));
-          item.classList.add('active');
-          currentChannelId = item.getAttribute('data-id');
-          const channelNameSpan = item.querySelector('span');
-          headerChannelName.textContent = channelNameSpan ? channelNameSpan.textContent : 'chat';
-          channelHeaderIcon.className = currentChannelId === 'friends' ? 'fa-solid fa-user' : 'fa-solid fa-hashtag';
-          
-          renderWorkspace();
-          navWrapper.classList.remove('active');
-        });
-      });
-    }
-
-    // Render Workspace (Friends view or Chat room)
-    function renderWorkspace() {
-      if (currentChannelId === 'friends') {
-        renderFriendsHomeView();
+      if (avatarUrl) {
+        barAvatar.style.backgroundImage = `url(${avatarUrl})`;
+        barAvatar.textContent = '';
+        sheetAvatar.style.backgroundImage = `url(${avatarUrl})`;
+        sheetAvatar.textContent = '';
       } else {
-        renderChatRoomView();
+        barAvatar.style.backgroundImage = 'none';
+        barAvatar.textContent = username.charAt(0).toUpperCase();
+        sheetAvatar.style.backgroundImage = 'none';
+        sheetAvatar.textContent = username.charAt(0).toUpperCase();
       }
     }
 
-    function renderFriendsHomeView() {
-      mainWorkspaceArea.innerHTML = `
-        <div class="home-view-container">
-          <div class="friends-header-tabs">
-            <button class="friend-tab-btn active"><i class="fa-solid fa-user-group" style="margin-right:6px;"></i> Online</button>
-          </div>
-          <div class="friends-content-body">
-            <div class="friends-list-pane">
-              <div class="members-group-title" style="margin-bottom: 8px;">Active User — 1 Online</div>
-              <div class="friend-row">
-                <div class="user-info">
-                  <div class="avatar-wrap">
-                    <div class="avatar">${currentUser ? currentUser.username.charAt(0).toUpperCase() : 'U'}</div>
-                    <div class="status-dot online"></div>
-                  </div>
-                  <div class="user-details">
-                    <div class="user-name">${escapeHTML(currentUser ? currentUser.username : 'User')}</div>
-                    <div class="user-tag">Active on DisCloud</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    // Fetch Servers (/discord/guilds)
+    async function fetchServers() {
+      appState.isLoadingServers = true;
+      renderServersLoading();
+      try {
+        const guilds = await apiRequest('/discord/guilds');
+        appState.servers = Array.isArray(guilds) ? guilds : (guilds.data || []);
+        appState.isLoadingServers = false;
+        renderServers();
+      } catch (err) {
+        appState.isLoadingServers = false;
+        renderServersError(err.message);
+      }
+    }
+
+    function renderServersLoading() {
+      serverSidebar.innerHTML = `
+        <div style="color: var(--text-secondary); font-size: 16px; padding: 12px;">
+          <i class="fa-solid fa-spinner fa-spin"></i>
         </div>
       `;
     }
 
-    async function renderChatRoomView() {
-      mainWorkspaceArea.innerHTML = `
-        <div class="messages-container" id="messagesContainer">
-          <div style="display:flex; align-items:center; justify-content:center; height:100%; color:var(--text-secondary);">
-            <i class="fa-solid fa-spinner fa-spin" style="margin-right:8px;"></i> Loading messages...
-          </div>
+    function renderServersError(msg) {
+      serverSidebar.innerHTML = `
+        <div style="color: var(--accent-red); font-size: 14px; padding: 8px;" title="${escapeHTML(msg)}">
+          <i class="fa-solid fa-triangle-exclamation"></i>
         </div>
+      `;
+    }
+
+    function renderServers() {
+      serverSidebar.innerHTML = '';
+
+      if (appState.servers.length === 0) {
+        serverSidebar.innerHTML = `
+          <div style="color: var(--text-secondary); font-size: 11px; text-align: center; padding: 8px;">
+            No Servers
+          </div>
+        `;
+        return;
+      }
+
+      appState.servers.forEach(guild => {
+        const iconDiv = document.createElement('div');
+        iconDiv.className = `server-icon ${guild.id === appState.currentServerId ? 'active' : ''}`;
+        
+        const iconUrl = guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` : null;
+
+        if (iconUrl) {
+          iconDiv.style.backgroundImage = `url(${iconUrl})`;
+          iconDiv.textContent = '';
+        } else {
+          iconDiv.style.backgroundImage = 'none';
+          const initials = guild.name.split(' ').map(w => w[0]).join('').substring(0, 3).toUpperCase();
+          iconDiv.textContent = initials || 'S';
+        }
+
+        iconDiv.title = guild.name;
+        iconDiv.addEventListener('click', () => {
+          if (appState.currentServerId !== guild.id) {
+            appState.currentServerId = guild.id;
+            serverTitleText.textContent = guild.name;
+            renderServers();
+            fetchChannels(guild.id);
+          }
+        });
+
+        serverSidebar.appendChild(iconDiv);
+      });
+    }
+
+    // Fetch Channels (/discord/guilds/{guild_id}/channels)
+    async function fetchChannels(guildId) {
+      appState.isLoadingChannels = true;
+      appState.channels = [];
+      appState.currentChannel = null;
+      renderChannelsLoading();
+      
+      try {
+        const channels = await apiRequest(`/discord/guilds/${guildId}/channels`);
+        appState.channels = Array.isArray(channels) ? channels : (channels.data || []);
+        appState.isLoadingChannels = false;
+        renderChannels();
+      } catch (err) {
+        appState.isLoadingChannels = false;
+        renderChannelsError(err.message);
+      }
+    }
+
+    function renderChannelsLoading() {
+      channelListContainer.innerHTML = `
+        <div class="state-container">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <span class="state-title">Loading channels...</span>
+        </div>
+      `;
+    }
+
+    function renderChannelsError(msg) {
+      channelListContainer.innerHTML = `
+        <div class="state-container">
+          <i class="fa-solid fa-circle-exclamation" style="color: var(--accent-red);"></i>
+          <span class="state-title">Failed to load channels</span>
+          <span style="font-size:12px;">${escapeHTML(msg)}</span>
+        </div>
+      `;
+    }
+
+    function renderChannels() {
+      channelListContainer.innerHTML = '';
+
+      if (appState.channels.length === 0) {
+        channelListContainer.innerHTML = `
+          <div class="state-container">
+            <span class="state-title">No Channels Found</span>
+            <span style="font-size:12px;">Ensure the Discord bot is in this server and has view permissions.</span>
+          </div>
+        `;
+        return;
+      }
+
+      // Group Channels by Category (Parent ID) or Category Name
+      const categoriesMap = {};
+      const nonCategoryChannels = [];
+
+      // Discord Channel Types: 0 = GUILD_TEXT, 2 = GUILD_VOICE, 4 = GUILD_CATEGORY
+      const categoryNodes = appState.channels.filter(c => c.type === 4);
+
+      categoryNodes.forEach(cat => {
+        categoriesMap[cat.id] = { name: cat.name, channels: [] };
+      });
+
+      appState.channels.forEach(ch => {
+        if (ch.type === 4) return;
+        if (ch.parent_id && categoriesMap[ch.parent_id]) {
+          categoriesMap[ch.parent_id].channels.push(ch);
+        } else {
+          nonCategoryChannels.push(ch);
+        }
+      });
+
+      // Render Uncategorized Channels
+      if (nonCategoryChannels.length > 0) {
+        const catDiv = document.createElement('div');
+        catDiv.className = 'channel-category';
+        
+        const catHeader = document.createElement('div');
+        catHeader.className = 'category-header';
+        catHeader.innerHTML = `<span>CHANNELS</span> <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>`;
+        catDiv.appendChild(catHeader);
+
+        nonCategoryChannels.forEach(ch => {
+          catDiv.appendChild(createChannelItemElement(ch));
+        });
+
+        channelListContainer.appendChild(catDiv);
+      }
+
+      // Render Categorized Channels
+      Object.keys(categoriesMap).forEach(catId => {
+        const catObj = categoriesMap[catId];
+        if (catObj.channels.length === 0) return;
+
+        const catDiv = document.createElement('div');
+        catDiv.className = 'channel-category';
+
+        const catHeader = document.createElement('div');
+        catHeader.className = 'category-header';
+        catHeader.innerHTML = `<span>${escapeHTML(catObj.name)}</span> <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>`;
+        catDiv.appendChild(catHeader);
+
+        catObj.channels.forEach(ch => {
+          catDiv.appendChild(createChannelItemElement(ch));
+        });
+
+        channelListContainer.appendChild(catDiv);
+      });
+    }
+
+    function createChannelItemElement(ch) {
+      const item = document.createElement('div');
+      const isSelected = appState.currentChannel && appState.currentChannel.id === ch.id;
+      const isVoice = ch.type === 2;
+
+      item.className = `channel-item ${isSelected ? 'active' : ''} ${isVoice ? 'disabled' : ''}`;
+      
+      const iconClass = isVoice ? 'fa-volume-high' : 'fa-hashtag';
+      item.innerHTML = `<i class="fa-solid ${iconClass}"></i> <span>${escapeHTML(ch.name)}</span>`;
+
+      item.addEventListener('click', () => {
+        if (isVoice) {
+          alert("Voice channels are not media-transport enabled in browser mode.");
+          return;
+        }
+
+        appState.currentChannel = ch;
+        headerChannelName.textContent = ch.name;
+        channelHeaderIcon.className = 'fa-solid fa-hashtag';
+        renderChannels();
+        fetchMessages(ch.id);
+        navWrapper.classList.remove('active');
+      });
+
+      return item;
+    }
+
+    // Fetch Messages (/discord/channels/{channel_id}/messages)
+    async function fetchMessages(channelId) {
+      appState.isLoadingMessages = true;
+      renderMessagesLoading();
+
+      try {
+        const msgs = await apiRequest(`/discord/channels/${channelId}/messages`);
+        appState.messages = Array.isArray(msgs) ? msgs : (msgs.data || []);
+        // Discord API returns newest first -> reverse to show chronological order
+        appState.messages.reverse();
+        appState.isLoadingMessages = false;
+        renderChatRoomView();
+      } catch (err) {
+        appState.isLoadingMessages = false;
+        renderMessagesError(err.message);
+      }
+    }
+
+    function renderMessagesLoading() {
+      mainWorkspaceArea.innerHTML = `
+        <div class="state-container">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <span class="state-title">Loading messages...</span>
+        </div>
+      `;
+    }
+
+    function renderMessagesError(msg) {
+      mainWorkspaceArea.innerHTML = `
+        <div class="state-container">
+          <i class="fa-solid fa-circle-exclamation" style="color: var(--accent-red);"></i>
+          <span class="state-title">Failed to load messages</span>
+          <span style="font-size:12px;">${escapeHTML(msg)}</span>
+        </div>
+      `;
+    }
+
+    // Render Chat Workspace & Messages
+    function renderChatRoomView() {
+      if (!appState.currentChannel) return;
+
+      mainWorkspaceArea.innerHTML = `
+        <div class="messages-container" id="messagesContainer"></div>
         <div class="message-input-area">
+          <div class="emoji-picker-popup" id="emojiPickerPopup">
+            <div class="emoji-picker-header">Standard Emojis</div>
+            <div class="emoji-picker-body" id="emojiPickerBody"></div>
+          </div>
           <div class="message-input-wrapper">
-            <textarea class="message-input" id="messageInput" rows="1" placeholder="Message #general..."></textarea>
+            <button class="icon-btn" id="emojiPickerToggleBtn" title="Insert Emoji"><i class="fa-solid fa-face-smile"></i></button>
+            <input type="text" class="message-input" id="messageInput" placeholder="Message #${escapeHTML(appState.currentChannel.name)}..." />
             <button class="icon-btn" id="sendMsgBtn" style="color: var(--accent-blue);"><i class="fa-solid fa-paper-plane"></i></button>
           </div>
         </div>
       `;
 
-      await loadAndDisplayMessages();
-
-      const messageInput = document.getElementById('messageInput');
-      const sendMsgBtn = document.getElementById('sendMsgBtn');
-
-      const submitAction = async () => {
-        const text = messageInput.value.trim();
-        if (!text) return;
-
-        sendMsgBtn.disabled = true;
-        sendMsgBtn.style.opacity = '0.5';
-
-        try {
-          const res = await fetch(`${API_BASE_URL}/messages`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${authToken}`
-            },
-            body: JSON.stringify({ text })
-          });
-
-          if (!res.ok) throw new Error('Failed to send message');
-          messageInput.value = '';
-          await loadAndDisplayMessages();
-        } catch (err) {
-          console.error('Send message error:', err);
-          alert('Could not send message. Please try again.');
-        } finally {
-          sendMsgBtn.disabled = false;
-          sendMsgBtn.style.opacity = '1';
-        }
-      };
-
-      sendMsgBtn.addEventListener('click', submitAction);
-      messageInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          submitAction();
-        }
-      });
-    }
-
-    async function loadAndDisplayMessages() {
       const msgContainer = document.getElementById('messagesContainer');
-      if (!msgContainer) return;
 
-      try {
-        const res = await fetch(`${API_BASE_URL}/messages`, {
-          method: 'GET',
-          headers: { 'Authorization': `Bearer ${authToken}` }
-        });
+      if (appState.messages.length === 0) {
+        msgContainer.innerHTML = `
+          <div class="state-container">
+            <i class="fa-solid fa-comments"></i>
+            <span class="state-title">Welcome to #${escapeHTML(appState.currentChannel.name)}!</span>
+            <span style="font-size:12px;">This is the start of the #${escapeHTML(appState.currentChannel.name)} channel.</span>
+          </div>
+        `;
+      } else {
+        appState.messages.forEach(m => {
+          const authorName = m.author ? (m.author.global_name || m.author.username || 'User') : 'User';
+          const avatarUrl = m.author && m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png` : null;
+          const timeStr = m.timestamp ? new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
 
-        if (!res.ok) throw new Error('Failed to load messages');
-        const data = await res.json();
-        const messages = data.messages || [];
-
-        msgContainer.innerHTML = '';
-        if (messages.length === 0) {
-          msgContainer.innerHTML = `<div style="color:var(--text-secondary); text-align:center; margin-top:20px;">No messages in #general yet. Start the conversation!</div>`;
-          return;
-        }
-
-        messages.forEach(m => {
           const msgDiv = document.createElement('div');
           msgDiv.className = 'message';
-          const author = m.username || 'User';
-          const time = m.time || 'Just now';
-          const initial = author.charAt(0).toUpperCase();
+
+          let avatarHtml = `<div class="avatar" style="width:36px; height:36px; font-size:14px; flex-shrink:0;">${escapeHTML(authorName.charAt(0).toUpperCase())}</div>`;
+          if (avatarUrl) {
+            avatarHtml = `<div class="avatar" style="width:36px; height:36px; background-image: url('${avatarUrl}'); flex-shrink:0;"></div>`;
+          }
+
+          let attachmentsHtml = '';
+          if (Array.isArray(m.attachments) && m.attachments.length > 0) {
+            m.attachments.forEach(att => {
+              if (att.content_type && att.content_type.startsWith('image/')) {
+                attachmentsHtml += `<img src="${escapeHTML(att.url)}" class="message-attachment" alt="attachment" loading="lazy" />`;
+              } else {
+                attachmentsHtml += `<div style="margin-top:4px;"><a href="${escapeHTML(att.url)}" target="_blank" rel="noopener" style="color:var(--accent-blue); font-size:12px;"><i class="fa-solid fa-paperclip"></i> ${escapeHTML(att.filename || 'Attachment')}</a></div>`;
+              }
+            });
+          }
 
           msgDiv.innerHTML = `
-            <div class="avatar" style="width:36px; height:36px; font-size:14px; flex-shrink:0;">${escapeHTML(initial)}</div>
+            ${avatarHtml}
             <div class="message-content">
               <div class="message-header">
-                <span class="message-author">${escapeHTML(author)}</span>
-                <span class="message-time">${escapeHTML(time)}</span>
+                <span class="message-author">${escapeHTML(authorName)}</span>
+                <span class="message-time">${escapeHTML(timeStr)}</span>
               </div>
-              <div class="message-text">${escapeHTML(m.text)}</div>
+              <div class="message-text">${escapeHTML(m.content || '')}</div>
+              ${attachmentsHtml}
             </div>
           `;
           msgContainer.appendChild(msgDiv);
         });
-
         msgContainer.scrollTop = msgContainer.scrollHeight;
+      }
+
+      // Input Event Listeners
+      const inputEl = document.getElementById('messageInput');
+      const sendBtn = document.getElementById('sendMsgBtn');
+      const emojiToggle = document.getElementById('emojiPickerToggleBtn');
+      const emojiPopup = document.getElementById('emojiPickerPopup');
+      const emojiBody = document.getElementById('emojiPickerBody');
+
+      sendBtn.addEventListener('click', () => submitMessage(inputEl, sendBtn));
+      inputEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          submitMessage(inputEl, sendBtn);
+        }
+      });
+
+      emojiToggle.addEventListener('click', () => {
+        emojiPopup.classList.toggle('active');
+        populateEmojiPicker(emojiBody, inputEl);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (emojiPopup && !emojiPopup.contains(e.target) && !emojiToggle.contains(e.target)) {
+          emojiPopup.classList.remove('active');
+        }
+      });
+    }
+
+    function populateEmojiPicker(container, inputEl) {
+      container.innerHTML = '';
+      const unicodeEmojis = ['😀', '😂', '🔥', '👍', '❤️', '🚀', '✨', '😎', '🎉', '💡', '💻', '⭐', '🙌', '💀', '💯', '🙏', '👀', '🥳'];
+      const grid = document.createElement('div');
+      grid.className = 'emoji-grid';
+      unicodeEmojis.forEach(em => {
+        const btn = document.createElement('button');
+        btn.className = 'emoji-cell';
+        btn.textContent = em;
+        btn.addEventListener('click', () => {
+          inputEl.value += em;
+          inputEl.focus();
+        });
+        grid.appendChild(btn);
+      });
+      container.appendChild(grid);
+    }
+
+    // Submit Message (POST /discord/channels/{channel_id}/messages)
+    async function submitMessage(inputEl, sendBtn) {
+      const content = inputEl.value.trim();
+      if (!content || appState.isSendingMessage || !appState.currentChannel) return;
+
+      appState.isSendingMessage = true;
+      sendBtn.disabled = true;
+      inputEl.disabled = true;
+
+      try {
+        await apiRequest(`/discord/channels/${appState.currentChannel.id}/messages`, 'POST', { content });
+        inputEl.value = '';
+        appState.isSendingMessage = false;
+        sendBtn.disabled = false;
+        inputEl.disabled = false;
+        inputEl.focus();
+        // Refresh message stream
+        fetchMessages(appState.currentChannel.id);
       } catch (err) {
-        console.error('Load messages error:', err);
-        msgContainer.innerHTML = `<div style="color:var(--accent-red); text-align:center; margin-top:20px;">Failed to load messages from backend.</div>`;
+        appState.isSendingMessage = false;
+        sendBtn.disabled = false;
+        inputEl.disabled = false;
+        alert(`Failed to send message: ${err.message}`);
       }
     }
 
-    // Initial Execution
-    fetchUserDataAndApp();
+    // Initialization Logic
+    checkAuthSession();
   </script>
 </body>
 </html>
