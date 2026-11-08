@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>DisCloud App</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-main: #121214;
+      --bg-surface: #1e1e24;
+      --bg-surface-hover: #26262e;
+      --bg-tab-active: #2b2b36;
+      --accent-blue: #5865f2;
+      --accent-blue-hover: #4752c4;
+      --accent-green: #2ec4b6;
+      --accent-red: #ff7043;
+      --accent-online: #3ddc84;
+      --accent-idle: #faa61a;
+      --accent-dnd: #f04747;
+      --accent-offline: #747f8d;
+      --text-primary: #f8f9fa;
+      --text-secondary: #a0a0ab;
+      --border-color: #2b2b36;
+      --header-height: 48px;
+      --server-sidebar-width: 70px;
+      --channel-sidebar-width: 240px;
+      --members-sidebar-width: 240px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Top Navigation Bar */
+    .top-bar {
+      height: var(--header-height);
+      min-height: var(--header-height);
+      background-color: var(--bg-surface);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      border-bottom: 1px solid var(--border-color);
+      z-index: 50;
+      flex-shrink: 0;
+      padding-top: env(safe-area-inset-top, 0);
+    }
+
+    .top-bar-left, .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .channel-title-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 6px;
+      transition: color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .icon-btn:hover, .icon-btn:active {
+      background-color: var(--bg-tab-active);
+      color: var(--text-primary);
+    }
+
+    .icon-btn.active {
+      color: var(--accent-blue);
+    }
+
+    /* App Workspace Container */
+    .app-container {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Left Drawer / Nav Wrapper */
+    .nav-wrapper {
+      display: flex;
+      height: 100%;
+      z-index: 40;
+      background-color: var(--bg-main);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (max-width: 768px) {
+      .nav-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform: translateX(-100%);
+      }
+      .nav-wrapper.active {
+        transform: translateX(0);
+      }
+    }
+
+    /* Server Sidebar */
+    .server-sidebar {
+      width: var(--server-sidebar-width);
+      min-width: var(--server-sidebar-width);
+      background-color: var(--bg-main);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      gap: 10px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .server-sidebar::-webkit-scrollbar { display: none; }
+
+    .server-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      position: relative;
+      transition: all 0.2s ease;
+      user-select: none;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .server-icon:hover {
+      border-color: var(--accent-blue);
+      border-radius: 10px;
+    }
+
+    .server-icon.active {
+      border-color: var(--accent-blue);
+      background-color: var(--bg-tab-active);
+      border-radius: 10px;
+    }
+
+    .server-icon.active::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 10px;
+      bottom: 10px;
+      width: 4px;
+      background-color: var(--accent-blue);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .server-separator {
+      width: 32px;
+      height: 2px;
+      background-color: var(--border-color);
+      border-radius: 1px;
+      margin: 2px 0;
+    }
+
+    /* Channel Sidebar */
+    .channel-sidebar {
+      width: var(--channel-sidebar-width);
+      min-width: var(--channel-sidebar-width);
+      background-color: var(--bg-surface);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width: 768px) {
+      .channel-sidebar {
+        flex: 1;
+        width: auto;
+      }
+    }
+
+    .channel-header {
+      height: var(--header-height);
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .channel-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .channel-category {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .category-header {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 4px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .category-header:hover {
+      color: var(--text-primary);
+    }
+
+    .channel-item {
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .channel-item:hover {
+      background-color: var(--bg-surface-hover);
+      color: var(--text-primary);
+    }
+
+    .channel-item.active {
+      background-color: var(--bg-tab-active);
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .channel-item.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Voice Overlay Panel */
+    .voice-control-panel {
+      background-color: #16161a;
+      border-top: 1px solid var(--border-color);
+      padding: 10px;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .voice-control-panel.active {
+      display: flex;
+    }
+
+    .voice-status-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
+    .voice-status-label {
+      color: var(--accent-red);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .voice-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .voice-action-btn {
+      flex: 1;
+      padding: 6px;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-primary);
+      font-size: 12px;
+      cursor: not-allowed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      opacity: 0.6;
+    }
+
+    /* User Profile Bar */
+    .user-profile-bar {
+      height: 52px;
+      background-color: #141417;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      cursor: pointer;
+      user-select: none;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .user-profile-bar:hover {
+      background-color: var(--bg-surface-hover);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #fff;
+      font-size: 13px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .status-dot {
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--accent-online);
+      border: 2px solid var(--bg-surface);
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-tag {
+      font-size: 10px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Main Chat Workspace */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-main);
+      height: 100%;
+      min-width: 0;
+    }
+
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      display: flex;
+      gap: 12px;
+      font-size: 13px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      transition: background-color 0.15s ease;
+      position: relative;
+    }
+
+    .message:hover {
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    .message-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .message-header {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .message-author {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .message-time {
+      font-size: 10px;
+      color: var(--text-secondary);
+    }
+
+    .message-text {
+      color: #d1d1d6;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .message-attachment {
+      max-width: 280px;
+      max-height: 200px;
+      border-radius: 6px;
+      margin-top: 6px;
+      border: 1px solid var(--border-color);
+      object-fit: cover;
+    }
+
+    /* Message Input Box */
+    .message-input-area {
+      padding: 12px;
+      background-color: var(--bg-main);
+      padding-bottom: calc(12px + env(safe-area-inset-bottom, 0));
+      position: relative;
+    }
+
+    .message-input-wrapper {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      gap: 6px;
+    }
+
+    .message-input-wrapper:focus-within {
+      border-color: var(--accent-blue);
+    }
+
+    .message-input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      padding: 10px 4px;
+      font-size: 13px;
+      max-height: 120px;
+      resize: none;
+    }
+
+    .message-input:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Custom Emoji Picker Popup */
+    .emoji-picker-popup {
+      position: absolute;
+      bottom: 60px;
+      right: 12px;
+      width: 300px;
+      height: 240px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      z-index: 100;
+      overflow: hidden;
+    }
+
+    .emoji-picker-popup.active {
+      display: flex;
+    }
+
+    .emoji-picker-header {
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-main);
+    }
+
+    .emoji-picker-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .emoji-section-title {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+    }
+
+    .emoji-cell {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 6px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+    }
+
+    .emoji-cell:hover {
+      background-color: var(--bg-tab-active);
+    }
+
+    /* Desktop Members Sidebar */
+    .members-sidebar {
+      width: var(--members-sidebar-width);
+      min-width: var(--members-sidebar-width);
+      background-color: var(--bg-surface);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      padding: 12px 10px;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 992px) {
+      .members-sidebar {
+        display: none;
+      }
+      .members-sidebar.mobile-open {
+        display: flex;
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        z-index: 45;
+        box-shadow: -4px 0 16px rgba(0,0,0,0.4);
+      }
+    }
+
+    .members-group-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Profile Read-Only Drawer Sheet */
+    .profile-drawer-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .profile-drawer-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .profile-sheet {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: var(--bg-surface);
+      border-radius: 16px 16px 0 0;
+      border-top: 1px solid var(--border-color);
+      z-index: 201;
+      transform: translateY(100%);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      max-height: 85vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .profile-sheet.active {
+      transform: translateY(0);
+    }
+
+    .sheet-header-banner {
+      height: 90px;
+      background: linear-gradient(135deg, var(--accent-blue), #2b2b36);
+      position: relative;
+    }
+
+    .sheet-avatar-wrap {
+      position: absolute;
+      bottom: -24px;
+      left: 16px;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 4px solid var(--bg-surface);
+      background: var(--accent-blue);
+    }
+
+    .sheet-avatar-wrap .avatar {
+      font-size: 24px;
+    }
+
+    .sheet-body {
+      padding: 34px 16px 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-bottom: calc(20px + env(safe-area-inset-bottom, 0));
+    }
+
+    .profile-card-user {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .profile-card-title {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .profile-card-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .btn-logout {
+      width: 100%;
+      padding: 10px;
+      background-color: rgba(255, 112, 67, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(255, 112, 67, 0.3);
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.15s ease;
+    }
+
+    .btn-logout:hover {
+      background-color: rgba(255, 112, 67, 0.25);
+    }
+
+    /* API Documentation / Notice Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .app-modal {
+      width: 100%;
+      max-width: 440px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      height: 48px;
+      background-color: var(--bg-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 14px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* UI State Containers */
+    .state-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      text-align: center;
+      gap: 12px;
+      color: var(--text-secondary);
+      flex: 1;
+    }
+
+    .state-container i {
+      font-size: 28px;
+      color: var(--text-secondary);
+    }
+
+    .state-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top App Navigation Header -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <button class="icon-btn" id="toggleNavBtn" title="Toggle Navigation"><i class="fa-solid fa-bars"></i></button>
+      <div class="channel-title-header">
+        <i class="fa-solid fa-hashtag" id="channelHeaderIcon" style="color: var(--text-secondary);"></i>
+        <span id="headerChannelName">Select a channel</span>
+      </div>
+    </div>
+    <div class="top-bar-right">
+      <button class="icon-btn" id="refreshBtn" title="Refresh Channel Messages"><i class="fa-solid fa-rotate-right"></i></button>
+      <button class="icon-btn" id="apiInfoBtn" title="Discord API Info"><i class="fa-solid fa-circle-info"></i></button>
+      <button class="icon-btn" id="toggleMembersBtn" title="Toggle Members List"><i class="fa-solid fa-users"></i></button>
+    </div>
+  </div>
+
+  <!-- Workspace Container -->
+  <div class="app-container">
+    <!-- Server & Channel Navigation -->
+    <div class="nav-wrapper" id="navWrapper">
+      <!-- Servers Rail -->
+      <div class="server-sidebar" id="serverSidebar">
+        <!-- Servers rendered dynamically -->
+      </div>
+
+      <!-- Channels List Sidebar -->
+      <div class="channel-sidebar" id="channelSidebarContainer">
+        <div class="channel-header">
+          <span id="serverTitleText">Select a Server</span>
+        </div>
+
+        <div class="channel-list" id="channelListContainer">
+          <div class="state-container">
+            <span class="state-title">No Server Selected</span>
+            <span>Select a server from the sidebar to view channels.</span>
+          </div>
+        </div>
+
+        <!-- Voice Call Status Control Bar (Disabled) -->
+        <div class="voice-control-panel" id="voiceControlPanel">
+          <div class="voice-status-info">
+            <span class="voice-status-label"><i class="fa-solid fa-triangle-exclamation"></i> Voice Unavailable</span>
+            <span style="color: var(--text-secondary);">Native Voice Off</span>
+          </div>
+          <div class="voice-actions">
+            <button class="voice-action-btn" disabled><i class="fa-solid fa-microphone"></i> Mute</button>
+            <button class="voice-action-btn" disabled><i class="fa-solid fa-headphones"></i> Deafen</button>
+            <button class="voice-action-btn" disabled><i class="fa-solid fa-phone-slash"></i></button>
+          </div>
+        </div>
+
+        <!-- User Profile Bar -->
+        <div class="user-profile-bar" id="userProfileBar">
+          <div class="user-info">
+            <div class="avatar-wrap">
+              <div class="avatar" id="barAvatar">?</div>
+              <div class="status-dot"></div>
+            </div>
+            <div class="user-details">
+              <div class="user-name" id="barUserName">Loading...</div>
+              <div class="user-tag" id="barUserTag">@...</div>
+            </div>
+          </div>
+          <i class="fa-solid fa-id-badge" style="color: var(--text-secondary); font-size: 14px;"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic Main Workspace Area -->
+    <div class="chat-area" id="mainWorkspaceArea">
+      <div class="state-container">
+        <i class="fa-solid fa-comments"></i>
+        <span class="state-title">Welcome to DisCloud</span>
+        <span>Select a server and channel to start reading and sending messages.</span>
+      </div>
+    </div>
+
+    <!-- Desktop Members List -->
+    <div class="members-sidebar" id="membersSidebar">
+      <div class="members-group-title">Channel Details</div>
+      <div id="membersListContainer">
+        <div style="font-size: 12px; color: var(--text-secondary); padding: 8px;">
+          Member lists are restricted by Discord Bot Gateway intents. Select channels to read live messages.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Read-Only Profile Sheet Drawer -->
+  <div class="profile-drawer-overlay" id="profileOverlay"></div>
+  <div class="profile-sheet" id="profileSheet">
+    <div class="sheet-header-banner">
+      <div class="sheet-avatar-wrap">
+        <div class="avatar" id="sheetAvatar">?</div>
+      </div>
+    </div>
+    <div class="sheet-body">
+      <div class="profile-card-user">
+        <div class="profile-card-title">
+          <span id="sheetUserName">Discord User</span>
+          <i class="fa-solid fa-circle-check" style="color: var(--accent-blue); font-size: 14px;"></i>
+        </div>
+        <div class="profile-card-sub" id="sheetUserTag">@user · ID: <span id="sheetUserId">000000000</span></div>
+      </div>
+      <div style="font-size: 12px; color: var(--text-secondary); background: var(--bg-main); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+        <i class="fa-solid fa-shield-halved" style="color: var(--accent-blue); margin-right: 6px;"></i> Profile editing is disabled in DisCloud to comply with Discord API security guidelines. Use the official Discord client to update account settings.
+      </div>
+      <button class="btn-logout" id="logoutBtn">
+        <i class="fa-solid fa-right-from-bracket"></i> Log Out of DisCloud
+      </button>
+    </div>
+  </div>
+
+  <!-- API Limitations / Architecture Info Modal -->
+  <div class="modal-overlay" id="apiModal">
+    <div class="app-modal">
+      <div class="modal-header">
+        <span><i class="fa-solid fa-circle-info" style="color: var(--accent-blue);"></i> DisCloud & Discord API Architecture</span>
+        <button class="icon-btn" id="closeApiModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Official OAuth2 & Backend:</strong> DisCloud connects via official Discord OAuth2 authorization tokens routed through a secure backend proxy to protect client secrets and eliminate token exposure risks.</p>
+        <p><strong>Voice Limitations:</strong> Native browser voice streaming is disabled as third-party client media routing requires WebRTC gateway media server node infrastructure.</p>
+        <p><strong>Real-time Synchronization:</strong> DisCloud synchronizes your authorized Discord servers, channel categories, and message streams cleanly directly from your account.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Project Configuration Constants
+    const API_BASE_URL = "https://aiwobjgrgqsgjirueaqa.supabase.co/functions/v1/discloud-api";
+    const LOGIN_PAGE_URL = "https://cloudfurm.com/Discloud.html";
+
+    // Application State Management
+    const appState = {
+      authenticated: false,
+      user: null,
+      servers: [],
+      currentServerId: null,
+      channels: [],
+      currentChannel: null,
+      messages: [],
+      isLoadingServers: false,
+      isLoadingChannels: false,
+      isLoadingMessages: false,
+      isSendingMessage: false
+    };
+
+    // Helper: Safe HTML Escaping
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        }[m];
+      });
+    }
+
+    // Helper: Redirect to login page on session failure
+    function redirectToLogin() {
+      window.location.href = LOGIN_PAGE_URL;
+    }
+
+    // Helper: Unified Secure API Request Handler
+    async function apiRequest(endpoint, method = 'GET', body = null) {
+      const options = {
+        method,
+        headers: {},
+        credentials: 'include' // Send HttpOnly session cookie cross-origin
+      };
+
+      if (body) {
+        options.headers['Content-Type'] = 'application/json';
+        options.body = JSON.stringify(body);
+      }
+
+      try {
+        const res = await fetch(`${API_BASE_URL}${endpoint}`, options);
+        if (res.status === 401) {
+          redirectToLogin();
+          throw new Error("Unauthorized or session expired.");
+        }
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || errData.error || `HTTP error ${res.status}`);
+        }
+        return await res.json();
+      } catch (err) {
+        console.error(`API Error [${method} ${endpoint}]:`, err);
+        throw err;
+      }
+    }
+
+    // DOM Elements
+    const logoutBtn = document.getElementById('logoutBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const toggleNavBtn = document.getElementById('toggleNavBtn');
+    const toggleMembersBtn = document.getElementById('toggleMembersBtn');
+    const navWrapper = document.getElementById('navWrapper');
+    const membersSidebar = document.getElementById('membersSidebar');
+    const serverSidebar = document.getElementById('serverSidebar');
+    const channelListContainer = document.getElementById('channelListContainer');
+    const mainWorkspaceArea = document.getElementById('mainWorkspaceArea');
+    const headerChannelName = document.getElementById('headerChannelName');
+    const channelHeaderIcon = document.getElementById('channelHeaderIcon');
+    const serverTitleText = document.getElementById('serverTitleText');
+
+    // Profile UI Elements
+    const userProfileBar = document.getElementById('userProfileBar');
+    const profileOverlay = document.getElementById('profileOverlay');
+    const profileSheet = document.getElementById('profileSheet');
+    const barAvatar = document.getElementById('barAvatar');
+    const barUserName = document.getElementById('barUserName');
+    const barUserTag = document.getElementById('barUserTag');
+    const sheetAvatar = document.getElementById('sheetAvatar');
+    const sheetUserName = document.getElementById('sheetUserName');
+    const sheetUserTag = document.getElementById('sheetUserTag');
+    const sheetUserId = document.getElementById('sheetUserId');
+
+    // Modal Elements
+    const apiInfoBtn = document.getElementById('apiInfoBtn');
+    const apiModal = document.getElementById('apiModal');
+    const closeApiModalBtn = document.getElementById('closeApiModalBtn');
+
+    // Navigation & UI Event Listeners
+    apiInfoBtn.addEventListener('click', () => apiModal.classList.add('active'));
+    closeApiModalBtn.addEventListener('click', () => apiModal.classList.remove('active'));
+
+    toggleNavBtn.addEventListener('click', () => {
+      navWrapper.classList.toggle('active');
+      membersSidebar.classList.remove('mobile-open');
+    });
+
+    toggleMembersBtn.addEventListener('click', () => {
+      membersSidebar.classList.toggle('mobile-open');
+      navWrapper.classList.remove('active');
+    });
+
+    userProfileBar.addEventListener('click', () => {
+      if (appState.user) {
+        profileOverlay.classList.add('active');
+        profileSheet.classList.add('active');
+      }
+    });
+
+    profileOverlay.addEventListener('click', () => {
+      profileOverlay.classList.remove('active');
+      profileSheet.classList.remove('active');
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await apiRequest('/auth/logout', 'POST');
+      } catch (e) {
+        console.warn("Logout endpoint error:", e);
+      }
+      appState.authenticated = false;
+      appState.user = null;
+      appState.servers = [];
+      appState.channels = [];
+      appState.messages = [];
+      profileOverlay.classList.remove('active');
+      profileSheet.classList.remove('active');
+      redirectToLogin();
+    });
+
+    refreshBtn.addEventListener('click', () => {
+      if (appState.currentChannel) {
+        fetchMessages(appState.currentChannel.id);
+      }
+    });
+
+    // Check Session (/auth/me)
+    async function checkAuthSession() {
+      try {
+        const data = await apiRequest('/auth/me');
+        // Handle variations in backend user payload structures:
+        const userObj = data ? (data.user || data.data?.user || (data.id ? data : null)) : null;
+
+        if (userObj) {
+          appState.user = userObj;
+          appState.authenticated = true;
+          updateUserProfileUI();
+          fetchServers();
+        } else {
+          redirectToLogin();
+        }
+      } catch (err) {
+        redirectToLogin();
+      }
+    }
+
+    // Update Profile UI
+    function updateUserProfileUI() {
+      const u = appState.user;
+      if (!u) return;
+
+      const username = u.global_name || u.username || 'Discord User';
+      const userTag = u.discriminator && u.discriminator !== '0' ? `#${u.discriminator}` : `@${u.username}`;
+      const avatarUrl = u.avatar ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png` : null;
+
+      barUserName.textContent = username;
+      barUserTag.textContent = userTag;
+      sheetUserName.textContent = username;
+      sheetUserTag.textContent = `${userTag} · ID: ${u.id}`;
+      sheetUserId.textContent = u.id;
+
+      if (avatarUrl) {
+        barAvatar.style.backgroundImage = `url(${avatarUrl})`;
+        barAvatar.textContent = '';
+        sheetAvatar.style.backgroundImage = `url(${avatarUrl})`;
+        sheetAvatar.textContent = '';
+      } else {
+        barAvatar.style.backgroundImage = 'none';
+        barAvatar.textContent = username.charAt(0).toUpperCase();
+        sheetAvatar.style.backgroundImage = 'none';
+        sheetAvatar.textContent = username.charAt(0).toUpperCase();
+      }
+    }
+
+    // Fetch Servers (/discord/guilds)
+    async function fetchServers() {
+      appState.isLoadingServers = true;
+      renderServersLoading();
+      try {
+        const guilds = await apiRequest('/discord/guilds');
+        appState.servers = Array.isArray(guilds) ? guilds : (guilds.data || []);
+        appState.isLoadingServers = false;
+        renderServers();
+      } catch (err) {
+        appState.isLoadingServers = false;
+        renderServersError(err.message);
+      }
+    }
+
+    function renderServersLoading() {
+      serverSidebar.innerHTML = `
+        <div style="color: var(--text-secondary); font-size: 16px; padding: 12px;">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+        </div>
+      `;
+    }
+
+    function renderServersError(msg) {
+      serverSidebar.innerHTML = `
+        <div style="color: var(--accent-red); font-size: 14px; padding: 8px;" title="${escapeHTML(msg)}">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+      `;
+    }
+
+    function renderServers() {
+      serverSidebar.innerHTML = '';
+
+      if (appState.servers.length === 0) {
+        serverSidebar.innerHTML = `
+          <div style="color: var(--text-secondary); font-size: 11px; text-align: center; padding: 8px;">
+            No Servers
+          </div>
+        `;
+        return;
+      }
+
+      appState.servers.forEach(guild => {
+        const iconDiv = document.createElement('div');
+        iconDiv.className = `server-icon ${guild.id === appState.currentServerId ? 'active' : ''}`;
+        
+        const iconUrl = guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` : null;
+
+        if (iconUrl) {
+          iconDiv.style.backgroundImage = `url(${iconUrl})`;
+          iconDiv.textContent = '';
+        } else {
+          iconDiv.style.backgroundImage = 'none';
+          const initials = guild.name.split(' ').map(w => w[0]).join('').substring(0, 3).toUpperCase();
+          iconDiv.textContent = initials || 'S';
+        }
+
+        iconDiv.title = guild.name;
+        iconDiv.addEventListener('click', () => {
+          if (appState.currentServerId !== guild.id) {
+            appState.currentServerId = guild.id;
+            serverTitleText.textContent = guild.name;
+            renderServers();
+            fetchChannels(guild.id);
+          }
+        });
+
+        serverSidebar.appendChild(iconDiv);
+      });
+    }
+
+    // Fetch Channels (/discord/guilds/{guild_id}/channels)
+    async function fetchChannels(guildId) {
+      appState.isLoadingChannels = true;
+      appState.channels = [];
+      appState.currentChannel = null;
+      renderChannelsLoading();
+      
+      try {
+        const channels = await apiRequest(`/discord/guilds/${guildId}/channels`);
+        appState.channels = Array.isArray(channels) ? channels : (channels.data || []);
+        appState.isLoadingChannels = false;
+        renderChannels();
+      } catch (err) {
+        appState.isLoadingChannels = false;
+        renderChannelsError(err.message);
+      }
+    }
+
+    function renderChannelsLoading() {
+      channelListContainer.innerHTML = `
+        <div class="state-container">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <span class="state-title">Loading channels...</span>
+        </div>
+      `;
+    }
+
+    function renderChannelsError(msg) {
+      channelListContainer.innerHTML = `
+        <div class="state-container">
+          <i class="fa-solid fa-circle-exclamation" style="color: var(--accent-red);"></i>
+          <span class="state-title">Failed to load channels</span>
+          <span style="font-size:12px;">${escapeHTML(msg)}</span>
+        </div>
+      `;
+    }
+
+    function renderChannels() {
+      channelListContainer.innerHTML = '';
+
+      if (appState.channels.length === 0) {
+        channelListContainer.innerHTML = `
+          <div class="state-container">
+            <span class="state-title">No Channels Found</span>
+            <span style="font-size:12px;">Ensure the Discord bot is in this server and has view permissions.</span>
+          </div>
+        `;
+        return;
+      }
+
+      // Group Channels by Category (Parent ID) or Category Name
+      const categoriesMap = {};
+      const nonCategoryChannels = [];
+
+      // Discord Channel Types: 0 = GUILD_TEXT, 2 = GUILD_VOICE, 4 = GUILD_CATEGORY
+      const categoryNodes = appState.channels.filter(c => c.type === 4);
+
+      categoryNodes.forEach(cat => {
+        categoriesMap[cat.id] = { name: cat.name, channels: [] };
+      });
+
+      appState.channels.forEach(ch => {
+        if (ch.type === 4) return;
+        if (ch.parent_id && categoriesMap[ch.parent_id]) {
+          categoriesMap[ch.parent_id].channels.push(ch);
+        } else {
+          nonCategoryChannels.push(ch);
+        }
+      });
+
+      // Render Uncategorized Channels
+      if (nonCategoryChannels.length > 0) {
+        const catDiv = document.createElement('div');
+        catDiv.className = 'channel-category';
+        
+        const catHeader = document.createElement('div');
+        catHeader.className = 'category-header';
+        catHeader.innerHTML = `<span>CHANNELS</span> <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>`;
+        catDiv.appendChild(catHeader);
+
+        nonCategoryChannels.forEach(ch => {
+          catDiv.appendChild(createChannelItemElement(ch));
+        });
+
+        channelListContainer.appendChild(catDiv);
+      }
+
+      // Render Categorized Channels
+      Object.keys(categoriesMap).forEach(catId => {
+        const catObj = categoriesMap[catId];
+        if (catObj.channels.length === 0) return;
+
+        const catDiv = document.createElement('div');
+        catDiv.className = 'channel-category';
+
+        const catHeader = document.createElement('div');
+        catHeader.className = 'category-header';
+        catHeader.innerHTML = `<span>${escapeHTML(catObj.name)}</span> <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>`;
+        catDiv.appendChild(catHeader);
+
+        catObj.channels.forEach(ch => {
+          catDiv.appendChild(createChannelItemElement(ch));
+        });
+
+        channelListContainer.appendChild(catDiv);
+      });
+    }
+
+    function createChannelItemElement(ch) {
+      const item = document.createElement('div');
+      const isSelected = appState.currentChannel && appState.currentChannel.id === ch.id;
+      const isVoice = ch.type === 2;
+
+      item.className = `channel-item ${isSelected ? 'active' : ''} ${isVoice ? 'disabled' : ''}`;
+      
+      const iconClass = isVoice ? 'fa-volume-high' : 'fa-hashtag';
+      item.innerHTML = `<i class="fa-solid ${iconClass}"></i> <span>${escapeHTML(ch.name)}</span>`;
+
+      item.addEventListener('click', () => {
+        if (isVoice) {
+          alert("Voice channels are not media-transport enabled in browser mode.");
+          return;
+        }
+
+        appState.currentChannel = ch;
+        headerChannelName.textContent = ch.name;
+        channelHeaderIcon.className = 'fa-solid fa-hashtag';
+        renderChannels();
+        fetchMessages(ch.id);
+        navWrapper.classList.remove('active');
+      });
+
+      return item;
+    }
+
+    // Fetch Messages (/discord/channels/{channel_id}/messages)
+    async function fetchMessages(channelId) {
+      appState.isLoadingMessages = true;
+      renderMessagesLoading();
+
+      try {
+        const msgs = await apiRequest(`/discord/channels/${channelId}/messages`);
+        appState.messages = Array.isArray(msgs) ? msgs : (msgs.data || []);
+        // Discord API returns newest first -> reverse to show chronological order
+        appState.messages.reverse();
+        appState.isLoadingMessages = false;
+        renderChatRoomView();
+      } catch (err) {
+        appState.isLoadingMessages = false;
+        renderMessagesError(err.message);
+      }
+    }
+
+    function renderMessagesLoading() {
+      mainWorkspaceArea.innerHTML = `
+        <div class="state-container">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <span class="state-title">Loading messages...</span>
+        </div>
+      `;
+    }
+
+    function renderMessagesError(msg) {
+      mainWorkspaceArea.innerHTML = `
+        <div class="state-container">
+          <i class="fa-solid fa-circle-exclamation" style="color: var(--accent-red);"></i>
+          <span class="state-title">Failed to load messages</span>
+          <span style="font-size:12px;">${escapeHTML(msg)}</span>
+        </div>
+      `;
+    }
+
+    // Render Chat Workspace & Messages
+    function renderChatRoomView() {
+      if (!appState.currentChannel) return;
+
+      mainWorkspaceArea.innerHTML = `
+        <div class="messages-container" id="messagesContainer"></div>
+        <div class="message-input-area">
+          <div class="emoji-picker-popup" id="emojiPickerPopup">
+            <div class="emoji-picker-header">Standard Emojis</div>
+            <div class="emoji-picker-body" id="emojiPickerBody"></div>
+          </div>
+          <div class="message-input-wrapper">
+            <button class="icon-btn" id="emojiPickerToggleBtn" title="Insert Emoji"><i class="fa-solid fa-face-smile"></i></button>
+            <input type="text" class="message-input" id="messageInput" placeholder="Message #${escapeHTML(appState.currentChannel.name)}..." />
+            <button class="icon-btn" id="sendMsgBtn" style="color: var(--accent-blue);"><i class="fa-solid fa-paper-plane"></i></button>
+          </div>
+        </div>
+      `;
+
+      const msgContainer = document.getElementById('messagesContainer');
+
+      if (appState.messages.length === 0) {
+        msgContainer.innerHTML = `
+          <div class="state-container">
+            <i class="fa-solid fa-comments"></i>
+            <span class="state-title">Welcome to #${escapeHTML(appState.currentChannel.name)}!</span>
+            <span style="font-size:12px;">This is the start of the #${escapeHTML(appState.currentChannel.name)} channel.</span>
+          </div>
+        `;
+      } else {
+        appState.messages.forEach(m => {
+          const authorName = m.author ? (m.author.global_name || m.author.username || 'User') : 'User';
+          const avatarUrl = m.author && m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png` : null;
+          const timeStr = m.timestamp ? new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+
+          const msgDiv = document.createElement('div');
+          msgDiv.className = 'message';
+
+          let avatarHtml = `<div class="avatar" style="width:36px; height:36px; font-size:14px; flex-shrink:0;">${escapeHTML(authorName.charAt(0).toUpperCase())}</div>`;
+          if (avatarUrl) {
+            avatarHtml = `<div class="avatar" style="width:36px; height:36px; background-image: url('${avatarUrl}'); flex-shrink:0;"></div>`;
+          }
+
+          let attachmentsHtml = '';
+          if (Array.isArray(m.attachments) && m.attachments.length > 0) {
+            m.attachments.forEach(att => {
+              if (att.content_type && att.content_type.startsWith('image/')) {
+                attachmentsHtml += `<img src="${escapeHTML(att.url)}" class="message-attachment" alt="attachment" loading="lazy" />`;
+              } else {
+                attachmentsHtml += `<div style="margin-top:4px;"><a href="${escapeHTML(att.url)}" target="_blank" rel="noopener" style="color:var(--accent-blue); font-size:12px;"><i class="fa-solid fa-paperclip"></i> ${escapeHTML(att.filename || 'Attachment')}</a></div>`;
+              }
+            });
+          }
+
+          msgDiv.innerHTML = `
+            ${avatarHtml}
+            <div class="message-content">
+              <div class="message-header">
+                <span class="message-author">${escapeHTML(authorName)}</span>
+                <span class="message-time">${escapeHTML(timeStr)}</span>
+              </div>
+              <div class="message-text">${escapeHTML(m.content || '')}</div>
+              ${attachmentsHtml}
+            </div>
+          `;
+          msgContainer.appendChild(msgDiv);
+        });
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+      }
+
+      // Input Event Listeners
+      const inputEl = document.getElementById('messageInput');
+      const sendBtn = document.getElementById('sendMsgBtn');
+      const emojiToggle = document.getElementById('emojiPickerToggleBtn');
+      const emojiPopup = document.getElementById('emojiPickerPopup');
+      const emojiBody = document.getElementById('emojiPickerBody');
+
+      sendBtn.addEventListener('click', () => submitMessage(inputEl, sendBtn));
+      inputEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          submitMessage(inputEl, sendBtn);
+        }
+      });
+
+      emojiToggle.addEventListener('click', () => {
+        emojiPopup.classList.toggle('active');
+        populateEmojiPicker(emojiBody, inputEl);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (emojiPopup && !emojiPopup.contains(e.target) && !emojiToggle.contains(e.target)) {
+          emojiPopup.classList.remove('active');
+        }
+      });
+    }
+
+    function populateEmojiPicker(container, inputEl) {
+      container.innerHTML = '';
+      const unicodeEmojis = ['😀', '😂', '🔥', '👍', '❤️', '🚀', '✨', '😎', '🎉', '💡', '💻', '⭐', '🙌', '💀', '💯', '🙏', '👀', '🥳'];
+      const grid = document.createElement('div');
+      grid.className = 'emoji-grid';
+      unicodeEmojis.forEach(em => {
+        const btn = document.createElement('button');
+        btn.className = 'emoji-cell';
+        btn.textContent = em;
+        btn.addEventListener('click', () => {
+          inputEl.value += em;
+          inputEl.focus();
+        });
+        grid.appendChild(btn);
+      });
+      container.appendChild(grid);
+    }
+
+    // Submit Message (POST /discord/channels/{channel_id}/messages)
+    async function submitMessage(inputEl, sendBtn) {
+      const content = inputEl.value.trim();
+      if (!content || appState.isSendingMessage || !appState.currentChannel) return;
+
+      appState.isSendingMessage = true;
+      sendBtn.disabled = true;
+      inputEl.disabled = true;
+
+      try {
+        await apiRequest(`/discord/channels/${appState.currentChannel.id}/messages`, 'POST', { content });
+        inputEl.value = '';
+        appState.isSendingMessage = false;
+        sendBtn.disabled = false;
+        inputEl.disabled = false;
+        inputEl.focus();
+        // Refresh message stream
+        fetchMessages(appState.currentChannel.id);
+      } catch (err) {
+        appState.isSendingMessage = false;
+        sendBtn.disabled = false;
+        inputEl.disabled = false;
+        alert(`Failed to send message: ${err.message}`);
+      }
+    }
+
+    // Initialization Logic
+    checkAuthSession();
+  </script>
+</body>
+</html>
