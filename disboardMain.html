@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>DisCloud App</title>
+  <title>DisCloud</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -190,14 +190,6 @@
       width: 4px;
       background-color: var(--accent-blue);
       border-radius: 0 4px 4px 0;
-    }
-
-    .server-separator {
-      width: 32px;
-      height: 2px;
-      background-color: var(--border-color);
-      border-radius: 1px;
-      margin: 2px 0;
     }
 
     /* Channel Sidebar */
@@ -988,15 +980,23 @@
 
     // Helper: Redirect to login page on session failure
     function redirectToLogin() {
+      sessionStorage.removeItem('discloud_token');
       window.location.href = LOGIN_PAGE_URL;
     }
 
-    // Helper: Unified Secure API Request Handler
+    // Helper: Unified Secure API Request Handler with Token Authorization Header
     async function apiRequest(endpoint, method = 'GET', body = null) {
+      const token = sessionStorage.getItem('discloud_token');
+      if (!token) {
+        redirectToLogin();
+        throw new Error("No active session token.");
+      }
+
       const options = {
         method,
-        headers: {},
-        credentials: 'include' // Send HttpOnly session cookie cross-origin
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       };
 
       if (body) {
@@ -1084,13 +1084,6 @@
       } catch (e) {
         console.warn("Logout endpoint error:", e);
       }
-      appState.authenticated = false;
-      appState.user = null;
-      appState.servers = [];
-      appState.channels = [];
-      appState.messages = [];
-      profileOverlay.classList.remove('active');
-      profileSheet.classList.remove('active');
       redirectToLogin();
     });
 
@@ -1104,7 +1097,6 @@
     async function checkAuthSession() {
       try {
         const data = await apiRequest('/auth/me');
-        // Handle variations in backend user payload structures:
         const userObj = data ? (data.user || data.data?.user || (data.id ? data : null)) : null;
 
         if (userObj) {
