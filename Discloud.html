@@ -127,30 +127,42 @@
     const loginBtn = document.getElementById('loginBtn');
     const statusMessage = document.getElementById('statusMessage');
 
+    // Capture token if backend redirected back with it in hash/query
+    const params = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const token = params.get('token') || hashParams.get('token');
+
+    if (token) {
+      sessionStorage.setItem('discloud_token', token);
+      window.history.replaceState({}, document.title, window.location.pathname);
+      window.location.href = MAIN_APP_URL;
+    }
+
     loginBtn.addEventListener('click', () => {
-      window.location.href = `${API_BASE_URL}/auth/login`;
+      // Direct user to backend OAuth login route, passing frontend return target
+      window.location.href = `${API_BASE_URL}/auth/login?redirect_uri=${encodeURIComponent(MAIN_APP_URL)}`;
     });
 
     async function checkExistingSession() {
+      const existingToken = sessionStorage.getItem('discloud_token');
+      if (!existingToken) return;
+
       try {
-        statusMessage.textContent = "Checking session...";
+        statusMessage.textContent = "Verifying session...";
         const res = await fetch(`${API_BASE_URL}/auth/me`, {
           method: 'GET',
-          credentials: 'include'
+          headers: {
+            'Authorization': `Bearer ${existingToken}`
+          }
         });
 
         if (res.ok) {
-          const data = await res.json();
-          const user = data.user || data.data?.user || (data.id ? data : null);
-          if (user) {
-            statusMessage.textContent = "Redirecting to DisCloud...";
-            window.location.href = MAIN_APP_URL;
-            return;
-          }
+          window.location.href = MAIN_APP_URL;
+        } else {
+          sessionStorage.removeItem('discloud_token');
+          statusMessage.textContent = "";
         }
-        statusMessage.textContent = "";
       } catch (err) {
-        console.log("No active session found:", err);
         statusMessage.textContent = "";
       }
     }
