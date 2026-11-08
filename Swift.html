@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Code Editor</title>
-  <link rel="icon" href="icon.png">
-  <link rel="apple-touch-icon" href="/icon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -900,8 +898,10 @@
   </div>
 
   <script>
-    // State Store
-    const appState = {
+    // State Store with LocalStorage persistence
+    const STORAGE_KEY = 'cloud_furm_workspace_v1';
+    
+    const defaultState = {
       projects: [
         {
           id: 1,
@@ -913,13 +913,36 @@
               id: 102, 
               name: 'Main.cc', 
               type: 'file', 
-              content: '<install-cloudcode>\n\n# CloudFurm Welcome Page\n\nPage.Title; "CloudFurm"\n\nCreate.Element.Frame_True\nElementName; "Main"\nSize; "350x400"\nBackground; "#202020"\nCorner; true\n\nCreate.Element.Text_True\nElementName; "Welcome"\nText; "Welcome to CloudFurm!"\nColor; "#FFFFFF"\nFontSize; 24\n\nCreate.Element.Button_True\nElementName; "Start"\nText; "Get Started"\nBackground; "#307AEF"\n\nButton.OnClick; "Start"\n    Console.Print; "Button clicked!"\n\n<end-cloudcode>' 
+              content: '<install-cloudcode>\n\n# CloudFurm Interactive Toggle\n\nPage.Title; "CloudFurm App"\n\nCreate.Element.Text_True\nElementName; "StatusText"\nText; "Go"\nColor; "#FFFFFF"\nFontSize; 24\n\nCreate.Element.Button_True\nElementName; "ChangeBtn"\nText; "Click Me"\nBackground; "#307AEF"\n\nButton.OnClick; "ChangeBtn"\n    Text; "Stop"\n\n<end-cloudcode>' 
             }
           ]
         }
       ],
       activeProjectId: 1
     };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          return JSON.parse(saved);
+        }
+      } catch (e) {
+        console.error('Failed to load from localStorage', e);
+      }
+      return defaultState;
+    }
+
+    function saveState() {
+      try {
+        saveCurrentEditorText();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        console.error('Failed to save to localStorage', e);
+      }
+    }
+
+    const appState = loadState();
 
     // DOM Elements
     const drawerBtn = document.getElementById('drawerBtn');
@@ -1016,7 +1039,7 @@
       const version = apkVersion.value.trim() || '1.0.0';
       const format = apkFormat.value;
 
-      saveCurrentEditorText();
+      saveState();
       const proj = getActiveProject();
       if (!proj || !proj.items.length) {
         return alert('No project files found to build!');
@@ -1099,7 +1122,7 @@
 
           case 'run':
             commandModalOverlay.classList.remove('active');
-            saveCurrentEditorText();
+            saveState();
             loadPreviewCode();
             previewScreen.classList.add('active');
             break;
@@ -1218,7 +1241,7 @@
       const file = getActiveFile();
       if (!file) return alert('No file is currently open!');
 
-      saveCurrentEditorText();
+      saveState();
       addChatMessage('user', `Fix and optimize my ${file.name} code.`);
 
       const aiReply = await askGroqAI([
@@ -1229,7 +1252,7 @@
       if (aiReply) {
         const cleanCode = aiReply.replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim();
         codeArea.innerText = cleanCode;
-        saveCurrentEditorText();
+        saveState();
         updateLineNumbers();
         addChatMessage('ai', 'Updated your code directly in the editor!');
       }
@@ -1246,7 +1269,7 @@
     });
 
     function switchProject(projId) {
-      saveCurrentEditorText();
+      saveState();
       appState.activeProjectId = projId;
       const proj = getActiveProject();
       
@@ -1353,7 +1376,7 @@
 
     downloadFileBtn.addEventListener('click', () => {
       dropdownMenu.classList.remove('show');
-      saveCurrentEditorText();
+      saveState();
       const file = getActiveFile();
       if (!file) return;
 
@@ -1361,7 +1384,7 @@
     });
 
     downloadProjectBtn.addEventListener('click', () => {
-      saveCurrentEditorText();
+      saveState();
       const proj = getActiveProject();
       if (!proj.items.length) return alert('No files to download.');
 
@@ -1385,7 +1408,7 @@
     }
 
     function setActiveTab(id) {
-      saveCurrentEditorText();
+      saveState();
       const proj = getActiveProject();
       const target = proj.items.find(i => i.id === id);
       if (!target || target.type === 'folder') return;
@@ -1412,6 +1435,7 @@
       renderTabs();
       checkHeaderButtons();
       updateLineNumbers();
+      saveState();
     }
 
     function renderTabs() {
@@ -1453,7 +1477,7 @@
 
     codeArea.addEventListener('input', () => {
       updateLineNumbers();
-      saveCurrentEditorText();
+      saveState();
     });
 
     function updateLineNumbers() {
@@ -1466,10 +1490,11 @@
       let pageTitle = "CloudCode App";
       let elementsHTML = "";
       let consoleLogs = [];
+      let clickActionsScript = "";
 
       const lines = ccCode.split('\n').map(l => l.trim());
       let currentElement = null;
-      let activeOnClick = null;
+      let activeOnClickButtonId = null;
 
       for (let i = 0; i < lines.length; i++) {
         let line = lines[i];
@@ -1492,7 +1517,7 @@
             currentElement = null;
           }
           let match = line.match(/Button\.OnClick;\s*"([^"]+)"/);
-          if (match) activeOnClick = match[1];
+          if (match) activeOnClickButtonId = match[1];
         }
         else if (line.includes(';')) {
           let parts = line.split(';');
@@ -1510,17 +1535,26 @@
 
           if (currentElement) {
             currentElement.props[pName] = pVal;
-          } else if (activeOnClick && pName === 'Text') {
-            // Action updated text or console log
-            elementsHTML += `<script>
-              document.addEventListener("DOMContentLoaded", () => {
-                const btn = document.getElementById("${activeOnClick}");
-                if(btn) btn.addEventListener("click", () => {
-                  // Action updated text or console log
-                  console.log("${pVal}");
-                });
-              });
-            <\/script>`;
+          } else if (activeOnClickButtonId) {
+            if (pName === 'Text') {
+              clickActionsScript += `
+                const btn = document.getElementById("${activeOnClickButtonId}");
+                if(btn) {
+                  btn.addEventListener("click", () => {
+                    btn.innerText = "${pVal}";
+                  });
+                }
+              `;
+            } else if (pName === 'Console.Print') {
+              clickActionsScript += `
+                const btn = document.getElementById("${activeOnClickButtonId}");
+                if(btn) {
+                  btn.addEventListener("click", () => {
+                    console.log("${pVal}");
+                  });
+                }
+              `;
+            }
           }
         } 
         else if (line.startsWith('Console.Print;')) {
@@ -1533,7 +1567,6 @@
         elementsHTML += renderCCElement(currentElement);
       }
 
-      // Wrap translated output into a fully valid HTML layout structure
       return `<!DOCTYPE html>
       <html lang="en">
       <head>
@@ -1547,6 +1580,11 @@
         <h2>${pageTitle}</h2>
         ${elementsHTML}
         ${consoleLogs.length ? `<div style="margin-top:20px; background:#0b0b0e; color:#39ff14; padding:10px; font-family:monospace; border-radius:4px;">[Console Output]:<br>` + consoleLogs.join('<br>') + `</div>` : ''}
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            ${clickActionsScript}
+          });
+        <\/script>
       </body>
       </html>`;
     }
@@ -1576,6 +1614,12 @@
       } else if (el.type === 'button') {
         let bg = el.props.Background || '#307AEF';
         return `<button ${idAttr} style="background: ${bg}; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-bottom: 10px;">${el.props.Text || 'Button'}</button>`;
+      } else if (el.type === 'image') {
+        return `<img ${idAttr} src="${el.props.Source || ''}" style="${style} object-fit: cover;" />`;
+      } else if (el.type === 'input') {
+        return `<input ${idAttr} type="text" placeholder="${el.props.Placeholder || ''}" style="${style} background: #222; color: #fff; border: 1px solid #444; border-radius: 4px;" />`;
+      } else if (el.type === 'link') {
+        return `<a ${idAttr} href="${el.props.Link || '#'}" style="${style} color: #4cc9f0; display: inline-block;">${el.props.Text || 'Link'}</a>`;
       }
       return '';
     }
@@ -1588,7 +1632,6 @@
       
       const lowerName = file.name.toLowerCase();
       if (lowerName.endsWith('.cc')) {
-        // Translate .cc code into executable HTML layout via interpreter translator
         previewFrame.srcdoc = translateCloudCodeToHTML(codeArea.innerText);
       } else {
         previewFrame.srcdoc = codeArea.innerText;
@@ -1596,7 +1639,7 @@
     }
 
     playBtn.addEventListener('click', () => {
-      saveCurrentEditorText();
+      saveState();
       loadPreviewCode();
       previewScreen.classList.add('active');
     });
