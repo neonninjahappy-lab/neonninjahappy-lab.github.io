@@ -282,7 +282,7 @@
       cursor: not-allowed;
     }
 
-    /* Voice Overlay Panel */
+    /* Voice Control Panel Overlay */
     .voice-control-panel {
       background-color: #16161a;
       border-top: 1px solid var(--border-color);
@@ -526,7 +526,7 @@
       cursor: not-allowed;
     }
 
-    /* Custom Emoji Picker Popup */
+    /* Emoji Picker Popup */
     .emoji-picker-popup {
       position: absolute;
       bottom: 60px;
@@ -563,14 +563,6 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-    }
-
-    .emoji-section-title {
-      font-size: 11px;
-      color: var(--text-secondary);
-      font-weight: 700;
-      text-transform: uppercase;
-      margin-bottom: 4px;
     }
 
     .emoji-grid {
@@ -632,7 +624,7 @@
       letter-spacing: 0.5px;
     }
 
-    /* Profile Read-Only Drawer Sheet */
+    /* Profile Sheet Drawer */
     .profile-drawer-overlay {
       position: fixed;
       top: 0; left: 0;
@@ -741,7 +733,7 @@
       background-color: rgba(255, 112, 67, 0.25);
     }
 
-    /* API Documentation / Notice Modal */
+    /* Modal Architecture Overlay */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0;
@@ -964,9 +956,9 @@
       isSendingMessage: false
     };
 
-    // Helper: Safe HTML Escaping
+    // Helper: Safe HTML Escaping for XSS Prevention
     function escapeHTML(str) {
-      if (!str) return '';
+      if (str === null || str === undefined) return '';
       return String(str).replace(/[&<>"']/g, function(m) {
         return {
           '&': '&amp;',
@@ -978,18 +970,18 @@
       });
     }
 
-    // Helper: Redirect to login page on session failure
+    // Helper: Clean Token Clear & Redirect
     function redirectToLogin() {
       sessionStorage.removeItem('discloud_token');
       window.location.href = LOGIN_PAGE_URL;
     }
 
-    // Helper: Unified Secure API Request Handler with Token Authorization Header
+    // Helper: Unified Secure API Request Handler using Authorization Bearer Header
     async function apiRequest(endpoint, method = 'GET', body = null) {
       const token = sessionStorage.getItem('discloud_token');
       if (!token) {
         redirectToLogin();
-        throw new Error("No active session token.");
+        throw new Error("No active session token found.");
       }
 
       const options = {
@@ -1016,7 +1008,7 @@
         }
         return await res.json();
       } catch (err) {
-        console.error(`API Error [${method} ${endpoint}]:`, err);
+        console.error(`API Request Error [${method} ${endpoint}]:`, err);
         throw err;
       }
     }
@@ -1035,7 +1027,7 @@
     const channelHeaderIcon = document.getElementById('channelHeaderIcon');
     const serverTitleText = document.getElementById('serverTitleText');
 
-    // Profile UI Elements
+    // Profile Elements
     const userProfileBar = document.getElementById('userProfileBar');
     const profileOverlay = document.getElementById('profileOverlay');
     const profileSheet = document.getElementById('profileSheet');
@@ -1052,7 +1044,7 @@
     const apiModal = document.getElementById('apiModal');
     const closeApiModalBtn = document.getElementById('closeApiModalBtn');
 
-    // Navigation & UI Event Listeners
+    // Navigation & Modal Event Listeners
     apiInfoBtn.addEventListener('click', () => apiModal.classList.add('active'));
     closeApiModalBtn.addEventListener('click', () => apiModal.classList.remove('active'));
 
@@ -1082,7 +1074,7 @@
       try {
         await apiRequest('/auth/logout', 'POST');
       } catch (e) {
-        console.warn("Logout endpoint error:", e);
+        console.warn("Logout notification error:", e);
       }
       redirectToLogin();
     });
@@ -1108,7 +1100,7 @@
           redirectToLogin();
         }
       } catch (err) {
-        redirectToLogin();
+        console.error("Authentication check failed:", err);
       }
     }
 
@@ -1118,25 +1110,26 @@
       if (!u) return;
 
       const username = u.global_name || u.username || 'Discord User';
-      const userTag = u.discriminator && u.discriminator !== '0' ? `#${u.discriminator}` : `@${u.username}`;
+      const userTag = u.discriminator && u.discriminator !== '0' ? `#${u.discriminator}` : `@${u.username || 'user'}`;
       const avatarUrl = u.avatar ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png` : null;
 
       barUserName.textContent = username;
       barUserTag.textContent = userTag;
       sheetUserName.textContent = username;
       sheetUserTag.textContent = `${userTag} · ID: ${u.id}`;
-      sheetUserId.textContent = u.id;
+      sheetUserId.textContent = u.id || 'N/A';
 
       if (avatarUrl) {
-        barAvatar.style.backgroundImage = `url(${avatarUrl})`;
+        barAvatar.style.backgroundImage = `url('${avatarUrl}')`;
         barAvatar.textContent = '';
-        sheetAvatar.style.backgroundImage = `url(${avatarUrl})`;
+        sheetAvatar.style.backgroundImage = `url('${avatarUrl}')`;
         sheetAvatar.textContent = '';
       } else {
+        const initial = username.charAt(0).toUpperCase();
         barAvatar.style.backgroundImage = 'none';
-        barAvatar.textContent = username.charAt(0).toUpperCase();
+        barAvatar.textContent = initial;
         sheetAvatar.style.backgroundImage = 'none';
-        sheetAvatar.textContent = username.charAt(0).toUpperCase();
+        sheetAvatar.textContent = initial;
       }
     }
 
@@ -1190,19 +1183,19 @@
         const iconUrl = guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` : null;
 
         if (iconUrl) {
-          iconDiv.style.backgroundImage = `url(${iconUrl})`;
+          iconDiv.style.backgroundImage = `url('${iconUrl}')`;
           iconDiv.textContent = '';
         } else {
           iconDiv.style.backgroundImage = 'none';
-          const initials = guild.name.split(' ').map(w => w[0]).join('').substring(0, 3).toUpperCase();
+          const initials = guild.name ? guild.name.split(' ').map(w => w[0]).join('').substring(0, 3).toUpperCase() : 'S';
           iconDiv.textContent = initials || 'S';
         }
 
-        iconDiv.title = guild.name;
+        iconDiv.title = guild.name || 'Server';
         iconDiv.addEventListener('click', () => {
           if (appState.currentServerId !== guild.id) {
             appState.currentServerId = guild.id;
-            serverTitleText.textContent = guild.name;
+            serverTitleText.textContent = guild.name || 'Server';
             renderServers();
             fetchChannels(guild.id);
           }
@@ -1262,13 +1255,11 @@
         return;
       }
 
-      // Group Channels by Category (Parent ID) or Category Name
+      // Group Channels by Category Node (Type 4 = GUILD_CATEGORY)
       const categoriesMap = {};
       const nonCategoryChannels = [];
 
-      // Discord Channel Types: 0 = GUILD_TEXT, 2 = GUILD_VOICE, 4 = GUILD_CATEGORY
       const categoryNodes = appState.channels.filter(c => c.type === 4);
-
       categoryNodes.forEach(cat => {
         categoriesMap[cat.id] = { name: cat.name, channels: [] };
       });
@@ -1332,7 +1323,7 @@
 
       item.addEventListener('click', () => {
         if (isVoice) {
-          alert("Voice channels are not media-transport enabled in browser mode.");
+          alert("Voice channels are disabled in web browser mode.");
           return;
         }
 
@@ -1355,7 +1346,7 @@
       try {
         const msgs = await apiRequest(`/discord/channels/${channelId}/messages`);
         appState.messages = Array.isArray(msgs) ? msgs : (msgs.data || []);
-        // Discord API returns newest first -> reverse to show chronological order
+        // Reverse array to render chronological timeline
         appState.messages.reverse();
         appState.isLoadingMessages = false;
         renderChatRoomView();
@@ -1417,7 +1408,12 @@
         appState.messages.forEach(m => {
           const authorName = m.author ? (m.author.global_name || m.author.username || 'User') : 'User';
           const avatarUrl = m.author && m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png` : null;
-          const timeStr = m.timestamp ? new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+          
+          let timeStr = '';
+          if (m.timestamp) {
+            const dateObj = new Date(m.timestamp);
+            timeStr = isNaN(dateObj.getTime()) ? String(m.timestamp) : dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          }
 
           const msgDiv = document.createElement('div');
           msgDiv.className = 'message';
@@ -1515,7 +1511,6 @@
         sendBtn.disabled = false;
         inputEl.disabled = false;
         inputEl.focus();
-        // Refresh message stream
         fetchMessages(appState.currentChannel.id);
       } catch (err) {
         appState.isSendingMessage = false;
@@ -1525,7 +1520,7 @@
       }
     }
 
-    // Initialization Logic
+    // App Initialization Execution
     checkAuthSession();
   </script>
 </body>
