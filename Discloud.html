@@ -11,6 +11,7 @@
       --bg-surface: #1e1e24;
       --accent-blue: #5865f2;
       --accent-blue-hover: #4752c4;
+      --accent-red: #ff7043;
       --text-primary: #f8f9fa;
       --text-secondary: #a0a0ab;
       --border-color: #2b2b36;
@@ -96,13 +97,24 @@
       text-decoration: none;
     }
 
-    .btn-discord-login:hover {
+    .btn-discord-login:hover:not(:disabled) {
       background-color: var(--accent-blue-hover);
     }
 
-    .status-text {
+    .btn-discord-login:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .status-msg {
       font-size: 13px;
       color: var(--text-secondary);
+      min-height: 20px;
+      word-break: break-word;
+    }
+    
+    .status-msg.error {
+      color: var(--accent-red);
     }
   </style>
 </head>
@@ -117,7 +129,7 @@
     <button class="btn-discord-login" id="loginBtn">
       <i class="fa-brands fa-discord"></i> Continue with Discord
     </button>
-    <div id="statusMessage" class="status-text"></div>
+    <div class="status-msg" id="statusMsg"></div>
   </div>
 
   <script>
@@ -125,49 +137,110 @@
     const MAIN_APP_URL = "https://cloudfurm.com/disboardMain.html";
 
     const loginBtn = document.getElementById('loginBtn');
-    const statusMessage = document.getElementById('statusMessage');
+    const statusMsg = document.getElementById('statusMsg');
 
-    // Capture token if backend redirected back with it in hash/query
-    const params = new URLSearchParams(window.location.search);
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const token = params.get('token') || hashParams.get('token');
-
-    if (token) {
-      sessionStorage.setItem('discloud_token', token);
-      window.history.replaceState({}, document.title, window.location.pathname);
-      window.location.href = MAIN_APP_URL;
-    }
-
-    loginBtn.addEventListener('click', () => {
-      // Direct user to backend OAuth login route, passing frontend return target
-      window.location.href = `${API_BASE_URL}/auth/login?redirect_uri=${encodeURIComponent(MAIN_APP_URL)}`;
-    });
-
-    async function checkExistingSession() {
-      const existingToken = sessionStorage.getItem('discloud_token');
-      if (!existingToken) return;
-
-      try {
-        statusMessage.textContent = "Verifying session...";
-        const res = await fetch(`${API_BASE_URL}/auth/me`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${existingToken}`
-          }
-        });
-
-        if (res.ok) {
-          window.location.href = MAIN_APP_URL;
-        } else {
-          sessionStorage.removeItem('discloud_token');
-          statusMessage.textContent = "";
-        }
-      } catch (err) {
-        statusMessage.textContent = "";
+    function setStatus(text, isError = false) {
+      statusMsg.textContent = text || "";
+      if (isError) {
+        statusMsg.classList.add('error');
+      } else {
+        statusMsg.classList.remove('error');
       }
     }
 
-    checkExistingSession();
+    function cleanUrlParams() {
+      if (window.history && window.history.replaceState) {
+        const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+
+    async function processAuthentication() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const handoffCode = urlParams.get('handoff');
+
+      // 1. Process Handoff Code Exchange
+      if (handoffCode) {
+        loginBtn.disabled = true;
+        setStatus("Completing Discord authorization...");
+
+        try {
+          const res = await fetch(`${API_BASE_URL}/auth/exchange`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ handoff: handoffCode })
+          });
+
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(data.error || data.message || `Exchange failed (HTTP ${res.status})`);
+          }
+
+          if (!data.token) {
+            throw new Error("No session token received from exchange endpoint.");
+          }
+
+          // Store token & redirect to dashboard
+          sessionStorage.setItem('discloud_token', data.token);
+          cleanUrlParams();
+          setStatus("Authorization successful! Loading DisCloud...");
+          window.location.href = MAIN_APP_URL;
+          return;
+        } catch (err) {
+          console.error("Auth Exchange Error:", err);
+          cleanUrlParams();
+          loginBtn.disabled = false;
+          setStatus(err.message || "Failed to exchange authorization code.", true);
+          return;
+        }
+      }
+
+      // 2. Check Existing Session Token
+      const existingToken = sessionStorage.getItem('discloud_token');
+      if (existingToken) {
+        setStatus("Verifying existing session...");
+        loginBtn.disabled = true;
+
+        try {
+          const res = await fetch(`${API_BASE_URL}/auth/me`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${existingToken}` }
+          });
+
+          if (res.ok) {
+            const data = await res.json().catch(() => ({}));
+            const userObj = data ? (data.user || data.data?.user || (data.id ? data : null)) : null;
+
+            if (userObj) {
+              setStatus("Session verified. Redirecting...");
+              window.location.href = MAIN_APP_URL;
+              return;
+            }
+          }
+
+          if (res.status === 401) {
+            sessionStorage.removeItem('discloud_token');
+            setStatus("Session expired. Please log in again.");
+          } else {
+            setStatus("Server temporarily unreachable. Retrying...", true);
+          }
+        } catch (err) {
+          console.warn("Session check offline/error:", err);
+          setStatus("Network error during session verification. Click login to try again.");
+        } finally {
+          loginBtn.disabled = false;
+        }
+      }
+    }
+
+    loginBtn.addEventListener('click', () => {
+      loginBtn.disabled = true;
+      setStatus("Redirecting to Discord...");
+      window.location.href = `${API_BASE_URL}/auth/login`;
+    });
+
+    // Execute authentication audit and verification on load
+    processAuthentication();
   </script>
 </body>
 </html>
