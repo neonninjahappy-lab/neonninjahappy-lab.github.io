@@ -23,19 +23,20 @@
 
     <style>
         :root {
-            --bg-main: #121214;
-            --bg-surface: #1e1e24;
-            --bg-tab-active: #2a2a32;
-            --accent-gold: #ffb703;
-            --accent-play: #4cc9f0;
-            --accent-ai: #a06ee1;
-            --accent-green: #2ec4b6;
-            --accent-orange: #ff7043;
-            --accent-android: #3ddc84;
-            --accent-ios: #ff4d4d;
-            --text-primary: #f8f9fa;
-            --text-secondary: #a0a0ab;
-            --border-color: #2b2b36;
+            --bg-main: #0a0e17;
+            --bg-surface: #111827;
+            --bg-tab-active: #1f293d;
+            --accent-primary: #3b82f6;
+            --accent-glow: #60a5fa;
+            --accent-gold: #f59e0b;
+            --accent-play: #38bdf8;
+            --accent-ai: #818cf8;
+            --accent-green: #10b981;
+            --accent-blue-btn: #2563eb;
+            --accent-blue-btn-hover: #1d4ed8;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #1e293b;
             --font-cartoon: 'Fredoka', 'Comfortaa', cursive, sans-serif;
             --font-logo: 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif;
         }
@@ -64,7 +65,7 @@
         }
 
         .app-logo {
-            background-color: #161616;
+            background-color: #0f172a;
             border-radius: 26%;
             display: inline-flex;
             align-items: center;
@@ -74,7 +75,7 @@
             font-weight: 300;
             letter-spacing: -2px;
             user-select: none;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 0 0 2px rgba(59, 130, 246, 0.2);
             flex-shrink: 0;
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -104,7 +105,7 @@
             left: 0;
             width: 100%;
             height: 60px;
-            background-color: rgba(30, 30, 36, 0.92);
+            background-color: rgba(17, 24, 39, 0.92);
             backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
@@ -149,7 +150,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.65);
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(6px);
             z-index: 200;
             opacity: 0;
@@ -231,7 +232,7 @@
         }
 
         .nav-link.active {
-            color: var(--accent-gold);
+            color: var(--accent-glow);
         }
 
         .container {
@@ -239,7 +240,7 @@
             background: var(--bg-surface);
             padding: 40px 28px;
             border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
             width: 100%;
             max-width: 720px;
             margin: 0 auto;
@@ -272,20 +273,67 @@
             line-height: 1.5;
         }
 
-        .gone-notice {
-            display: flex;
+        .action-btn-container {
+            margin-bottom: 20px;
+        }
+
+        .cta-btn {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            background: rgba(255, 77, 77, 0.1);
-            border: 2px solid var(--accent-ios);
-            color: var(--accent-ios);
+            gap: 10px;
+            background: linear-gradient(135deg, var(--accent-blue-btn), #1d4ed8);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 32px;
             border-radius: 14px;
-            padding: 22px 20px;
             font-family: var(--font-cartoon);
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+            transition: all 0.2s ease;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(37, 99, 235, 0.5);
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .roadmap-banner {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: rgba(30, 58, 138, 0.25);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--text-primary);
+            border-radius: 14px;
+            padding: 18px 20px;
+            text-align: left;
             margin-bottom: 24px;
+        }
+
+        .roadmap-banner i {
+            font-size: 20px;
+            color: var(--accent-glow);
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .roadmap-banner-title {
+            font-family: var(--font-cartoon);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-glow);
+            margin-bottom: 4px;
+        }
+
+        .roadmap-banner-text {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.5;
         }
 
         .feature-list {
@@ -332,7 +380,7 @@
         .stat-num {
             font-size: 18px;
             font-weight: 700;
-            color: var(--accent-gold);
+            color: var(--accent-glow);
         }
 
         .stat-label {
@@ -393,7 +441,7 @@
         .changelog-entry {
             background: var(--bg-main);
             border: 1px solid var(--border-color);
-            border-left: 4px solid var(--accent-gold);
+            border-left: 4px solid var(--accent-primary);
             border-radius: 8px;
             padding: 12px 14px;
         }
@@ -449,7 +497,7 @@
 
         .faq-item summary::before {
             content: '+';
-            color: var(--accent-gold);
+            color: var(--accent-glow);
             font-weight: 700;
             font-size: 16px;
             width: 12px;
@@ -512,13 +560,13 @@
         }
 
         .badge.new {
-            background: rgba(255, 183, 3, 0.15);
-            color: var(--accent-gold);
-            border: 1px solid var(--accent-gold);
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-glow);
+            border: 1px solid var(--accent-primary);
         }
 
         .badge.update {
-            background: rgba(76, 201, 240, 0.15);
+            background: rgba(56, 189, 248, 0.15);
             color: var(--accent-play);
             border: 1px solid var(--accent-play);
         }
@@ -625,52 +673,61 @@
             <h1>CloudFurm</h1>
             <p class="subtitle">Code from your phone. Build, preview, and collaborate live — no desktop required.</p>
 
-            <div class="gone-notice">
-                <i class="fa-solid fa-ghost"></i>
-                <span>Gone do to red guys retirement</span>
+            <div class="action-btn-container">
+                <a href="https://cloudfurm.com/IOS" class="cta-btn">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Go to CloudFurm
+                </a>
+            </div>
+
+            <div class="roadmap-banner">
+                <i class="fa-solid fa-mobile-screen-button"></i>
+                <div>
+                    <div class="roadmap-banner-title">Native App Relaunch Notice</div>
+                    <div class="roadmap-banner-text">We are actively refactoring our architecture to bring CloudFurm back to native app stores soon. Full platform availability and expanded standalone app distribution will resume in an upcoming release cycle.</div>
+                </div>
             </div>
 
             <div class="feature-list">
                 <div class="feature-item"><i class="fa-solid fa-users" style="color: var(--accent-play);"></i> Live multi-device collaboration</div>
-                <div class="feature-item"><i class="fa-solid fa-microphone" style="color: var(--accent-gold);"></i> In-room voice chat support</div>
+                <div class="feature-item"><i class="fa-solid fa-microphone" style="color: var(--accent-glow);"></i> In-room voice chat support</div>
                 <div class="feature-item"><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent-ai);"></i> CloudFurm.AI & Autocomplete</div>
-                <div class="feature-item"><i class="fa-solid fa-boxes-packing" style="color: var(--accent-android);"></i> Export APK & App Bundles</div>
+                <div class="feature-item"><i class="fa-solid fa-boxes-packing" style="color: var(--accent-green);"></i> Direct Web & Package Studio</div>
             </div>
 
             <div class="stats-row">
                 <div class="stat-box">
                     <div class="stat-num">V6</div>
-                    <div class="stat-label">Android</div>
+                    <div class="stat-label">Web Engine</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-num">v3.2</div>
-                    <div class="stat-label">iOS</div>
+                    <div class="stat-label">iOS Web App</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-num">~100MB</div>
-                    <div class="stat-label">Install size</div>
+                    <div class="stat-num">Cloud</div>
+                    <div class="stat-label">Realtime Sync</div>
                 </div>
             </div>
 
             <div class="section-heading">System Requirements</div>
             <div class="req-table">
-                <div class="req-row"><span>Android</span><span>8.0 or later, 100 MB free</span></div>
-                <div class="req-row"><span>iOS</span><span>15.0 or later, 100 MB free</span></div>
-                <div class="req-row"><span>Connection</span><span>Needed for live collab & voice chat</span></div>
-                <div class="req-row"><span>Offline mode</span><span>Editing works without a connection</span></div>
+                <div class="req-row"><span>Android</span><span>Modern Web Browser (Chrome/Firefox)</span></div>
+                <div class="req-row"><span>iOS</span><span>Safari / WebKit, iOS 15.0 or later</span></div>
+                <div class="req-row"><span>Connection</span><span>Required for live collaboration & voice</span></div>
+                <div class="req-row"><span>Offline mode</span><span>Local project saving supported</span></div>
             </div>
 
             <div class="section-heading">Permissions</div>
             <div class="perm-list">
-                <div class="perm-item"><span class="perm-name">Microphone</span> Only requested when you start or join a voice chat.</div>
-                <div class="perm-item"><span class="perm-name">Storage</span> Used to save projects on-device and export files.</div>
-                <div class="perm-item"><span class="perm-name">Network</span> Used to sync projects live and relay calls.</div>
+                <div class="perm-item"><span class="perm-name">Microphone</span> Only requested when you start or join a voice chat room.</div>
+                <div class="perm-item"><span class="perm-name">Storage</span> Used to cache projects locally on-device.</div>
+                <div class="perm-item"><span class="perm-name">Network</span> Used to synchronize sessions live across collaborators.</div>
             </div>
 
             <div class="section-heading">Changelog</div>
             <div class="changelog">
                 <div class="changelog-entry">
-                    <div class="cl-head"><span class="cl-version">Android V6</span><span class="cl-date">Latest</span></div>
+                    <div class="cl-head"><span class="cl-version">Platform V6</span><span class="cl-date">Latest</span></div>
                     <ul>
                         <li>Added room passcodes and moderation controls</li>
                         <li>Integrated CloudFurm.AI workspace assistant</li>
@@ -693,8 +750,8 @@
                 <p>Yes, using the editor is completely free.</p>
             </details>
             <details class="faq-item">
-                <summary>Will this appear in the App Store or Play Store?</summary>
-                <p>Not currently.</p>
+                <summary>Will native apps return to store listings?</summary>
+                <p>Yes. Standalone native app builds are undergoing architectural updates and will be relaunched soon.</p>
             </details>
             <details class="faq-item">
                 <summary>Can I use it offline?</summary>
@@ -705,22 +762,22 @@
         <!-- ANNOUNCEMENTS PAGE PANEL -->
         <div class="page-panel" id="announcementsPanel">
             <div style="text-align: left; margin-bottom: 24px;">
-                <h1 style="font-size: 28px;"><i class="fa-solid fa-bullhorn" style="color: var(--accent-gold);"></i> Announcements</h1>
+                <h1 style="font-size: 28px;"><i class="fa-solid fa-bullhorn" style="color: var(--accent-glow);"></i> Announcements</h1>
                 <p style="font-size: 14px; color: var(--text-secondary);">Stay updated with the latest news, updates, and releases for CloudFurm.</p>
             </div>
 
             <div class="announcement-card">
-                <span class="badge new">New Release</span>
-                <h3>CloudFurm V6 Released for Android!</h3>
-                <div class="date"><i class="fa-regular fa-calendar"></i> August 2026</div>
-                <p>We are thrilled to announce the rollout of CloudFurm Android V6! This massive update brings full integration with CloudFurm.AI, room passcodes, kick/ban controls for live collaboration, and full support for direct APK packaging built straight into the studio.</p>
+                <span class="badge new">Roadmap Update</span>
+                <h3>Native Mobile App Relaunch in Development</h3>
+                <div class="date"><i class="fa-regular fa-calendar"></i> November 2026</div>
+                <p>We are actively working on returning CloudFurm to standalone native mobile packaging. In the interim, all web workspace services remain fully active via CloudFurm online.</p>
             </div>
 
             <div class="announcement-card">
-                <span class="badge update">iOS Update</span>
-                <h3>iOS Profile v3.2 Stability Patch</h3>
+                <span class="badge update">Platform Release</span>
+                <h3>CloudFurm V6 Live Engine Rolling Out</h3>
                 <div class="date"><i class="fa-regular fa-calendar"></i> August 2026</div>
-                <p>The latest iOS profile (v3.2) resolves audio drop issues during extended voice calls in collaboration rooms and improves project sync reliability when switching files rapidly.</p>
+                <p>This major milestone brings full integration with CloudFurm.AI, room passcodes, kick/ban controls for live collaboration, and enhanced web studio execution.</p>
             </div>
 
             <div class="announcement-card">
@@ -732,7 +789,7 @@
         </div>
 
         <div class="footer-note">
-            Android APK V6 · iOS profile v3.2
+            CloudFurm V6 · Web & Mobile Studio
         </div>
     </div>
 
